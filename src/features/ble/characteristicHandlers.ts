@@ -3,7 +3,7 @@
 import base64 from "react-native-base64";
 
 
-import { setMain, setMainCharacteristic } from "./bleSlice"
+import { setMainCharacteristic } from "./bleSlice"
 
 //==== Types ====================
 import { BleError, BleErrorCode, Characteristic } from "react-native-ble-plx";
@@ -13,6 +13,9 @@ import { MainCharacteristic } from "./types";
 import store from "../../store";
 import { disconnectFromDevice } from "./ble";
 // On updates ==============================================================================================
+
+
+
 
 
 const onCharacteristicUpdate = (error: BleError | null, characteristic: Characteristic | null) => {
@@ -39,6 +42,7 @@ const rawDataToMainCharacteristic = (value: string): MainCharacteristic | null =
 
     const values = value.split(';')
     const measurementsQuantity = parseFloat(values[stringFields.SENSORS_QUANTITY])
+    console.log('Recieved: ',value);
     
     const measurements = values.slice(
         stringFields.MEASUREMENTS,

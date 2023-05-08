@@ -5,8 +5,6 @@ import { Device } from 'react-native-ble-plx'
 
 //========Types========================================
 import { MainCharacteristic, ErrorBleState, DeviceSerializable } from "./types";
-import { RootState } from '../../store';
-
 
 //===== Could be moved to types.ts ========================
 interface BLEState {
@@ -56,16 +54,17 @@ export const bleSlice = createSlice({
   reducers: {
 
     // ======================== Just setters ===================================
-    setMainCharacteristic: (state: RootState, action: PayloadAction<MainCharacteristic>) => {
-      state.mainCharacteristic = action.payload
+    setMainCharacteristic: (state, action: PayloadAction<MainCharacteristic | null>) => {
+      if (action.payload)
+        state.mainCharacteristic = action.payload
     },
 
 
-    setError: (state: RootState, action: PayloadAction<ErrorBleState>) => {
+    setError: (state, action: PayloadAction<ErrorBleState>) => {
       state.error = action.payload
     },
     /** set a device id and name as the connected device, if it is set to null it will set connectionState to disconnected otherwise to connected */
-    setConnectedDevice: (state: RootState, action: PayloadAction<Device>) => {
+    setConnectedDevice: (state, action: PayloadAction<DeviceSerializable | null>) => {
       state.connectedDevice = action.payload
       if (action.payload)
         state.connectionState = 'connected'
@@ -76,12 +75,12 @@ export const bleSlice = createSlice({
     //============================ Others===========================================
 
     /** Used when the connection is lost and the phone still is retrying to reconnect */
-    setTryingToConnect: (state: RootState) => {
-      state.connectionState = 'connecting'
+    setTryingToConnect: (state) => {
+      state.connectionState = 'reconnecting'
     },
 
 
-    addDevice: (state: RootState, action: PayloadAction<Device>) => {
+    addDevice: (state, action: PayloadAction<DeviceSerializable>) => {
       if (!isDuplicteDevice(state.allDevices, action.payload)) {
         console.log(action.payload.id, action.payload.name);
 
@@ -94,7 +93,7 @@ export const bleSlice = createSlice({
       // Or just think that the user will no stay long enough looking for devices
       // I found the devices in less than 4 seconds in my phone
     },
-    resetDevices: (state: RootState) => { //TODO Improve name
+    resetDevices: (state) => { //TODO Improve name
       state.allDevices = []
     },
   }
@@ -107,4 +106,4 @@ export const { setMainCharacteristic,
 export default bleSlice.reducer
 
 //================ Utils =============================
-const isDuplicteDevice = (devices: Device[], nextDevice: Device) => devices.findIndex((device) => nextDevice.id === device.id) > -1;
+const isDuplicteDevice = (devices: DeviceSerializable[], nextDevice: DeviceSerializable) => devices.findIndex((device) => nextDevice.id === device.id) > -1;

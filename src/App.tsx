@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { NativeBaseProvider, Text } from 'native-base';
 
-import { Provider, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import store from './store';
 
 

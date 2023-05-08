@@ -24,7 +24,7 @@ export const RingCircle = ({ size = 200, height, borderWidth = 4, borderColor, c
         <View style={{
             width: size,
             height: height || size,
-            borderRadius: size / 2,
+            borderRadius:  size / 2,
             borderWidth: borderWidth,
             borderColor: borderColor,
 

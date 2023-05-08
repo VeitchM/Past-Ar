@@ -21,6 +21,13 @@ import bleConstants from "./bleConstants";
 
 import { DeviceSerializable } from "./types";
 
+
+
+const MTU = 255
+
+
+//TODO MODAL SHOWING BLUETOOTH IS OFF
+
 const bleManager = new BleManager()
 requestPermissions()
 //
@@ -103,9 +110,16 @@ const scanForPeripherals = () => {
         console.error('Error scaning peripherals', error)
 
       }
-      //console.log('Found Device ',device?.name);
-      //if (device && device.name?.includes(DEVICE_BRAND)) {
-      store.dispatch(addDevice({ id: device.id, name: device.name }))
+      else {
+
+        //console.log('Found Device ',device?.name);
+        //if (device && device.name?.includes(DEVICE_BRAND)) {
+        if (device) {
+          console.log('Dispatch null', device);
+
+          store.dispatch(addDevice({ id: device.id, name: device.name }))
+        }
+      }
 
       //}
     });
@@ -142,7 +156,7 @@ const connectToDevice = async (device: DeviceSerializable) => {
   if (!deviceIsConnected) {
 
     try {
-      deviceConnection = await bleManager.connectToDevice(device.id);
+      deviceConnection = await bleManager.connectToDevice(device.id, { requestMTU: MTU });
     }
     catch (error) {
       console.error('Error Connecting', error);
@@ -197,7 +211,7 @@ const setMonitorsCallbacks = async (device: Device) => {
       services.main.characteristics.main.UUID,
       onCharacteristicUpdate
     );
-   
+
 
   } else {
     console.error("No Device Connected");
