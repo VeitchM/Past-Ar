@@ -1,0 +1,97 @@
+import { Flex, Text, useTheme } from "native-base"
+import { useEffect, useState } from "react"
+import { useTypedSelector } from "../storeHooks"
+import RoundedContainer from "./RoundedContainer"
+
+
+
+
+
+/**
+ * 
+ * @returns a component which displays the last measurement and the time elapsed since the measurement was made
+ */
+export const LastMeasurement = () => {
+
+    const RINGSIZE = 300
+    const UPDATE_TIME = 10000
+
+    const theme = useTheme()
+    const ringColor = theme.colors.muted
+
+    const [timePassed, setTimePassed] = useState('')
+
+ const {height,timeStamp} = useTypedSelector(state=>state.ble.lastMeasurement)
+
+
+
+
+    //Refresh minutes when a certain amount of time passed
+    useEffect(() => {
+
+        const calculateTime = () => {
+            let timePassed = 'No hubo mediciones '
+
+            if (timeStamp != '') {
+                timePassed = 'hace '
+
+                const milisecondsPassed = Date.now() - new Date(timeStamp).valueOf()
+                if (milisecondsPassed < 60000)
+                    timePassed += Math.floor(milisecondsPassed / 1000) + ' segundos'
+                else if (milisecondsPassed < 1000 * 60 * 60) {
+                    const minutes = Math.floor(milisecondsPassed / 60000)
+                    timePassed += `${minutes} minuto${minutes > 1 ? 's' : ''}`
+                }
+                else if (milisecondsPassed < 1000 * 60 * 60 * 24) {
+                    const hours = Math.floor(milisecondsPassed / 1000 * 60 * 60)
+                    timePassed += `${hours} hora${hours > 1 ? 's' : ''}`
+                }
+                else {
+                    const days = Math.floor(milisecondsPassed / 1000 * 60 * 60 * 24)
+                    timePassed += `${days} día${days > 1 ? 's' : ''}`
+                }
+            }
+            return timePassed
+        }
+
+
+        setTimePassed(calculateTime())
+        const interval = setInterval(() => {
+
+            const milisecondsPassed = Date.now() - new Date(timeStamp).valueOf()
+
+            console.log('Mili', milisecondsPassed, new Date(timeStamp));
+            setTimePassed(calculateTime)
+
+            console.log('Time Passed', timePassed);
+        }, UPDATE_TIME);
+        return () => {
+            clearInterval(interval);
+        };
+    }, [timeStamp])
+
+    return (
+
+        <RoundedContainer size={RINGSIZE} borderColor={ringColor[300]}>
+            <Flex direction='column' style={{ width: RINGSIZE, justifyContent: 'center', alignItems: 'center' }} >
+
+                <Text fontSize='xl' fontWeight='extrabold' >
+                    ULTIMA MEDICION</Text>
+                {timeStamp == '' || height == -1 ? (
+                    <Text fontSize='2xl' fontWeight='bold'>No hubo mediciones</Text>)
+                    : (<>
+
+                        < Flex direction='row'>
+                            <Text fontSize='8xl' lineHeight='xs' fontWeight='bold' style={{ color: 'muted.500' }}>
+                                {height.toFixed(1)}</Text>
+                            <Text fontSize='4xl' fontWeight='bold'>cm</Text>
+                        </Flex>
+                        <Text fontSize='3xl' lineHeight='2xs'>
+                            {timePassed}</Text>
+                    </>
+                    )}
+            </Flex>
+
+        </RoundedContainer >
+    )
+}

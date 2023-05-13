@@ -1,34 +1,35 @@
 import { extendTheme } from 'native-base';
-const customTheme = {
+import { color } from 'native-base/lib/typescript/theme/styled-system';
+const theme = extendTheme({
     colors: {
         // primary: {
         //     //300: '#d97706'// 'muted.300'
         // },
-        buttonColorScheme:{
-            50: '#E3F2F9',
-            100: '#C5E4F3',
-            200: '#A2D4EC',
-            300: '#7AC1E4',
-            400: '#47A9DA',
-            500: '#0088CC',
-            600: 'black', // base Color
-            700: 'yellow',
-            800: 'yellow', // pressed
-            900: '#003F5E'
+        buttonColors: {
+            50: '#d4d4d8',
+            100: '#d4d4d8',
+            200: '#d4d4d8',
+            300: '#d4d4d8',
+            400: '#d4d4d8',
+            500: '#d4d4d8',
+            600: '#E9E8E8', // base Color
+            700: '#d4d4d8',
+            800: '#71717a', // pressed
+            900: '#8E8E93'
 
 
         }
     },
     components: {
-        Text:{
-            baseStyle:{
+        Text: {
+            baseStyle: {
                 color: 'muted.400'
             }
         },
-        Heading:{
-            baseStyle:{
+        Heading: {
+            baseStyle: {
                 color: 'muted.400',
-                alignText:'center'
+                alignText: 'center'
             }
         },
         Container: {
@@ -47,15 +48,60 @@ const customTheme = {
                 alignItems: 'center', justifyContent: 'center'
             }
         },
-        // Button: {
-        //     baseStyle:{
-        //         // backgroundColor:'muted.300',
-        //         // shadow: 2
+        Button: {
+            baseStyle: {
+                borderRadius: '2xl',
+                shadow: 2,
+                // colorScheme:'red',
+                // color:'black.500'
+                // minWidth:200
 
-        //     }
-        // }
-    }
-};
-const theme = extendTheme(customTheme);
+            },
+
+            defaultProps: {
+                colorScheme: 'buttonColors',
+                _text: {
+                    color: 'buttonColors.900',
+                    fontWeight: '900',
+                    fontSize: 20
+                }
+
+            }
+        },
+
+
+        Select: {
+            baseStyle: {
+
+                borderRadius: 'lg',
+                borderWidth: 0,
+                shadow: 2,
+                bg: 'buttonColors.600'
+
+            },
+            defaultProps: {
+                colorScheme: 'buttonColors',
+                fontSize: 'lg',
+                color: 'buttonColors.900',
+                fontWeight:'bold'
+              
+
+            },
+        },
+
+
+
+
+    },
+
+    // Button: {
+    //     baseStyle:{
+    //         // backgroundColor:'muted.300',
+    //         // shadow: 2
+
+    //     }
+    // }
+
+})
 
 export default theme

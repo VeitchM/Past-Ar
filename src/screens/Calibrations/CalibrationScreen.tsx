@@ -1,47 +1,90 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { View, Text, Heading, Box, Container, ZStack, Flex, Button } from "native-base";
+import { View, Text, Heading, Box, Container, ZStack, Flex, Button, Select, CheckIcon, HStack, VStack } from "native-base";
 import CalibrationMeasurementScreen from "./CalibrationMeasurementScreen";
 import SetCalibrationsScreen from "./SetCalibrationsScreen";
+import RoundedContainer from "../../components/RoundedContainer";
+import { useState } from "react";
+import { useTypedSelector } from "../../storeHooks";
 
 const Stack = createNativeStackNavigator();
 
-function RootCalibration({navigation}) {
-    const lastPaddock = 'Rio'
-    const lastCalibration = 'Otoño'
+function HomeCalibration({ navigation }) {
+    //Value represents id in database
+    const [calibrations, setCalibrations] = useState(
+        [{ label: 'Otoño', value: '14' },
+        { label: 'Verano', value: '19' },])
+    //change by redux later
+
+    const connectionState = useTypedSelector(state=>state.ble.connectionState)
 
     return (
 
-        <View bg='white' _dark={{ bg: 'black' }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
-            
-            <View bg='white' paddingTop={10} flex={1} >
-                <Heading >Ultima Calibracion Utilizada</Heading>
-                <Container>
-                    <Heading size='xl'>Potrero: {lastPaddock} </Heading>
-                    <Heading size='xl'>Calibracion: {lastCalibration}</Heading>
+        <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
 
-                </Container>
+            <View style={{paddingTop:50}}>
+
+
+
+
+                <RoundedContainer size={329} height={264} borderRadius={33}>
+                    <VStack flex={1} justifyContent='space-around'                    >
+                        <Heading paddingTop={5} flex={0.5} size='md'>Cargar Medicion de Calibracion</Heading>
+                        <HStack style={{ justifyContent: "space-between", }}>
+                            <Text fontSize='lg' style={{ alignSelf: 'center' }} >Calibracion</Text>
+                            <Select
+                            // colorScheme='yellow'
+                           
+                                minWidth="150"
+                                placeholder="Elige la calibracion"
+                                mt="1"
+                                _item={{color:'green.400'}}
+                                // style={{backgroundColor:'green'}}
+                                // bg='green.100'
+                                // bgColor='gray.600'
+                                _text={{color:'amber.500'}}
+                            >
+                                {calibrations.map((calibration) => {
+                                    return <Select.Item key={calibration.value} 
+                                    label={calibration.label} 
+                                    value={calibration.value}
+                                 />
+                                })}
+                            </Select>
+                        </HStack>
+                    </VStack>
+                    <VStack flex={1} justifyContent='center'>
+
+                        {connectionState=='connected'?
+
+                            <Button>Realizar Medicion</Button>
+                            :
+                            <Button>Vincular Pasturometro</Button>
+
+                        }
+                    </VStack>
+                </RoundedContainer >
             </View>
 
-            <Flex bg='muted.100' flex={1} >
+            <Flex bg='muted.100' flex={.6} alignSelf='flex-end'>
                 <Flex flex={1} width='100%' direction="row">
-                    <CustomButton text='Seleccionar Calibracion' onPress={()=>{navigation.navigate('SetCalibrations')}}></CustomButton>
+                    <CustomButton text='Seleccionar Calibracion' onPress={() => { navigation.navigate('SetCalibrations') }}></CustomButton>
                     <CustomButton text='Crear Calibracion'></CustomButton>
                 </Flex>
-                <CustomButton text='Cargar Datos de Calibracion'></CustomButton>
-                <CustomButton text='Realizar Medicion de Calibracion' onPress={()=>{navigation.navigate('CalibrationMeasurement')}}></CustomButton>
+                <CustomButton text='Finalizar Calibracion'></CustomButton>
                 <CustomButton text='Ayuda'></CustomButton>
             </Flex>
 
-        </View>
+        </VStack >
     )
 }
 
-export default function CalibrationScreen({navigation}) {
-    return(
+export default function CalibrationScreen({ navigation }) {
+    return (
         <Stack.Navigator>
-            <Stack.Screen name='CalibrationHome' component={RootCalibration}/>
-            <Stack.Screen name='CalibrationMeasurement' component={CalibrationMeasurementScreen}/>
-            <Stack.Screen name='SetCalibrations' component={SetCalibrationsScreen}/>
+            <Stack.Screen name='CalibrationHome' component={HomeCalibration} />
+            <Stack.Screen name='CalibrationMeasurement' component={CalibrationMeasurementScreen} />
+            <Stack.Screen name='SetCalibrations' component={SetCalibrationsScreen} />
 
 
         </Stack.Navigator>
@@ -55,7 +98,7 @@ export default function CalibrationScreen({navigation}) {
 function CustomButton({ onPress = () => { }, text = '' }) {
 
     return (
-        <Button onPress={onPress} borderRadius={0} variant='outline' borderWidth={0.25} colorScheme='muted' flex={1}>
+        <Button onPress={onPress} style={{shadowColor:'transparent'}} borderRadius={0} variant='outline' borderWidth={0.25} colorScheme='muted' flex={1}>
             <Text>{text}</Text>
         </Button>
     )

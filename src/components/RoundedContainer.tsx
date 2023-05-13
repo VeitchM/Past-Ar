@@ -2,7 +2,7 @@
 
 import { View, useTheme } from 'native-base';
 
-import { ColorValue } from 'react-native';
+import { ColorValue, StyleProp, ViewProps } from 'react-native';
 
 
 
@@ -11,26 +11,32 @@ type RingProps = {
     height?: number;
     borderWidth?: number;
     borderColor?: ColorValue;
-    children?: any
+    children?: any;
+    borderRadius?:number;
+    style?:StyleProp<ViewProps>
 }
 
-export const RingCircle = ({ size = 200, height, borderWidth = 4, borderColor, children = {} }: RingProps) => {
+ const RoundedContainer = ({borderRadius, size = 200, height, borderWidth = 4, borderColor,style, children = {} }: RingProps) => {
     const theme = useTheme();
     //borderColor = borderColor || theme.colors.primary 
     borderColor = borderColor || theme.colors.muted[300]
     console.log(borderColor);
+    const styleSpread = style ? style : {}
+   
 
     return (
         <View style={{
             width: size,
             height: height || size,
-            borderRadius:  size / 2,
             borderWidth: borderWidth,
             borderColor: borderColor,
-
+            borderRadius: borderRadius || size/2,
+            ...styleSpread
 
         }}>
             {children}
         </View>
     )
 }
+
+export default RoundedContainer

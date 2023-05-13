@@ -7,11 +7,12 @@ import { setMainCharacteristic } from "./bleSlice"
 
 //==== Types ====================
 import { BleError, BleErrorCode, Characteristic } from "react-native-ble-plx";
-import { MainCharacteristic } from "./types";
+import { MainCharacteristic, Measurement } from "./types";
 
 
 import store from "../../store";
 import { disconnectFromDevice } from "./ble";
+import { getMeasurements, insertMeasurement } from "../localDB/localDB";
 // On updates ==============================================================================================
 
 
@@ -19,14 +20,16 @@ import { disconnectFromDevice } from "./ble";
 
 
 const onCharacteristicUpdate = (error: BleError | null, characteristic: Characteristic | null) => {
-    if (!characteristicError(error, characteristic)) {
+    if ((!characteristicError(error, characteristic)) && characteristic?.value) {
         const rawData = base64.decode(characteristic.value);
       
-        const mainCharacteristic = rawDataToMainCharacteristic(rawData)
-        console.log('Main Characteristic', mainCharacteristic);
+        const {reduxCharacteristic,measurement} = rawDataToMainCharacteristic(rawData)
+        console.log('Main Characteristic', reduxCharacteristic);
         
         
-        store.dispatch(setMainCharacteristic(mainCharacteristic));
+        store.dispatch(setMainCharacteristic(reduxCharacteristic));
+        insertMeasurement(measurement)
+        getMeasurements()
     }
 }
 
@@ -37,7 +40,7 @@ const onCharacteristicUpdate = (error: BleError | null, characteristic: Characte
 //ID, timeStamp, GPS(currently null), batery, humity, sensorsQuantity, and N measures(one by sensor)
 const stringFields = { DEVICE_ID: 0, BATERY: 3, SENSORS_QUANTITY: 6, MEASUREMENTS: 7 }
 
-const rawDataToMainCharacteristic = (value: string): MainCharacteristic | null => {
+const rawDataToMainCharacteristic = (value: string): {reduxCharacteristic:MainCharacteristic,measurement:Measurement}  => {
     
 
     const values = value.split(';')
@@ -52,14 +55,20 @@ const rawDataToMainCharacteristic = (value: string): MainCharacteristic | null =
     
     const measurementValue =  verifyMeasurements(measurements)
 
-    const mainCharacteristic: MainCharacteristic ={
+    const reduxCharacteristic: MainCharacteristic ={
         deviceID : values[stringFields.DEVICE_ID],
-        measurementValue:measurementValue,
+        height:measurementValue,
         timeStamp: new Date().toISOString(),
         battery: parseFloat(values[stringFields.BATERY])
     }
 
-    return mainCharacteristic
+    const measurement:Measurement = {
+        height:measurementValue,
+        timestamp:reduxCharacteristic.timeStamp,
+        coordinates: 'Placeholder TODO'
+    }
+
+    return {reduxCharacteristic: reduxCharacteristic, measurement:measurement}
 
 }
 

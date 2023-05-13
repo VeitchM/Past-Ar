@@ -20,7 +20,7 @@ interface BLEState {
 
 
 
-  mainCharacteristic: MainCharacteristic,
+  lastMeasurement: MainCharacteristic,
 
 
   error: ErrorBleState,
@@ -34,8 +34,8 @@ const initialState: BLEState = {
   connectionState: 'disconnected',
   permissionsGranted: false,
 
-  mainCharacteristic: {
-    measurementValue: -1,
+  lastMeasurement: {
+    height: -1,
     timeStamp: '',
     battery: -1,
     deviceID: ''
@@ -56,7 +56,7 @@ export const bleSlice = createSlice({
     // ======================== Just setters ===================================
     setMainCharacteristic: (state, action: PayloadAction<MainCharacteristic | null>) => {
       if (action.payload)
-        state.mainCharacteristic = action.payload
+        state.lastMeasurement = action.payload
     },
 
 

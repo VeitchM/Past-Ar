@@ -1,5 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+
+//Move to ScreenStack
 type RootStackParamList = {
     Home: undefined,
     Profile: { userId: string },
@@ -11,14 +13,14 @@ type Props = NativeStackScreenProps<RootStackParamList>;
 
 
 
-import { View, Text, Button, Box, Badge, useTheme, Flex, IconButton, useColorMode, useColorModeValue, Heading, Divider, Center, Modal, FormControl, Input, FlatList, HStack, VStack, Spacer } from 'native-base';
+import { View, Text, StatusBar, Button, Box, Badge, useTheme, Flex, IconButton, useColorMode, useColorModeValue, Heading, Divider, Center, Modal, FormControl, Input, FlatList, HStack, VStack, Spacer } from 'native-base';
 import { ReactNode, useEffect, useState } from 'react';
 import { ColorValue, TouchableOpacity } from 'react-native';
-import { RingCircle } from '../../components/RoundedContainer';
-import { DeviceSerializable, MainCharacteristic } from '../../features/ble/types';
-import { connectToDevice, disconnectFromDevice, scanForPeripherals, stopScanningForPeripherals } from '../../features/ble/ble';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import RoundedContainer from '../../components/RoundedContainer';
+import { disconnectFromDevice } from '../../features/ble/ble';
 import { useTypedSelector } from '../../storeHooks';
+import DevicesModal from '../../components/DevicesModal';
+import BatteryLevel from '../../components/Battery';
 
 
 
@@ -32,7 +34,7 @@ export default function HomeScreen(props: Props) {
     const theme = useTheme()
     const color = theme.colors.muted[400]
 
-    const mainCharacteristic = useTypedSelector(state => state.ble.mainCharacteristic)
+    const { height, timeStamp, battery } = useTypedSelector(state => state.ble.mainCharacteristic)
     const bleConnectionState = useTypedSelector(state => state.ble.connectionState)
 
 
@@ -60,19 +62,17 @@ export default function HomeScreen(props: Props) {
 
 
     return (
-        <>
 
 
-
-
+           
             <View bg='white' style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <LastMeasurement lastMeasurementValue={mainCharacteristic.measurementValue} lastMeasurementTime={mainCharacteristic.timeStamp} />
+                <LastMeasurement lastMeasurementValue={height} lastMeasurementTime={timeStamp} />
 
                 <BatteryLevel />
 
                 <Flex paddingTop={10}>
                     <Text fontSize='xl' fontWeight='extrabold' paddingLeft={10} style={{ color: color }} >MEDIA</Text>
-                    <RingCircle size={300} height={120} >
+                    <RoundedContainer size={300} height={120} borderRadius={33} >
                         <Flex direction='row'>
                             <Text fontSize='4xl' fontWeight='bold' style={{ color: color }}>
                                 {measurementsMediaValue}</Text>
@@ -81,16 +81,15 @@ export default function HomeScreen(props: Props) {
                         </Flex>
                         <Text fontSize='xl' fontWeight='hairline' style={{ color: color }}>
                             {mediaContextValue}</Text>
-                    </RingCircle>
+                    </RoundedContainer>
                 </Flex>
 
 
 
                 <Button
                     onPress={bleConnectionState == 'disconnected' ? () => setShowModalDevices(true) : disconnectFromDevice}
-                    margin={10} fontSize="sm" size="lg" 
-                     colorScheme='buttonColorScheme' 
-                    borderRadius='2xl' >
+                    margin={10} fontSize="sm" size="lg"
+                   >
 
                     {bleConnectionState == 'disconnected' ? 'CONECTAR DISPOSITIVO' : 'DESCONECTAR DISPOSITIVO'}
                 </Button>
@@ -98,50 +97,11 @@ export default function HomeScreen(props: Props) {
 
                 <DevicesModal showModal={showModalDevices} setShowModal={setShowModalDevices} />
             </View>
-        </>
 
     );
 };
 
 
-// =================================== BATTERY ================================================================
-
-import { FontAwesome, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-
-
-function BatteryLevel() {
-
-    const { battery } = useTypedSelector(state => state.ble.mainCharacteristic)
-
-    const batteryIcon = setBatteryIcon(battery);
-
-    return (
-        <View>
-            <Text fontWeight={900} fontSize={27}>Pasturometro</Text>
-            <HStack alignItems='center'>
-                <MaterialCommunityIcons size={36} name={batteryIcon} />
-                <Text fontSize={26}> {battery}%</Text>
-
-            </HStack>
-        </View>
-
-    )
-
-
-
-    function setBatteryIcon(battery:number) : 'battery' {
-        let batteryLevel: string | number = Math.round(battery / 10) * 10;
-        if (batteryLevel == 0)
-            batteryLevel = 'alert';
-        if (batteryLevel == 100)
-            batteryLevel = '';
-
-        else
-            batteryLevel = '-' + batteryLevel;
-        const batteryIcon = `battery${batteryLevel}`;
-        return batteryIcon;
-    }
-}
 
 
 //==================================== LAST MEASUREMENT COMPONENT ========================================================
@@ -210,7 +170,7 @@ export const LastMeasurement = (props: { lastMeasurementValue: number, lastMeasu
 
     return (
 
-        <RingCircle size={RINGSIZE} borderColor={ringColor[300]}>
+        <RoundedContainer size={RINGSIZE} borderColor={ringColor[300]}>
             <Flex direction='column' style={{ width: RINGSIZE, justifyContent: 'center', alignItems: 'center' }} >
 
                 <Text fontSize='xl' fontWeight='extrabold' >
@@ -230,7 +190,7 @@ export const LastMeasurement = (props: { lastMeasurementValue: number, lastMeasu
                     )}
             </Flex>
 
-        </RingCircle >
+        </RoundedContainer >
     )
 }
 
@@ -238,87 +198,4 @@ export const LastMeasurement = (props: { lastMeasurementValue: number, lastMeasu
 
 
 
-// =================================== DEVICE MODAL==============================================================
 
-/** It starts the device scanning when its shown, and stops when it is not */
-function DevicesModal(props: { showModal: boolean, setShowModal: any }) {
-
-
-
-    const devices: DeviceSerializable[] = useTypedSelector(state => state.ble.allDevices)
-
-
-    useEffect(() => {
-        if (props.showModal) {
-            scanForPeripherals()
-        }
-        else {
-            stopScanningForPeripherals()
-        }
-
-
-    }, [props.showModal])
-
-    const connectDevice = (device: DeviceSerializable) => {
-        console.log('Connecting to device');
-
-        connectToDevice(device)
-        props.setShowModal(false)
-    }
-
-    const deviceRenderer = (props: { item: DeviceSerializable, onSelected: any }) => (
-
-        // <Box borderBottomWidth="1" _dark={{
-        //     borderColor: "muted.200"
-        // }} borderColor="muted.800" pl={["0", "4"]} pr={["0", "5"]} py="2">
-        <Button variant='unstyled' onPress={() => { props.onSelected(props.item) }}>
-
-
-            <VStack width={200}>
-                {props.item.name ?
-                    <>
-                        <Heading size='md'  >{props.item.name}</Heading>
-                        <HStack justifyContent="space-between">
-                            <Text>ID</Text>
-                            <Text>{props.item.id}</Text>
-                        </HStack>
-
-                    </>
-                    : <Heading size='md'  >{props.item.id}</Heading>
-                }
-            </VStack>
-        </Button>
-
-        // </Box>
-    )
-
-    return (
-
-        <Modal isOpen={props.showModal} onClose={() => props.setShowModal(false)}>
-            <Modal.Content maxWidth="400px">
-
-
-                {/*  For some reason this makes all Explode <Modal.CloseButton /> */}
-                <Modal.Header>Dispositivos</Modal.Header>
-                {/* <Modal.Body> It throws warning to Flatlist  */}
-
-                <SafeAreaView >
-                    <FlatList data={devices} renderItem={({ item }) => deviceRenderer({ item: item, onSelected: connectDevice })} keyExtractor={item => item.id} />
-                </SafeAreaView>
-
-                <Modal.Footer>
-                    <Button.Group space={2}>
-                        <Button size='lg' colorScheme="red" onPress={() => { props.setShowModal(false); }}>
-                            Salir
-                        </Button>
-
-                    </Button.Group>
-                </Modal.Footer>
-            </Modal.Content>
-        </Modal>
-
-    )
-
-}
-
-//----------------------------------------------------------------------------------------------
