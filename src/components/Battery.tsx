@@ -2,7 +2,7 @@
 
 import {  MaterialCommunityIcons } from '@expo/vector-icons';
 import { HStack, Text, View } from 'native-base';
-import { useTypedSelector } from '../storeHooks';
+import { useTypedSelector } from '../features/store/storeHooks';
 
 type BatteryIcons = 'battery'|'battery-10'|'battery-20'|'battery-30'|'battery-40'|'battery-50'|
 'battery-60'|'battery-70'|'battery-80'|'battery-90'| 'battery-alert'
@@ -11,7 +11,7 @@ type BatteryIcons = 'battery'|'battery-10'|'battery-20'|'battery-30'|'battery-40
 
 export default function BatteryLevel() {
 
-    const { battery } = useTypedSelector(state => state.ble.lastMeasurement)
+    const battery = useTypedSelector(state => state.ble.battery)
     const batteryIcon = setBatteryIcon(battery);
 
     return <>

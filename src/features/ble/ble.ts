@@ -13,13 +13,13 @@ import requestPermissions from "./blePermissionRequest";
 
 import { BleManager, Device, Subscription } from "react-native-ble-plx";
 
-import { setConnectedDevice, addDevice, resetDevices, setTryingToConnect, setDisconnected } from "./bleSlice";
+import { setConnectedDevice, addDevice, resetDevices, setTryingToConnect, setDisconnected } from "../store/bleSlice";
 
-import store from "../../store";
+import store from "../store/store";
 
 import bleConstants from "./bleConstants";
 
-import { DeviceSerializable } from "./types";
+import { DeviceSerializable } from "../store/types";
 
 
 
@@ -155,20 +155,21 @@ const connectToDevice = async (device: DeviceSerializable) => {
 
     try {
       deviceConnection = await bleManager.connectToDevice(device.id, { requestMTU: MTU });
+      if (deviceConnection) {
+        store.dispatch(setConnectedDevice({ id: device.id, name: device.name }));
+        await deviceConnection.discoverAllServicesAndCharacteristics();
+        // It already stop scanning following the control flow of the screens, but it is an idempotent function so...
+        stopScanningForPeripherals()
+        setMonitorsCallbacks(deviceConnection);
+        onAnomalousDisconnection(device.id)
+        console.log('Connnected to device ', device.name);
+      }
     }
     catch (error) {
 
       console.error('Error Connecting', error);
-    }
-    if (deviceConnection) {
+      store.dispatch(setDisconnected())
 
-      store.dispatch(setConnectedDevice({ id: device.id, name: device.name }));
-      await deviceConnection.discoverAllServicesAndCharacteristics();
-      // It already stop scanning following the control flow of the screens, but it is an idempotent function so...
-      stopScanningForPeripherals()
-      setMonitorsCallbacks(deviceConnection);
-      onAnomalousDisconnection(device.id)
-      console.log('Connnected to device ', device.name);
     }
   }
 
@@ -186,7 +187,7 @@ const disconnectFromDevice = async () => {
 
   let deviceIsConnected = connectedDevice && await bleManager.isDeviceConnected(connectedDevice.id)
 
-  console.log('Try disconnect: ', connectedDevice,store.getState().ble.connectionState);
+  console.log('Try disconnect: ', connectedDevice, store.getState().ble.connectionState);
 
 
   store.dispatch(setDisconnected())

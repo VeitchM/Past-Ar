@@ -31,7 +31,7 @@ type RingProps = {
             borderWidth: borderWidth,
             borderColor: borderColor,
             borderRadius: borderRadius || size/2,
-            ...styleSpread
+            ...styleSpread as Object
 
         }}>
             {children}

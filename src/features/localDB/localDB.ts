@@ -1,7 +1,7 @@
 
 import * as SQLite from 'expo-sqlite';
 
-import { Measurement } from '../ble/types'
+import { Measurement } from '../store/types'
 
 const db = SQLite.openDatabase('pastar.db');
 

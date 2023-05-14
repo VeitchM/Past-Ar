@@ -18,7 +18,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { ColorValue, TouchableOpacity } from 'react-native';
 import RoundedContainer from '../../components/RoundedContainer';
 import { disconnectFromDevice } from '../../features/ble/ble';
-import { useTypedSelector } from '../../storeHooks';
+import { useTypedSelector } from '../../features/store/storeHooks';
 import DevicesModal from '../../components/DevicesModal';
 import BatteryLevel from '../../components/Battery';
 import { LastMeasurement } from '../../components/LastMeasurement';
@@ -90,15 +90,14 @@ export default function HomeScreen(props: Props) {
 
             {/* {bleConnectionState== 'disconnected' ?  */}
             <VStack margin={10}>
-                {bleConnectionState == 'disconnected' ?
-                    <ConnectDeviceButton />
-                    :
-
+                {bleConnectionState == 'connected' ?
                     <Button
                         onPress={() => disconnectFromDevice()}
                         size="lg">
                         Desvincular Pasturometro
                     </Button>
+                    :
+                    <ConnectDeviceButton />
 
                 }
             </VStack>

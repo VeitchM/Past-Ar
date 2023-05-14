@@ -1,6 +1,6 @@
 import { Flex, Text, useTheme } from "native-base"
 import { useEffect, useState } from "react"
-import { useTypedSelector } from "../storeHooks"
+import { useTypedSelector } from "../features/store/storeHooks"
 import RoundedContainer from "./RoundedContainer"
 
 
@@ -21,7 +21,7 @@ export const LastMeasurement = () => {
 
     const [timePassed, setTimePassed] = useState('')
 
- const {height,timeStamp} = useTypedSelector(state=>state.ble.lastMeasurement)
+ const {height,timestamp} = useTypedSelector(state=>state.measurement.lastMeasurement)
 
 
 
@@ -32,10 +32,10 @@ export const LastMeasurement = () => {
         const calculateTime = () => {
             let timePassed = 'No hubo mediciones '
 
-            if (timeStamp >0) {
+            if (timestamp >0) {
                 timePassed = 'hace '
 
-                const milisecondsPassed = Date.now() - new Date(timeStamp).valueOf()
+                const milisecondsPassed = Date.now() - new Date(timestamp).valueOf()
                 if (milisecondsPassed < 60000)
                     timePassed += Math.floor(milisecondsPassed / 1000) + ' segundos'
                 else if (milisecondsPassed < 1000 * 60 * 60) {
@@ -58,9 +58,9 @@ export const LastMeasurement = () => {
         setTimePassed(calculateTime())
         const interval = setInterval(() => {
 
-            const milisecondsPassed = Date.now() - new Date(timeStamp).valueOf()
+            const milisecondsPassed = Date.now() - new Date(timestamp).valueOf()
 
-            console.log('Mili', milisecondsPassed, new Date(timeStamp));
+            console.log('Mili', milisecondsPassed, new Date(timestamp));
             setTimePassed(calculateTime)
 
             console.log('Time Passed', timePassed);
@@ -68,7 +68,7 @@ export const LastMeasurement = () => {
         return () => {
             clearInterval(interval);
         };
-    }, [timeStamp])
+    }, [timestamp])
 
     return (
 
@@ -77,7 +77,7 @@ export const LastMeasurement = () => {
 
                 <Text fontSize='xl' fontWeight='extrabold' >
                     ULTIMA MEDICION</Text>
-                {timeStamp <0 || height == -1 ? (
+                {timestamp <0 || height == -1 ? (
                     <Text fontSize='2xl' fontWeight='bold'>No hubo mediciones</Text>)
                     : (<>
 

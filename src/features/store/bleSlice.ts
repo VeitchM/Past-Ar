@@ -4,7 +4,7 @@ import { Device } from 'react-native-ble-plx'
 
 
 //========Types========================================
-import { MainCharacteristic, ErrorBleState, DeviceSerializable } from "./types";
+import {  ErrorBleState, DeviceSerializable } from "./types";
 
 //===== Could be moved to types.ts ========================
 interface BLEState {
@@ -16,11 +16,10 @@ interface BLEState {
   connectionState: 'disconnected' | 'connecting' | 'connected'
   permissionsGranted: boolean,
 
+  battery: number
 
-
-
-
-  lastMeasurement: MainCharacteristic,
+  //TODO Separate in measurment slice, and ble slice, manage database from redux
+  //Create redux folder and put all the slices there, add to measurement a receiving calibration variable that change on focus, and if true insert CalibrationMeasure
 
 
   error: ErrorBleState,
@@ -34,13 +33,7 @@ const initialState: BLEState = {
   connectionState: 'disconnected',
   permissionsGranted: false,
 
-  lastMeasurement: {
-    height: -1,
-    timeStamp: -1,
-    battery: -1,
-    deviceID: ''
-
-  },
+  battery: -1,
 
   error: {}
 }
@@ -54,49 +47,46 @@ export const bleSlice = createSlice({
   reducers: {
 
     // ======================== Just setters ===================================
-    setMainCharacteristic: (state, action: PayloadAction<MainCharacteristic | null>) => {
+
+    /** Set a device id and name as the connected device, set connection state to connected */
+    setConnectedDevice: (state, action: PayloadAction<DeviceSerializable>) => {
+      state.connectedDevice = action.payload
+      state.connectionState = 'connected'
+    },
+
+    /** set connection state to connecting */
+    setTryingToConnect: (state) => {
+      state.connectionState = 'connecting'
+    },
+
+    /** set connection state to disconnected */
+    setDisconnected: (state) => {
+      state.connectionState = 'disconnected'
+    },
+
+    /** set battery */
+    setBattery: (state, action: PayloadAction<number>) => {
       if (action.payload)
-        state.lastMeasurement = action.payload
+        state.battery = action.payload
     },
 
 
     setError: (state, action: PayloadAction<ErrorBleState>) => {
       state.error = action.payload
     },
-    /** set a device id and name as the connected device, if it is set to null it will set connectionState to disconnected otherwise to connected */
-    setConnectedDevice: (state, action: PayloadAction<DeviceSerializable | null>) => {
-      state.connectedDevice = action.payload
-      if (action.payload)
-        state.connectionState = 'connected'
-      else
-        state.connectionState = 'disconnected'
-    },
 
     //============================ Others===========================================
 
-    /** Used when the connection is lost and the phone still is retrying to reconnect */
-    setTryingToConnect: (state) => {
-      state.connectionState = 'connecting'
-    },
-    setDisconnected: (state) => {
-      state.connectionState = 'disconnected'
-    },
-
-
-
+    /** Add device to all devices if it isn't repeated, if it is, does nothing */
     addDevice: (state, action: PayloadAction<DeviceSerializable>) => {
       if (!isDuplicteDevice(state.allDevices, action.payload)) {
-        console.log('Added device to list',action.payload.id, action.payload.name);
+        console.log('Added device to list', action.payload.id, action.payload.name);
 
         state.allDevices = [...state.allDevices, action.payload] // Not sure if this is the way
       }
-      //TODO we should have code for deleting devices from the list
-      // when they havent been seen for a log time, we could implement 
-      // kind of 'time to leave' for each device.
-      // In this section we should set the time to leave
-      // Or just think that the user will no stay long enough looking for devices
-      // I found the devices in less than 4 seconds in my phone
     },
+
+    /** Reset all devices to an empty list */
     resetDevices: (state) => { //TODO Improve name
       state.allDevices = []
     },
@@ -104,8 +94,8 @@ export const bleSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function, IDK what I tryed to say
-export const { setMainCharacteristic,
-  setError, addDevice, resetDevices,setDisconnected, setConnectedDevice, setTryingToConnect } = bleSlice.actions
+export const { setBattery,
+  setError, addDevice, resetDevices, setDisconnected, setConnectedDevice, setTryingToConnect } = bleSlice.actions
 
 export default bleSlice.reducer
 

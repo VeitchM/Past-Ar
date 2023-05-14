@@ -2,12 +2,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // Screens ================================================================
 import HomeScreen from './Home/HomeScreen';
-import CalibrationScreen from './Calibrations/CalibrationScreen';
+import CalibrationStackScreen from './Calibrations/ScreenStack';
 
-
+//TODO Change screen titles
 
 import { FontAwesome, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { StatusBar, Text } from 'native-base';
+import HomeCalibration from './Calibrations/HomeScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -44,7 +45,7 @@ export default function ScreenTabs() {
                 />
                 <Tab.Screen
                     name="Calibration"
-                    component={CalibrationScreen}
+                    component={CalibrationStackScreen}
                     options={{
                         tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Calibracion</Text>,
                         tabBarIcon: ({ focused, color, size }) => <MaterialCommunityIcons size={30} name='ruler-square-compass' color={color} focused={focused} style={{ marginBottom: -3 }} />,

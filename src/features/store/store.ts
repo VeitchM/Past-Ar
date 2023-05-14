@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
-import bleReducer from './features/ble/bleSlice'
+import bleReducer from './bleSlice'
+import measurementReducer from './measurementSlice'
 // ...
 
 const store = configureStore({
   reducer: {
-    ble: bleReducer
-  },
+    ble: bleReducer,
+    measurement: measurementReducer
+  }
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

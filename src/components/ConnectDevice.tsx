@@ -1,7 +1,7 @@
 import { useState } from "react";
 import DevicesModal from "./DevicesModal";
 import { Button, HStack, Heading, Spinner } from "native-base";
-import { useTypedSelector } from "../storeHooks";
+import { useTypedSelector } from "../features/store/storeHooks";
 
 
 export default function ConnectDeviceButton() {

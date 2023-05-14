@@ -1,13 +1,13 @@
 import { useEffect } from "react"
-import { DeviceSerializable } from "../features/ble/types"
-import { useTypedDispatch, useTypedSelector } from "../storeHooks"
+import { DeviceSerializable } from "../features/store/types"
+import { useTypedDispatch, useTypedSelector } from "../features/store/storeHooks"
 import { connectToDevice, scanForPeripherals, stopScanningForPeripherals } from "../features/ble/ble"
 import { Button, FlatList, HStack, Heading, Modal, Spinner, Text, VStack } from "native-base"
 import { SafeAreaView } from "react-native"
-import { setTryingToConnect } from "../features/ble/bleSlice"
+import { setTryingToConnect } from "../features/store/bleSlice"
 
 /** It starts the device scanning when its shown, and stops when it is not */
-export default function DevicesModal(props: { showModal: boolean, setShowModal: any }) {
+export default function DevicesModal(props: { showModal: boolean, setShowModal: (value:boolean)=>void }) {
 
 
     const dispatch = useTypedDispatch()

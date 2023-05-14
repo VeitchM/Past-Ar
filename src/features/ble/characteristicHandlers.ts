@@ -3,14 +3,16 @@
 import base64 from "react-native-base64";
 
 
-import { setMainCharacteristic } from "./bleSlice"
+import { setLastMeasurement } from "../store/measurementSlice"
+import { setBattery } from "../store/bleSlice"
+
 
 //==== Types ====================
 import { BleError, BleErrorCode, Characteristic } from "react-native-ble-plx";
-import { MainCharacteristic, Measurement } from "./types";
+import { MainCharacteristic, Measurement } from "../store/types";
 
 
-import store from "../../store";
+import store from "../store/store";
 
 
 import { getMeasurements, insertMeasurement } from "../localDB/localDB";
@@ -26,13 +28,17 @@ import { getLocation } from "../location/location";
 const onCharacteristicUpdate = async (error: BleError | null, characteristic: Characteristic | null) => {
     if ((!characteristicError(error, characteristic)) && characteristic?.value) {
         const rawData = base64.decode(characteristic.value);
-      
-        const {reduxCharacteristic,measurement} = await rawDataToMainCharacteristic(rawData)
-        console.log('Main Characteristic', reduxCharacteristic);
-        
-        
-        store.dispatch(setMainCharacteristic(reduxCharacteristic));
-        insertMeasurement(measurement)
+
+        const { battery, measurement } = await rawDataToMainCharacteristic(rawData)
+        console.log('Main Characteristic', measurement);
+
+
+
+        store.dispatch(setLastMeasurement(measurement))
+        store.dispatch(setBattery(battery));
+
+
+        insertMeasurement(measurement) //TODO call bleSlice and measurementSlice
         getMeasurements()
     }
 }
@@ -44,37 +50,35 @@ const onCharacteristicUpdate = async (error: BleError | null, characteristic: Ch
 //ID, timeStamp, GPS(currently null), batery, humity, sensorsQuantity, and N measures(one by sensor)
 const stringFields = { DEVICE_ID: 0, BATERY: 3, SENSORS_QUANTITY: 6, MEASUREMENTS: 7 }
 
-const rawDataToMainCharacteristic = async(value: string): Promise<{reduxCharacteristic:MainCharacteristic,measurement:Measurement}>  => {
-    
+const rawDataToMainCharacteristic = async (value: string): Promise<{ battery: number, measurement: Measurement }> => {
+
 
     const values = value.split(';')
     const measurementsQuantity = parseFloat(values[stringFields.SENSORS_QUANTITY])
-    console.log('Recieved: ',value);
-    
+    console.log('Recieved: ', value);
+
     const measurements = values.slice(
         stringFields.MEASUREMENTS,
         stringFields.MEASUREMENTS + measurementsQuantity
     ).map((measurement) => parseFloat(measurement))
 
-    
-    const measurementValue =  verifyMeasurements(measurements)
 
-    const reduxCharacteristic: MainCharacteristic ={
-        deviceID : values[stringFields.DEVICE_ID],
-        height:measurementValue,
-        timeStamp: Date.now(),
-        battery: parseFloat(values[stringFields.BATERY])
-    }
+    const measurementValue = verifyMeasurements(measurements)
+
+    //TODO it may be a measurement plus battery
+
+    const battery = parseFloat(values[stringFields.BATERY])
+
 
     const location = await getLocation()
-    const measurement:Measurement = {
-        height:measurementValue,
-        timestamp:reduxCharacteristic.timeStamp,
+    const measurement: Measurement = {
+        height: measurementValue,
+        timestamp: Date.now(),
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
     }
 
-    return {reduxCharacteristic: reduxCharacteristic, measurement:measurement}
+    return { battery: battery, measurement: measurement }
 
 }
 
@@ -82,7 +86,7 @@ const verifyMeasurements = (measurements: number[]) => {
     let sum = 0
     let validNumbers = 0
     measurements.forEach((number) => {
-        //TODO verification if()
+        //TODO validation of each sensor if()
         sum += number
         validNumbers++
     })
