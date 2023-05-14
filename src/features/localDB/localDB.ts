@@ -73,8 +73,9 @@ const createTableQueries = [
     `CREATE TABLE IF NOT EXISTS measurements (
         UID INTEGER PRIMARY KEY,
         height REAL,
-        coordinates TEXT,
-        timestamp TIMESTAMP,
+        latitude REAL,
+        longitude REAL,
+        timestamp INTEGER,
         sent INTEGER
       );`
 ]

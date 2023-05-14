@@ -1,14 +1,16 @@
 import { useEffect } from "react"
 import { DeviceSerializable } from "../features/ble/types"
-import { useTypedSelector } from "../storeHooks"
-import { scanForPeripherals, stopScanningForPeripherals } from "../features/ble/ble"
-import { Button, FlatList, HStack, Heading, Modal, Text, VStack } from "native-base"
+import { useTypedDispatch, useTypedSelector } from "../storeHooks"
+import { connectToDevice, scanForPeripherals, stopScanningForPeripherals } from "../features/ble/ble"
+import { Button, FlatList, HStack, Heading, Modal, Spinner, Text, VStack } from "native-base"
 import { SafeAreaView } from "react-native"
+import { setTryingToConnect } from "../features/ble/bleSlice"
 
 /** It starts the device scanning when its shown, and stops when it is not */
 export default function DevicesModal(props: { showModal: boolean, setShowModal: any }) {
 
 
+    const dispatch = useTypedDispatch()
 
     const devices: DeviceSerializable[] = useTypedSelector(state => state.ble.allDevices)
 
@@ -27,13 +29,14 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
     const connectDevice = (device: DeviceSerializable) => {
         console.log('Connecting to device');
 
-        connectDevice(device)
+        connectToDevice(device)
+        dispatch(setTryingToConnect())
         props.setShowModal(false)
     }
 
     const deviceRenderer = (props: { item: DeviceSerializable, onSelected: any }) => (
 
-      
+
         <Button variant='unstyled' style={{ shadowColor: 'transparent' }} onPress={() => { props.onSelected(props.item) }}>
 
 
@@ -62,17 +65,19 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
 
 
                 {/*  For some reason this makes all Explode <Modal.CloseButton /> */}
-                <Modal.Header>Dispositivos</Modal.Header>
+                <Modal.Header flexDir='row' alignItems='center' justifyContent='space-between'>Buscando Dispositivos
+                    <Spinner size='lg'/>
+                </Modal.Header>
                 {/* <Modal.Body> */}
-                    {/* It throws warning to Flatlist  */}
-                    {/* <SafeAreaView> */}
+                {/* It throws warning to Flatlist  */}
+                {/* <SafeAreaView> */}
 
-                        <FlatList data={devices} renderItem={({ item }) => deviceRenderer({ item: item, onSelected: connectDevice })} keyExtractor={item => item.id} />
-                    {/* </SafeAreaView> */}
+                    <FlatList data={devices} renderItem={({ item }) => deviceRenderer({ item: item, onSelected: connectDevice })} keyExtractor={item => item.id} />
+                {/* </SafeAreaView> */}
                 {/* </Modal.Body> */}
                 <Modal.Footer>
                     <Button.Group space={2}>
-                        <Button _text={{color:'white'}} size='lg' colorScheme="danger" onPress={() => { props.setShowModal(false); }}>
+                        <Button _text={{ color: 'white' }} size='lg' colorScheme="danger" onPress={() => { props.setShowModal(false); }}>
                             Salir
                         </Button>
 

@@ -1,14 +1,15 @@
 type MainCharacteristic={
     height: number,
-    timeStamp: string,
+    timeStamp: number,
     battery : number,
     deviceID: string
 }
 
 type Measurement = {
     height: number,
-    timestamp:string,
-    coordinates: string,
+    timestamp:number,
+    latitude: number,
+    longitude:number,
 
 }
 

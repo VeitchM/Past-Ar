@@ -11,7 +11,7 @@ type BatteryIcons = 'battery'|'battery-10'|'battery-20'|'battery-30'|'battery-40
 
 export default function BatteryLevel() {
 
-    const { battery } = useTypedSelector(state => state.ble.mainCharacteristic)
+    const { battery } = useTypedSelector(state => state.ble.lastMeasurement)
     const batteryIcon = setBatteryIcon(battery);
 
     return <>
@@ -42,6 +42,6 @@ export default function BatteryLevel() {
         else
             batteryLevel = '-' + batteryLevel;
         const batteryIcon = `battery${batteryLevel}`;
-        return batteryIcon;
+        return batteryIcon as BatteryIcons;
     }
 }

@@ -11,19 +11,23 @@ import { MainCharacteristic, Measurement } from "./types";
 
 
 import store from "../../store";
-import { disconnectFromDevice } from "./ble";
+
+
 import { getMeasurements, insertMeasurement } from "../localDB/localDB";
+import { getLocation } from "../location/location";
+
+
 // On updates ==============================================================================================
 
 
 
 
 
-const onCharacteristicUpdate = (error: BleError | null, characteristic: Characteristic | null) => {
+const onCharacteristicUpdate = async (error: BleError | null, characteristic: Characteristic | null) => {
     if ((!characteristicError(error, characteristic)) && characteristic?.value) {
         const rawData = base64.decode(characteristic.value);
       
-        const {reduxCharacteristic,measurement} = rawDataToMainCharacteristic(rawData)
+        const {reduxCharacteristic,measurement} = await rawDataToMainCharacteristic(rawData)
         console.log('Main Characteristic', reduxCharacteristic);
         
         
@@ -40,7 +44,7 @@ const onCharacteristicUpdate = (error: BleError | null, characteristic: Characte
 //ID, timeStamp, GPS(currently null), batery, humity, sensorsQuantity, and N measures(one by sensor)
 const stringFields = { DEVICE_ID: 0, BATERY: 3, SENSORS_QUANTITY: 6, MEASUREMENTS: 7 }
 
-const rawDataToMainCharacteristic = (value: string): {reduxCharacteristic:MainCharacteristic,measurement:Measurement}  => {
+const rawDataToMainCharacteristic = async(value: string): Promise<{reduxCharacteristic:MainCharacteristic,measurement:Measurement}>  => {
     
 
     const values = value.split(';')
@@ -58,14 +62,16 @@ const rawDataToMainCharacteristic = (value: string): {reduxCharacteristic:MainCh
     const reduxCharacteristic: MainCharacteristic ={
         deviceID : values[stringFields.DEVICE_ID],
         height:measurementValue,
-        timeStamp: new Date().toISOString(),
+        timeStamp: Date.now(),
         battery: parseFloat(values[stringFields.BATERY])
     }
 
+    const location = await getLocation()
     const measurement:Measurement = {
         height:measurementValue,
         timestamp:reduxCharacteristic.timeStamp,
-        coordinates: 'Placeholder TODO'
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
     }
 
     return {reduxCharacteristic: reduxCharacteristic, measurement:measurement}

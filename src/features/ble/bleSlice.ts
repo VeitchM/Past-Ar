@@ -13,7 +13,7 @@ interface BLEState {
   bleState: string
   allDevices: DeviceSerializable[]
   connectedDevice: DeviceSerializable | null,
-  connectionState: 'disconnected' | 'reconnecting' | 'connected'
+  connectionState: 'disconnected' | 'connecting' | 'connected'
   permissionsGranted: boolean,
 
 
@@ -36,7 +36,7 @@ const initialState: BLEState = {
 
   lastMeasurement: {
     height: -1,
-    timeStamp: '',
+    timeStamp: -1,
     battery: -1,
     deviceID: ''
 
@@ -76,13 +76,17 @@ export const bleSlice = createSlice({
 
     /** Used when the connection is lost and the phone still is retrying to reconnect */
     setTryingToConnect: (state) => {
-      state.connectionState = 'reconnecting'
+      state.connectionState = 'connecting'
     },
+    setDisconnected: (state) => {
+      state.connectionState = 'disconnected'
+    },
+
 
 
     addDevice: (state, action: PayloadAction<DeviceSerializable>) => {
       if (!isDuplicteDevice(state.allDevices, action.payload)) {
-        console.log(action.payload.id, action.payload.name);
+        console.log('Added device to list',action.payload.id, action.payload.name);
 
         state.allDevices = [...state.allDevices, action.payload] // Not sure if this is the way
       }
@@ -101,7 +105,7 @@ export const bleSlice = createSlice({
 
 // Action creators are generated for each case reducer function, IDK what I tryed to say
 export const { setMainCharacteristic,
-  setError, addDevice, resetDevices, setConnectedDevice, setTryingToConnect } = bleSlice.actions
+  setError, addDevice, resetDevices,setDisconnected, setConnectedDevice, setTryingToConnect } = bleSlice.actions
 
 export default bleSlice.reducer
 

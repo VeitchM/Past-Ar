@@ -32,7 +32,7 @@ export const LastMeasurement = () => {
         const calculateTime = () => {
             let timePassed = 'No hubo mediciones '
 
-            if (timeStamp != '') {
+            if (timeStamp >0) {
                 timePassed = 'hace '
 
                 const milisecondsPassed = Date.now() - new Date(timeStamp).valueOf()
@@ -77,7 +77,7 @@ export const LastMeasurement = () => {
 
                 <Text fontSize='xl' fontWeight='extrabold' >
                     ULTIMA MEDICION</Text>
-                {timeStamp == '' || height == -1 ? (
+                {timeStamp <0 || height == -1 ? (
                     <Text fontSize='2xl' fontWeight='bold'>No hubo mediciones</Text>)
                     : (<>
 

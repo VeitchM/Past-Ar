@@ -5,24 +5,30 @@ import SetCalibrationsScreen from "./SetCalibrationsScreen";
 import RoundedContainer from "../../components/RoundedContainer";
 import { useState } from "react";
 import { useTypedSelector } from "../../storeHooks";
+import DevicesModal from "../../components/DevicesModal";
+import ConnectDeviceButton from "../../components/ConnectDevice";
 
 const Stack = createNativeStackNavigator();
 
-function HomeCalibration({ navigation }) {
+
+// TODO set Type
+function HomeCalibration({ navigation }: any) {
     //Value represents id in database
     const [calibrations, setCalibrations] = useState(
         [{ label: 'Otoño', value: '14' },
         { label: 'Verano', value: '19' },])
     //change by redux later
 
-    const connectionState = useTypedSelector(state=>state.ble.connectionState)
+    const connectionState = useTypedSelector(state => state.ble.connectionState)
+
+    const [show,setShow] = useState(false)
 
     return (
 
         <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
             style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
 
-            <View style={{paddingTop:50}}>
+            <View style={{ paddingTop: 50 }}>
 
 
 
@@ -33,33 +39,34 @@ function HomeCalibration({ navigation }) {
                         <HStack style={{ justifyContent: "space-between", }}>
                             <Text fontSize='lg' style={{ alignSelf: 'center' }} >Calibracion</Text>
                             <Select
-                            // colorScheme='yellow'
-                           
+                                // colorScheme='yellow'
+
                                 minWidth="150"
                                 placeholder="Elige la calibracion"
                                 mt="1"
-                                _item={{color:'green.400'}}
+                                _item={{ color: 'green.400' }}
                                 // style={{backgroundColor:'green'}}
                                 // bg='green.100'
                                 // bgColor='gray.600'
-                                _text={{color:'amber.500'}}
+                                _text={{ color: 'amber.500' }}
                             >
                                 {calibrations.map((calibration) => {
-                                    return <Select.Item key={calibration.value} 
-                                    label={calibration.label} 
-                                    value={calibration.value}
-                                 />
+                                    return <Select.Item key={calibration.value}
+                                        label={calibration.label}
+                                        value={calibration.value}
+                                    />
                                 })}
                             </Select>
                         </HStack>
                     </VStack>
                     <VStack flex={1} justifyContent='center'>
 
-                        {connectionState=='connected'?
-
+                        {connectionState == 'connected' ?
                             <Button>Realizar Medicion</Button>
                             :
-                            <Button>Vincular Pasturometro</Button>
+                            <>
+                                <ConnectDeviceButton/>
+                            </>
 
                         }
                     </VStack>
@@ -79,7 +86,7 @@ function HomeCalibration({ navigation }) {
     )
 }
 
-export default function CalibrationScreen({ navigation }) {
+export default function CalibrationStackScreen() {
     return (
         <Stack.Navigator>
             <Stack.Screen name='CalibrationHome' component={HomeCalibration} />
@@ -98,7 +105,7 @@ export default function CalibrationScreen({ navigation }) {
 function CustomButton({ onPress = () => { }, text = '' }) {
 
     return (
-        <Button onPress={onPress} style={{shadowColor:'transparent'}} borderRadius={0} variant='outline' borderWidth={0.25} colorScheme='muted' flex={1}>
+        <Button onPress={onPress} style={{ shadowColor: 'transparent' }} borderRadius={0} variant='outline' borderWidth={0.25} colorScheme='muted' flex={1}>
             <Text>{text}</Text>
         </Button>
     )

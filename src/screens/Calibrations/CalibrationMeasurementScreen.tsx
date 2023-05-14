@@ -1,4 +1,5 @@
 import { Box, Container, Flex, Heading, Text, View } from "native-base"
+import { useEffect } from "react"
 
 function CalibrationMeasurement() {
     const actualPaddock = 'Rio'
@@ -6,6 +7,10 @@ function CalibrationMeasurement() {
 
     const SPACE_BETWEEN_TEXT = 8
 
+
+    // useEffect(()=>{
+
+    // },[measurement])
 
     return (
         <View bg='white' style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>

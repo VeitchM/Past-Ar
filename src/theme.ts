@@ -60,6 +60,7 @@ const theme = extendTheme({
 
             defaultProps: {
                 colorScheme: 'buttonColors',
+                size:'lg',
                 _text: {
                     color: 'buttonColors.900',
                     fontWeight: '900',
