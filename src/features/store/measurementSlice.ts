@@ -11,8 +11,12 @@ interface MeasurementState {
 
 
   lastMeasurement: Measurement,
+  /** boolean which is true if the app is in calibration mode */
   calibrationMode: boolean,
+  /** ID of the used calibration */
   calibrationID: string,
+  /** ID of the last calibrationMeasurement */
+  calibrationMeasurementID:string|null,
 
 }
 //=========================================================
@@ -28,7 +32,8 @@ const initialState: MeasurementState = {
   },
 
   calibrationMode: false,
-  calibrationID:''
+  calibrationID:'',
+  calibrationMeasurementID:null
 }
 
 
@@ -44,7 +49,9 @@ export const measurementSlice = createSlice({
       state.lastMeasurement = action.payload
     },
 
-    /** Set calibration mode to true, and the calibration ID with its parameter */
+    /** Set calibration mode to true, and the calibration ID with its parameter, 
+     * all the measurement received in this mode will be added as calibration measurements
+     */
     setCalibrationModeOn: (state,action: PayloadAction<string>) => {
       state.calibrationMode = true
       state.calibrationID=action.payload
@@ -54,14 +61,20 @@ export const measurementSlice = createSlice({
 
     setCalibrationModeOff: (state) => {
       state.calibrationMode = false
+      state.calibrationMeasurementID = null
     },
+
+    setCalibrationMeasurementID: (state,action: PayloadAction<string>)=>{
+      state.calibrationMeasurementID = action.payload
+    }
 
   }
 })
 // Action creators are generated for each case reducer function, IDK what I tryed to say
 export const {
   setLastMeasurement,
-  setCalibrationModeOn, setCalibrationModeOff } = measurementSlice.actions
+  setCalibrationModeOn, setCalibrationModeOff,
+setCalibrationMeasurementID } = measurementSlice.actions
 
 export default measurementSlice.reducer
 

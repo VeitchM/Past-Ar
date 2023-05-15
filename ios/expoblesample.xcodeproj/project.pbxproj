@@ -319,7 +319,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dfriyia2.expoblesample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pastar.app;
 				PRODUCT_NAME = expoblesample;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -345,7 +345,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dfriyia2.expoblesample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pastar.app;
 				PRODUCT_NAME = expoblesample;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

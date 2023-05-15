@@ -31,7 +31,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.dfriyia2.expoblesample</string>
+          <string>com.pastar.app</string>
         </array>
       </dict>
     </array>

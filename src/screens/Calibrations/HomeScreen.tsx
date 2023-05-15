@@ -65,7 +65,7 @@ export default function HomeCalibration({ navigation }: Props) {
                                         })
                             }
                             }>
-                                {selectedCalibration? 'Realizar Medicion': 'Elija Calibracion'}
+                                {selectedCalibration ? 'Realizar Medicion' : 'Elija Calibracion'}
                             </Button>
                             :
                             <ConnectDeviceButton />
@@ -74,11 +74,11 @@ export default function HomeCalibration({ navigation }: Props) {
                 </RoundedContainer >
             </View>
 
-            <VStack bg='muted.100' flex={.6} alignSelf='flex-end'>
-                <HStack flex={0.7} width='100%' >
-                    <CustomButton text='Configure Calibraciones' onPress={() => { navigation.navigate('SetCalibrations') }}></CustomButton>
-                    <CustomButton text='Crear Calibracion'></CustomButton>
-                </HStack>
+            <VStack bg='muted.100' flex={.6}  alignSelf='flex-end' width='100%'>
+
+                <CustomButton text='Calibraciones' onPress={() => { navigation.navigate('CalibrationsList') }} />
+
+                {/* TODO IF finalizar calibracion, o cargar datos de calibracion */}
                 <CustomButton text='Finalizar Calibracion'></CustomButton>
                 <CustomButton text='Ayuda'></CustomButton>
             </VStack>
@@ -93,7 +93,7 @@ export default function HomeCalibration({ navigation }: Props) {
 function CustomButton({ onPress = () => { }, text = '' }) {
 
     return (
-        <Button onPress={onPress} style={{ shadowColor: 'transparent' }} borderRadius={0} variant='outline' borderWidth={0.25} colorScheme='muted' flex={0.5}>
+        <Button onPress={onPress} style={{ shadowColor: 'transparent' }} borderRadius={0} variant='outline' borderWidth={0.25} colorScheme='muted' flex={1}>
             <Text>{text}</Text>
         </Button>
     )
