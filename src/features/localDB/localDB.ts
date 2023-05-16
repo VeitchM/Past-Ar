@@ -5,21 +5,23 @@ import { Measurement } from '../store/types'
 
 const db = SQLite.openDatabase('pastar.db');
 
+
+//Does it work?
 db.exec([{ sql: 'SELECT load_extension("libspatialite.so")', args: [] }], false, (error) => {
     console.log(error);
 
 });
 
-db.transaction((tx) => {
+// db.transaction((tx) => {
 
 
-    tx.executeSql('DROP TABLE measurements;', [],
-        () => { },
-        (_, error) => {
-            console.error('Error Creating', error)
-            return false
-        })
-})
+//     tx.executeSql('DROP TABLE measurements;', [],
+//         () => { },
+//         (_, error) => {
+//             console.error('Error Creating', error)
+//             return false
+//         })
+// })
 
 
 db.transaction((tx) => {
