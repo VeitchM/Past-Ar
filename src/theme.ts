@@ -1,6 +1,6 @@
 import { extendTheme } from 'native-base';
 import { color } from 'native-base/lib/typescript/theme/styled-system';
-const theme = extendTheme({
+export const themeNative = extendTheme({
     colors: {
         primary: {
             "50": "#a4f5c8",
@@ -111,6 +111,14 @@ const theme = extendTheme({
             },
         },
 
+        Input:{
+            defaultProps:{
+                variant:'filled',
+                bg:'muted.100',
+                borderRadius:15, 
+                size : 'xl' 
+            }
+        }
 
 
 
@@ -126,4 +134,16 @@ const theme = extendTheme({
 
 })
 
-export default theme
+
+
+
+
+import {DefaultTheme } from '@react-navigation/native';
+
+export const themeNavigation = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: themeNative.colors.primary[500],
+  },
+};

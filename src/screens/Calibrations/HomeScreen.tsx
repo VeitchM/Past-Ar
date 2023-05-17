@@ -79,7 +79,7 @@ export default function HomeCalibration({ navigation }: Props) {
                 <CustomButton text='Calibraciones' onPress={() => { navigation.navigate('CalibrationsList') }} />
 
                 {/* TODO IF finalizar calibracion, o cargar datos de calibracion */}
-                <CustomButton text='Finalizar Calibracion'></CustomButton>
+                <CustomButton text='Enviar calibracion'></CustomButton>
                 <CustomButton text='Ayuda'></CustomButton>
             </VStack>
 
@@ -94,7 +94,7 @@ function CustomButton({ onPress = () => { }, text = '' }) {
 
     return (
         <Button onPress={onPress} style={{ shadowColor: 'transparent' }} borderRadius={0} variant='outline' borderWidth={0.25} colorScheme='muted' flex={1}>
-            <Text>{text}</Text>
+            <Heading>{text}</Heading>
         </Button>
     )
 }

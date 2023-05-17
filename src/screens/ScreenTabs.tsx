@@ -28,7 +28,7 @@ export default function ScreenTabs() {
                 initialRouteName='home'
                 backBehavior='history'
                 screenOptions={{
-                    tabBarStyle: { height: 50 },
+                    tabBarStyle: { height: 60 },
                     headerShown: false
 
 
@@ -38,8 +38,8 @@ export default function ScreenTabs() {
                     name="Home"
                     component={HomeScreen}
                     options={{
-                        tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Home</Text>,
-                        tabBarIcon: ({ focused, color, size }) => <FontAwesome size={30} name='home' color={color} focused={focused} style={{ marginBottom: -3 }} />,
+                        tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Inicio</Text>,
+                        tabBarIcon: ({ focused, color, size }) => <FontAwesome size={45} m name='home' color={color} focused={focused} style={{ marginBottom: -10 }} />,
 
                     }}
                 />
@@ -48,7 +48,7 @@ export default function ScreenTabs() {
                     component={CalibrationStackScreen}
                     options={{
                         tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Calibracion</Text>,
-                        tabBarIcon: ({ focused, color, size }) => <MaterialCommunityIcons size={30} name='ruler-square-compass' color={color} focused={focused} style={{ marginBottom: -3 }} />,
+                        tabBarIcon: ({ focused, color, size }) => <MaterialCommunityIcons size={40} name='ruler-square-compass' color={color} focused={focused} style={{ marginBottom: -3 }} />,
                     }}
                 />
                 <Tab.Screen
@@ -56,7 +56,7 @@ export default function ScreenTabs() {
                     component={HomeScreen}
                     options={{
                         tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Estadisticas</Text>,
-                        tabBarIcon: ({ focused, color, size }) => <Ionicons size={30} name='stats-chart' color={color} focused={focused} style={{ marginBottom: -3 }} />,
+                        tabBarIcon: ({ focused, color, size }) => <Ionicons size={35} name='stats-chart' color={color} focused={focused} style={{ marginBottom: -5 }} />,
                     }}
                 />
                 <Tab.Screen
@@ -64,7 +64,7 @@ export default function ScreenTabs() {
                     component={HomeScreen}
                     options={{
                         tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Potreros</Text>,
-                        tabBarIcon: ({ focused, color, size }) => <MaterialCommunityIcons size={30} name='fence' color={color} focused={focused} style={{ marginBottom: -3 }} />,
+                        tabBarIcon: ({ focused, color, size }) => <MaterialCommunityIcons size={43} name='map' color={color} focused={focused} style={{ marginBottom:-5  }} />,
                     }}
                 />
                 <Tab.Screen
@@ -72,7 +72,7 @@ export default function ScreenTabs() {
                     component={HomeScreen}
                     options={{
                         tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Usuario</Text>,
-                        tabBarIcon: ({ focused, color, size }) => <FontAwesome size={30} name='user' color={color} focused={focused} style={{ marginBottom: -3 }} />,
+                        tabBarIcon: ({ focused, color, size }) => <FontAwesome size={40} name='user' color={color} focused={focused} style={{ marginBottom: -3 }} />,
                     }}
                 />
 

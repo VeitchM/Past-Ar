@@ -2,27 +2,21 @@ import { useEffect } from "react"
 import { DeviceSerializable } from "../features/store/types"
 import { useTypedDispatch, useTypedSelector } from "../features/store/storeHooks"
 import { connectToDevice, scanForPeripherals, stopScanningForPeripherals } from "../features/ble/ble"
-import { Button, FlatList, HStack, Heading, Modal, Spinner, Text, VStack } from "native-base"
+import { Button, FlatList, HStack, Heading, Input, Modal, Spinner, Text, VStack } from "native-base"
 import { SafeAreaView } from "react-native"
 import { setTryingToConnect } from "../features/store/bleSlice"
 
+
+//TODO Not used delete or modified
 /** It starts the device scanning when its shown, and stops when it is not */
-export default function DevicesModal(props: { showModal: boolean, setShowModal: (value:boolean)=>void }) {
+export default function NewCalibrationModal(props: { showModal: boolean, setShowModal: (value: boolean) => void }) {
 
 
     const dispatch = useTypedDispatch()
 
-    const devices: DeviceSerializable[] = useTypedSelector(state => state.ble.allDevices)
 
 
     useEffect(() => {
-        if (props.showModal) {
-            scanForPeripherals()
-        }
-        else {
-            stopScanningForPeripherals()
-        }
-        return ()=>{stopScanningForPeripherals()}
 
 
     }, [props.showModal])
@@ -66,18 +60,26 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
 
 
                 {/*  For some reason this makes all Explode <Modal.CloseButton /> */}
-                <Modal.Header flexDir='row' alignItems='center' justifyContent='space-between'>Buscando Dispositivos
-                    <Spinner size='lg'/>
-                </Modal.Header>
-                {/* <Modal.Body> */}
-                {/* It throws warning to Flatlist  */}
-                {/* <SafeAreaView> */}
+                <Modal.Header flexDir='row' alignItems='center' justifyContent='space-between'>
+                    <Heading>
+                        Crear nueva calibracion
+                    </Heading>
+                    {/* <Modal.CloseButton /> */}
 
-                    <FlatList data={devices} renderItem={({ item }) => deviceRenderer({ item: item, onSelected: connectDevice })} keyExtractor={item => item.id} />
-                {/* </SafeAreaView> */}
-                {/* </Modal.Body> */}
+                </Modal.Header>
+                <Modal.Body>
+                    {/* It throws warning to Flatlist  */}
+                    <Heading size='md' marginLeft={3} >Nombre</Heading>
+                    <Input   marginTop={2} colorScheme='primary' variant='filled'/>
+                    {/* <SafeAreaView> */}
+
+                    {/* </SafeAreaView> */}
+                </Modal.Body>
                 <Modal.Footer>
                     <Button.Group space={2}>
+                        <Button _text={{ color: 'white' }} size='lg' colorScheme="primary" onPress={() => { props.setShowModal(false); }}>
+                            Crear
+                        </Button>
                         <Button _text={{ color: 'white' }} size='lg' colorScheme="danger" onPress={() => { props.setShowModal(false); }}>
                             Salir
                         </Button>

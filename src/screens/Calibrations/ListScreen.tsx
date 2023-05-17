@@ -18,6 +18,8 @@ import RoundedContainer from "../../components/RoundedContainer";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackParamList } from "./ScreenStack";
 import { getCalibrations } from "../../features/localDB/localDB";
+import { ListRenderItem } from "react-native";
+import NewCalibrationModal from "../../components/CalibrationModal";
 type Props = NativeStackScreenProps<StackParamList, 'CalibrationsList'>;
 
 
@@ -29,6 +31,8 @@ export default function CalibrationsList({ navigation }: Props) {
         { label: 'Verano', value: '19' },])
     //change by redux later
 
+
+    const [showModal,setShowModal] = useState(false)
 
     useEffect(() => {
         getCalibrations().then((calibrations) => {
@@ -50,7 +54,7 @@ export default function CalibrationsList({ navigation }: Props) {
                 name: "plus"
             }}/> */}
 
-            <Button rounded='full' style={{ width: 60, height: 60 }} onPress={()=>navigation.navigate('CreateCalibration')}>
+            <Button rounded='full' style={{ width: 60, height: 60 }} onPress={()=>{navigation.navigate('CreateCalibration')}}>
                 <Entypo name="plus" size={35} color ='white' />
             </Button>
 
@@ -60,7 +64,8 @@ export default function CalibrationsList({ navigation }: Props) {
 
 
 
-function Item({ item }) {
+function Item(props : {item:{value:string,label:string}}) {
+    const {item} = props
     return (
 
         <>

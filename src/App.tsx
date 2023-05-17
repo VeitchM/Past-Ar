@@ -15,18 +15,20 @@ ble // Dont delete, it force the import
 
 
 
-import theme from './theme';
+import {themeNative,themeNavigation} from './theme';
 import ScreenTabs from './screens/ScreenTabs';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 
 
 
+
+
 export default function App() {
   return (
     <Provider store={store}>
-      <NativeBaseProvider theme={theme}>
-        <NavigationContainer>
+      <NativeBaseProvider theme={themeNative}>
+        <NavigationContainer theme={themeNavigation} >
           <ScreenTabs/>
         </NavigationContainer>
       </NativeBaseProvider>
