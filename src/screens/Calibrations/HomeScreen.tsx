@@ -42,7 +42,7 @@ export default function HomeCalibration({ navigation }: Props) {
                     <VStack flex={1} justifyContent='space-around' >
                         <Heading paddingTop={5} flex={0.5} size='md'>Cargar Medicion de Calibracion</Heading>
                         <HStack style={{ justifyContent: "space-between", }}>
-                            <Text fontSize='lg' style={{ alignSelf: 'center' }} >Calibracion</Text>
+                            <Text fontSize='lg' fontWeight='bold' style={{ alignSelf: 'center' }} >Calibracion</Text>
                             <Select selectedValue={selectedCalibration} onValueChange={itemValue => setSelectedCalibration(itemValue)} minWidth="150" placeholder="Elige" >
                                 {calibrations.map((calibration) => {
                                     return <Select.Item key={calibration.value}

@@ -2,7 +2,19 @@ import { extendTheme } from 'native-base';
 import { color } from 'native-base/lib/typescript/theme/styled-system';
 const theme = extendTheme({
     colors: {
-        // primary: {
+        primary: {
+            "50": "#a4f5c8",
+            "100": "#86edb5",
+            "200": "#6be3a1",
+            "300": "#52d88e",
+            "400": "#33d17a",
+            "500": "#33bb70",
+            "600": "#34a466",
+            "700": "#348e5d",
+            "800": "#337953",
+            "900": "#316548"
+        }
+        ,
         //     //300: '#d97706'// 'muted.300'
         // },
         buttonColors: {
@@ -12,9 +24,13 @@ const theme = extendTheme({
             300: '#d4d4d8',
             400: '#d4d4d8',
             500: '#d4d4d8',
-            600: '#E9E8E8', // base Color
+
+            600: '#F5F1F1', // base Color
+
+            // 600: '#E9E8E8', // base Color
             700: '#d4d4d8',
             800: '#71717a', // pressed
+            // 800: '#E9E8E8', // pressed
             900: '#8E8E93'
 
 
@@ -35,7 +51,7 @@ const theme = extendTheme({
         Container: {
             baseStyle: {
 
-                backgroundColor: 'muted.100',
+                // backgroundColor: 'muted.100',
                 //colorScheme: 'primary',
                 padding: 10,
                 margin: 10,
@@ -59,10 +75,10 @@ const theme = extendTheme({
             },
 
             defaultProps: {
-                colorScheme: 'buttonColors',
-                size:'lg',
+                // colorScheme: 'buttonColors',
+                size: 'lg',
                 _text: {
-                    color: 'buttonColors.900',
+                    // color: 'buttonColors.900',
                     fontWeight: '900',
                     fontSize: 20
                 }
@@ -76,16 +92,21 @@ const theme = extendTheme({
 
                 borderRadius: 'lg',
                 borderWidth: 0,
-                shadow: 2,
-                bg: 'buttonColors.600'
+                // shadow: 2,
+                bg: 'muted.100'
+                // bg: 'primary.100'
+                // colorScheme:'primary'
 
             },
             defaultProps: {
-                colorScheme: 'buttonColors',
+                // colorScheme: 'buttonColors',
                 fontSize: 'lg',
-                color: 'buttonColors.900',
-                fontWeight:'bold'
-              
+                placeholderTextColor: 'muted.400',
+                color: 'muted.500',
+                // color: 'buttonColors.900',
+                fontColor: 'white',
+                fontWeight: 'bold'
+
 
             },
         },

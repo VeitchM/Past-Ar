@@ -1,12 +1,12 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 
-import CalibrationMeasurementScreen from "./CalibrationMeasurementScreen";
-import SetCalibrationsScreen from "./SetCalibrationsScreen";
+import CalibrationMeasurementScreen from "./MeasurementScreen";
+import SetCalibrationsScreen from "./SetScreen";
 import HomeCalibration from "./HomeScreen";
 import { Text } from "native-base";
-import CreateCalibration from "./CreateCalibrationScreen";
-import CalibrationsList from "./CalibrationsListScreen";
+import CreateCalibration from "./CreateScreen";
+import CalibrationsList from "./ListScreen";
 
 
 export type StackParamList = {

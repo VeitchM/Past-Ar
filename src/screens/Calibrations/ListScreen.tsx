@@ -51,7 +51,7 @@ export default function CalibrationsList({ navigation }: Props) {
             }}/> */}
 
             <Button rounded='full' style={{ width: 60, height: 60 }} onPress={()=>navigation.navigate('CreateCalibration')}>
-                <Entypo name="plus" size={35} />
+                <Entypo name="plus" size={35} color ='white' />
             </Button>
 
         </VStack>
@@ -67,7 +67,9 @@ function Item({ item }) {
             <HStack style={{ height: 60, flex: 1, paddingHorizontal: 30 }} backgroundColor='white' justifyContent='space-between' alignItems='center' >
 
                 <Heading>{item.label}</Heading>
-                <IconButton size='lg' colorScheme='muted' _icon={{
+                <IconButton size='lg' 
+                colorScheme='red'
+                _icon={{
                     as: MaterialIcons,
                     name: "delete",
 

@@ -1,4 +1,4 @@
-import { Flex, Text, useTheme } from "native-base"
+import { Flex, Text, VStack, useTheme } from "native-base"
 import { useEffect, useState } from "react"
 import { useTypedSelector } from "../features/store/storeHooks"
 import RoundedContainer from "./RoundedContainer"
@@ -15,9 +15,6 @@ export const LastMeasurement = () => {
 
     const RINGSIZE = 300
     const UPDATE_TIME = 10000
-
-    const theme = useTheme()
-    const ringColor = theme.colors.muted
 
     const [timePassed, setTimePassed] = useState('')
 
@@ -72,8 +69,11 @@ export const LastMeasurement = () => {
 
     return (
 
-        <RoundedContainer size={RINGSIZE} borderColor={ringColor[300]}>
-            <Flex direction='column' style={{ width: RINGSIZE, justifyContent: 'center', alignItems: 'center' }} >
+        <RoundedContainer size={RINGSIZE}>
+            <VStack  style={{ width: RINGSIZE,
+                // justifyContent: 's', 
+                alignItems: 'center' 
+                }} >
 
                 <Text fontSize='xl' fontWeight='extrabold' >
                     ULTIMA MEDICION</Text>
@@ -82,7 +82,7 @@ export const LastMeasurement = () => {
                     : (<>
 
                         < Flex direction='row'>
-                            <Text fontSize='8xl' lineHeight='xs' fontWeight='bold' style={{ color: 'muted.500' }}>
+                            <Text fontSize='8xl' lineHeight='xs' fontWeight='bold' >
                                 {height.toFixed(1)}</Text>
                             <Text fontSize='4xl' fontWeight='bold'>cm</Text>
                         </Flex>
@@ -90,7 +90,7 @@ export const LastMeasurement = () => {
                             {timePassed}</Text>
                     </>
                     )}
-            </Flex>
+            </VStack>
 
         </RoundedContainer >
     )

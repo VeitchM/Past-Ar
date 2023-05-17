@@ -1,6 +1,7 @@
 /* eslint-disable no-bitwise */
+/** It must be on Upper Case, its value its used for filtering devices will scanning */
+const DEVICE_BRAND = 'PASTUROMETRO'
 
-//const DEVICE_BRAND = 'Pasturometro'
 const RECONNECTIONS_INTENTS = 4
 const TIME_BETWEEN_RECONNECTIONS = 1000
 
@@ -111,8 +112,8 @@ const scanForPeripherals = () => {
       else {
 
         //console.log('Found Device ',device?.name);
-        //if (device && device.name?.includes(DEVICE_BRAND)) {
-        if (device) {
+        if (device && device.name?.toUpperCase().includes(DEVICE_BRAND)) {
+        // if (device) {
           console.log('Scanned device');
 
           store.dispatch(addDevice({ id: device.id, name: device.name }))

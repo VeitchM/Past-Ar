@@ -1,8 +1,9 @@
 
 
-import { View, useTheme } from 'native-base';
+import { Box,View, useTheme } from 'native-base';
+import { ColorType } from 'native-base/lib/typescript/components/types';
 
-import { ColorValue, StyleProp, ViewProps } from 'react-native';
+import {ColorValue, StyleProp, ViewProps } from 'react-native';
 
 
 
@@ -10,26 +11,34 @@ type RingProps = {
     size?: number;
     height?: number;
     borderWidth?: number;
-    borderColor?: ColorValue;
+    borderColor?: ColorType;
     children?: any;
     borderRadius?:number;
     style?:StyleProp<ViewProps>
 }
 
- const RoundedContainer = ({borderRadius, size = 200, height, borderWidth = 4, borderColor,style, children = {} }: RingProps) => {
-    const theme = useTheme();
+ const RoundedContainer = ({borderRadius, size = 200, height, borderWidth = 2, borderColor,style, children = {} }: RingProps) => {
+    
+    console.log('borderColor ',borderColor);
+    
+   const  theme = useTheme()
     //borderColor = borderColor || theme.colors.primary 
-    borderColor = borderColor || theme.colors.muted[300]
+    borderColor = borderColor || 'muted.300'
+    console.log('borderColor2 ',borderColor);
+
     console.log(borderColor);
     const styleSpread = style ? style : {}
    
 
     return (
-        <View style={{
+        <View borderColor={borderColor} style={{
             width: size,
             height: height || size,
             borderWidth: borderWidth,
-            borderColor: borderColor,
+            // borderLeftColor: 'green',
+            // borderColor: 'green.300',
+            // justifyContent: 'center',
+            // alignContent:'center',
             borderRadius: borderRadius || size/2,
             ...styleSpread as Object
 
