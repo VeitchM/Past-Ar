@@ -4,18 +4,21 @@ import { Button, HStack, Heading, Spinner } from "native-base";
 import { useTypedSelector } from "../features/store/storeHooks";
 
 
-export default function ConnectDeviceButton() {
+export default function ConnectDevice() {
 
     const [showModal, setShowModal] = useState(false)
     const state = useTypedSelector(state => state.ble.connectionState)
     return (
         <>
-            {state == 'disconnected' ?
 
-                <Button size='lg'  onPress={() => setShowModal(true)}>Vincular Pasturometro</Button>
-                :
-                <Connecting />
-            }
+
+
+            <Button size='lg' isLoading={state == 'connecting'} isLoadingText="Conectando"
+                _spinner={{ size: 30 }}
+                onPress={() => setShowModal(true)}>
+                Vincular Pasturometro
+            </Button>
+
             <DevicesModal showModal={showModal} setShowModal={setShowModal} />
         </>
     )
@@ -23,17 +26,4 @@ export default function ConnectDeviceButton() {
 
 }
 
-function Connecting() {
-    return (
-        <Button>
-            <HStack space={2} justifyContent="center" alignItems='center'>
-                <Heading
-                //color="primary.500" fontSize="md"
-                >
-                    Conectando
-                </Heading>
-                <Spinner size='lg' color='white.300' />
-            </HStack>
-        </Button>
-    )
-};
+

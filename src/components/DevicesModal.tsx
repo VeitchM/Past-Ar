@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native"
 import { setTryingToConnect } from "../features/store/bleSlice"
 
 /** It starts the device scanning when its shown, and stops when it is not */
-export default function DevicesModal(props: { showModal: boolean, setShowModal: (value:boolean)=>void }) {
+export default function DevicesModal(props: { showModal: boolean, setShowModal: (value: boolean) => void }) {
 
 
     const dispatch = useTypedDispatch()
@@ -22,7 +22,7 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
         else {
             stopScanningForPeripherals()
         }
-        return ()=>{stopScanningForPeripherals()}
+        return () => { stopScanningForPeripherals() }
 
 
     }, [props.showModal])
@@ -66,14 +66,17 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
 
 
                 {/*  For some reason this makes all Explode <Modal.CloseButton /> */}
-                <Modal.Header flexDir='row' alignItems='center' justifyContent='space-between'>Buscando Dispositivos
-                    <Spinner size='lg'/>
+                <Modal.Header flexDir='row' alignItems='center' justifyContent='space-between'>
+                    <Heading size='md'>
+                        Buscando Dispositivos
+                    </Heading>
+                    <Spinner size='lg' />
                 </Modal.Header>
                 {/* <Modal.Body> */}
                 {/* It throws warning to Flatlist  */}
                 {/* <SafeAreaView> */}
 
-                    <FlatList data={devices} renderItem={({ item }) => deviceRenderer({ item: item, onSelected: connectDevice })} keyExtractor={item => item.id} />
+                <FlatList data={devices} renderItem={({ item }) => deviceRenderer({ item: item, onSelected: connectDevice })} keyExtractor={item => item.id} />
                 {/* </SafeAreaView> */}
                 {/* </Modal.Body> */}
                 <Modal.Footer>

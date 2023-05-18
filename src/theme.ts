@@ -83,6 +83,9 @@ export const themeNative = extendTheme({
                     fontSize: 20
                 }
 
+            },
+            _disabled:{
+                variant:'subtle'
             }
         },
 
