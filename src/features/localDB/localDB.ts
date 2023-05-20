@@ -2,7 +2,7 @@
 import * as SQLite from 'expo-sqlite';
 
 import { Measurement } from '../store/types'
-import { TablesNames, calibrationLocalDB } from './types';
+import { TablesNames, calibrationLocalDB, calibrationsFromMeasurementsLocalDB } from './types';
 
 const db = SQLite.openDatabase('pastar.db');
 
@@ -10,14 +10,16 @@ const db = SQLite.openDatabase('pastar.db');
 //DOCUMENTATION DEVELOPMENT NOTE
 //We could declare foreigns key, for that, we should import a pragma module 
 //with a query
-db.transaction((tx) => {
-    tx.executeSql(`PRAGMA foreign_keys = ON;`, [],
-        () => { console.log('Foreign keys activated ') },
-        (_, error) => {
-            console.error('Error Activating foreign_keys', error)
-            return false
-        })
+db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {
+    console.log('Foreign keys turned on')
+
+    console.log('Foreign keys activated ')
+    createTables()
+
+
+
 })
+
 
 
 
@@ -29,13 +31,13 @@ db.exec([{ sql: 'SELECT load_extension("libspatialite.so")', args: [] }], false,
 
 });
 
-function dropTables(tableName:TablesNames) {
+function dropTables(tableName: TablesNames) {
 
     db.transaction((tx) => {
 
 
         tx.executeSql(`DROP TABLE ${tableName};`, [],
-            () => { console.log('Dropped table ',tableName) },
+            () => { console.log('Dropped table ', tableName) },
             (_, error) => {
                 console.error('Error Creating', error)
                 return false
@@ -43,22 +45,26 @@ function dropTables(tableName:TablesNames) {
     })
 }
 
-// dropTables('calibrationsFromMeasurements')
-// dropTables('calibrations')
+dropTables('calibrationsFromMeasurements')
+dropTables('calibrations')//
 
 
 
-db.transaction((tx) => {
-    createTableQueries.forEach((query) => {
+createTables();
 
-        tx.executeSql(query, [],
-            () => { },
-            (_, error) => {
-                console.error('Error Creating', error)
-                return false
-            })
-    })
-})
+function createTables() {
+    db.transaction((tx) => {
+        createTableQueries.forEach((query) => {
+
+            tx.executeSql(query, [],
+                () => { },
+                (_, error) => {
+                    console.error('Error Creating', error);
+                    return false;
+                });
+        });
+    });
+}
 
 /** Insert a measurement in de localDB with the column sent set to false(0) 
  *  @param measurement A measurement struct which will be inserted into measurements table
@@ -128,10 +134,10 @@ export function calibrationExists(name: string) {
     return new Promise<boolean>((resolve, reject) => {
         db.transaction((tx) => {
             tx.executeSql(`SELECT * FROM calibrations WHERE name = ?`, [name],
-                (_, { rows: {length, _array} }) => {
-                    console.log('Exists', _array,length);
-                    
-                    resolve(length >0)
+                (_, { rows: { length, _array } }) => {
+                    console.log('Exists', _array, length);
+
+                    resolve(length > 0)
                 },
                 (_, error) => {
                     console.error('Error on query', error)
@@ -215,6 +221,28 @@ export function getMeasurements() {
     })
 }
 
+export function deleteCalibration(ID: number) {
+    return new Promise<void>((resolve, reject) => {
+
+        db.transaction((tx) => {
+
+
+            tx.executeSql(`DELETE FROM calibrations WHERE ID = ?`, [ID],
+                (_, { rows: { _array } }) => {
+                    console.log('Deleted', _array, ID);
+                    resolve()
+                },
+                (_, error) => {
+                    console.error('Error Getting', error)
+                    reject(error)
+                    return false
+                })
+        })
+    })
+}
+
+
+
 
 export function getCalibrations() {
     return new Promise<calibrationLocalDB[]>((resolve, reject) => {
@@ -226,6 +254,26 @@ export function getCalibrations() {
                 (_, { rows: { _array } }) => {
                     console.log('Get result', _array);
                     resolve(_array as calibrationLocalDB[])
+                },
+                (_, error) => {
+                    console.error('Error Getting Calibrations', error)
+                    reject(error)
+                    return false
+                })
+        })
+    })
+}
+
+export function getCalibrationsFromMeasurement() {
+    return new Promise<calibrationsFromMeasurementsLocalDB[]>((resolve, reject) => {
+
+        db.transaction((tx) => {
+
+
+            tx.executeSql(`SELECT * FROM calibrationsFromMeasurements `, [],
+                (_, { rows: { _array } }) => {
+                    console.log('Get result', _array);
+                    resolve(_array as calibrationsFromMeasurementsLocalDB[])
                 },
                 (_, error) => {
                     console.error('Error Getting Calibrations', error)
@@ -256,13 +304,17 @@ const createTableQueries = [
         function TEXT
       );`,
     `CREATE TABLE IF NOT EXISTS calibrationsFromMeasurements (
-        ID INTEGER PRIMARY KEY REFERENCES calibrations(ID) ON DELETE CASCADE,
-        sendStatus INTEGER
+        ID INTEGER PRIMARY KEY,
+        sendStatus INTEGER,
+        FOREIGN KEY (ID) REFERENCES calibrations(ID) ON DELETE CASCADE
+
       );`,
     `CREATE TABLE IF NOT EXISTS calibrationsMeasurements (
-        ID INTEGER PRIMARY KEY REFERENCES calibrationsFromMeasurements(ID) ON DELETE CASCADE,
-        calibrationID REFERENCES calibrations(ID) ON DELETE CASCADE,
-        weight REAL
+        ID INTEGER PRIMARY KEY ,
+        calibrationID INTEGER,
+        weight REAL,
+        FOREIGN KEY (calibrationID) REFERENCES calibrationsFromMeasurements(ID) ON DELETE CASCADE,
+        FOREIGN KEY (ID) REFERENCES measurements(ID) ON DELETE CASCADE
       );`,
 
 

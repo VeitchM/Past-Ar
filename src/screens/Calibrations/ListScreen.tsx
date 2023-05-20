@@ -16,7 +16,7 @@ import RoundedContainer from "../../components/RoundedContainer";
 //==== Navigation ==============================================
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackParamList } from "./ScreenStack";
-import { getCalibrations } from "../../features/localDB/localDB";
+import { deleteCalibration, getCalibrations, getCalibrationsFromMeasurement } from "../../features/localDB/localDB";
 import { ListRenderItem } from "react-native";
 import NewCalibrationModal from "../../components/CalibrationModal";
 import { useFocusEffect } from "@react-navigation/native";
@@ -34,19 +34,53 @@ export default function CalibrationsList({ navigation }: Props) {
 
     const [showModal, setShowModal] = useState(false)
 
-    useFocusEffect(
-        useCallback(() => {
-            getCalibrations().then((calibrations) => {
-                console.log('Calibrations from Screen', calibrations);
-                setCalibrations(calibrations)
+    const refreshList = useCallback(() => {
+        getCalibrationsFromMeasurement().then((calibrations) => {
+            console.log('Calibrations from Measurement', calibrations);
+        })
+        getCalibrations().then((calibrations) => {
+            console.log('Calibrations from Screen', calibrations);
+            setCalibrations(calibrations)
 
-            })
+        })
 
-            //TODO add to setCalibrations
+        //TODO add to setCalibrations
 
-        }, [])
+    }, [])
 
-    )
+    useFocusEffect(refreshList)
+
+    function onDelete(ID: number) {
+        deleteCalibration(ID).then(() => {
+            refreshList()
+        })
+
+    }
+
+
+    function Item(props: { item: { ID: number, name: string } }) {
+        const { item } = props
+        return (
+
+            <>
+                <HStack style={{ height: 60, flex: 1, paddingHorizontal: 30 }} backgroundColor='white' justifyContent='space-between' alignItems='center' >
+
+                    <Heading>{item.name}</Heading>
+                    <IconButton
+                        onPress={() => onDelete(props.item.ID)}
+                        colorScheme='red'
+                        _icon={{
+                            as: MaterialIcons,
+                            name: "delete",
+                            size: '2xl'
+
+                        }} />
+                </HStack>
+                <Divider />
+            </>
+        )
+    }
+
 
 
 
@@ -74,28 +108,6 @@ export default function CalibrationsList({ navigation }: Props) {
 }
 
 
-
-function Item(props: { item: { id: number, name: string } }) {
-    const { item } = props
-    return (
-
-        <>
-            <HStack style={{ height: 60, flex: 1, paddingHorizontal: 30 }} backgroundColor='white' justifyContent='space-between' alignItems='center' >
-
-                <Heading>{item.name}</Heading>
-                <IconButton
-                    colorScheme='red'
-                    _icon={{
-                        as: MaterialIcons,
-                        name: "delete",
-                        size: '2xl'
-
-                    }} />
-            </HStack>
-            <Divider />
-        </>
-    )
-}
 
 
 
