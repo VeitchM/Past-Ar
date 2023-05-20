@@ -1,8 +1,7 @@
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useTypedSelector } from "../../features/store/storeHooks";
-
 
 
 import { Entypo } from '@expo/vector-icons';
@@ -20,28 +19,34 @@ import { StackParamList } from "./ScreenStack";
 import { getCalibrations } from "../../features/localDB/localDB";
 import { ListRenderItem } from "react-native";
 import NewCalibrationModal from "../../components/CalibrationModal";
+import { useFocusEffect } from "@react-navigation/native";
+import { calibrationLocalDB } from "../../features/localDB/types";
 type Props = NativeStackScreenProps<StackParamList, 'CalibrationsList'>;
 
 
 // TODO set Type
 export default function CalibrationsList({ navigation }: Props) {
     //Value represents id in database
-    const [calibrations, setCalibrations] = useState(
-        [{ label: 'Otoño', value: '14' },
-        { label: 'Verano', value: '19' },])
+    const [calibrations, setCalibrations] = useState<calibrationLocalDB[]>(
+        [])
     //change by redux later
 
 
     const [showModal, setShowModal] = useState(false)
 
-    useEffect(() => {
-        getCalibrations().then((calibrations) => {
-            console.log('Calibrations from Screen', calibrations);
+    useFocusEffect(
+        useCallback(() => {
+            getCalibrations().then((calibrations) => {
+                console.log('Calibrations from Screen', calibrations);
+                setCalibrations(calibrations)
+
+            })
+
             //TODO add to setCalibrations
 
-        })
+        }, [])
 
-    }, [])
+    )
 
 
 
@@ -54,12 +59,12 @@ export default function CalibrationsList({ navigation }: Props) {
                 name: "plus"
             }}/> */}
 
-            <IconButton 
-            _icon={{
-                as: Entypo,
-                name: "plus",
-                size: '4xl'
-            }}
+            <IconButton
+                _icon={{
+                    as: Entypo,
+                    name: "plus",
+                    size: '4xl'
+                }}
                 rounded='full' variant='solid' style={{ width: 60, height: 60 }} onPress={() => { navigation.navigate('CreateCalibration') }}>
                 {/* <Entypo name="plus" size={35} color='white' /> */}
             </IconButton>
@@ -70,14 +75,14 @@ export default function CalibrationsList({ navigation }: Props) {
 
 
 
-function Item(props: { item: { value: string, label: string } }) {
+function Item(props: { item: { id: number, name: string } }) {
     const { item } = props
     return (
 
         <>
             <HStack style={{ height: 60, flex: 1, paddingHorizontal: 30 }} backgroundColor='white' justifyContent='space-between' alignItems='center' >
 
-                <Heading>{item.label}</Heading>
+                <Heading>{item.name}</Heading>
                 <IconButton
                     colorScheme='red'
                     _icon={{
