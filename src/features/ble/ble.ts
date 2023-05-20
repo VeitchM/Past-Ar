@@ -5,6 +5,8 @@ const DEVICE_BRAND = 'PASTUROMETRO'
 const RECONNECTIONS_INTENTS = 4
 const TIME_BETWEEN_RECONNECTIONS = 1000
 
+const MTU = 255
+
 // Important: When using expo, when you refresh all the variable are setted to their original states, 
 //but it doesnt reset the already made connections, so they will stay in a unreacheable space(Or i think so)
 // So previusly restart expo you should disconnect the device, for now this is archive going back.
@@ -24,7 +26,6 @@ import { DeviceSerializable } from "../store/types";
 
 
 
-const MTU = 255
 
 
 //TODO MODAL SHOWING BLUETOOTH IS OFF

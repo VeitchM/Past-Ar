@@ -14,9 +14,9 @@ interface MeasurementState {
   /** boolean which is true if the app is in calibration mode */
   calibrationMode: boolean,
   /** ID of the used calibration */
-  calibrationID: string,
+  calibrationID: number,
   /** ID of the last calibrationMeasurement */
-  calibrationMeasurementID:string|null,
+  calibrationMeasurementID:number|null,
 
 }
 //=========================================================
@@ -32,7 +32,7 @@ const initialState: MeasurementState = {
   },
 
   calibrationMode: false,
-  calibrationID:'',
+  calibrationID:-1,
   calibrationMeasurementID:null
 }
 
@@ -52,7 +52,7 @@ export const measurementSlice = createSlice({
     /** Set calibration mode to true, and the calibration ID with its parameter, 
      * all the measurement received in this mode will be added as calibration measurements
      */
-    setCalibrationModeOn: (state,action: PayloadAction<string>) => {
+    setCalibrationModeOn: (state,action: PayloadAction<number>) => {
       state.calibrationMode = true
       state.calibrationID=action.payload
       console.log('setCalibration Mode on',action.payload);
@@ -64,7 +64,7 @@ export const measurementSlice = createSlice({
       state.calibrationMeasurementID = null
     },
 
-    setCalibrationMeasurementID: (state,action: PayloadAction<string>)=>{
+    setCalibrationMeasurementID: (state,action: PayloadAction<number>)=>{
       state.calibrationMeasurementID = action.payload
     }
 

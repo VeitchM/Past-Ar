@@ -39,7 +39,9 @@ const onCharacteristicUpdate = async (error: BleError | null, characteristic: Ch
         
         if(store.getState().measurement.calibrationMode){
 
-            const calibrationID = Number(store.getState().measurement.calibrationID)
+            const calibrationID = store.getState().measurement.calibrationID
+            console.log({calibrationID,measurementID});
+            
             const calibrationMeasurementID = await insertCalibrationMeasurement(calibrationID,measurementID) 
             // TODO verify code
         }

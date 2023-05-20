@@ -11,7 +11,7 @@ import CalibrationsList from "./ListScreen";
 
 export type StackParamList = {
     CalibrationHome: undefined;
-    CalibrationMeasurement: { calibrationID: string, calibrationLabel: string };
+    CalibrationMeasurement: { calibrationID: number, calibrationName: string };
     SetCalibrations: { sort: 'latest' | 'top' } | undefined;
     CreateCalibration : undefined;
     CalibrationsList : undefined;

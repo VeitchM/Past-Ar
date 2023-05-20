@@ -15,26 +15,28 @@ ble // Dont delete, it force the import
 
 
 
-import {themeNative,themeNavigation} from './theme';
+import { customFonts, themeNative, themeNavigation } from './theme';
 import ScreenTabs from './screens/ScreenTabs';
+import { useFonts } from 'expo-font';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 
 
-
-
-
 export default function App() {
+  const [fontLoaded] = useFonts(customFonts)
+  if (!fontLoaded)
+    return <></>
+
+
+    
   return (
     <Provider store={store}>
       <NativeBaseProvider theme={themeNative}>
         <NavigationContainer theme={themeNavigation} >
-          <ScreenTabs/>
+          <ScreenTabs />
         </NavigationContainer>
       </NativeBaseProvider>
     </Provider>
-
-
   )
 }
 

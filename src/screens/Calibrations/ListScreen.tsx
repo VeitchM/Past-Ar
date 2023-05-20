@@ -27,12 +27,9 @@ type Props = NativeStackScreenProps<StackParamList, 'CalibrationsList'>;
 // TODO set Type
 export default function CalibrationsList({ navigation }: Props) {
     //Value represents id in database
-    const [calibrations, setCalibrations] = useState<calibrationLocalDB[]>(
-        [])
+    const [calibrations, setCalibrations] = useState<calibrationLocalDB[]>([])
     //change by redux later
 
-
-    const [showModal, setShowModal] = useState(false)
 
     const refreshList = useCallback(() => {
         getCalibrationsFromMeasurement().then((calibrations) => {

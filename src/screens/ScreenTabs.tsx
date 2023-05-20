@@ -52,10 +52,10 @@ export default function ScreenTabs() {
                     }}
                 />
                 <Tab.Screen
-                    name="Statistics"
+                    name="Data"
                     component={HomeScreen}
                     options={{
-                        tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Estadisticas</Text>,
+                        tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Datos</Text>,
                         tabBarIcon: ({ focused, color, size }) => <FontAwesome size={40} name='pie-chart' color={color} focused={focused} style={{ marginBottom: -9 }} />,
                     }}
                 />

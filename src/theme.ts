@@ -1,6 +1,55 @@
 import { extendTheme } from 'native-base';
 import { color } from 'native-base/lib/typescript/theme/styled-system';
 export const themeNative = extendTheme({
+
+    fontConfig: {
+        Ubuntu: {
+            100: {
+                normal: "Ubuntu-Light",
+                italic: "Ubuntu-LightItalic",
+            },
+            200: {
+                normal: "Ubuntu-Light",
+                italic: "Ubuntu-LightItalic",
+            },
+            300: {
+                normal: "Ubuntu-Light",
+                italic: "Ubuntu-LightItalic",
+            },
+            400: {
+                normal: "Ubuntu-Regular",
+                italic: "Ubuntu-Italic",
+            },
+            500: {
+                normal: "Ubuntu-Medium",
+                italic: "Ubuntu-MediumItalic",
+            },
+            600: {
+                normal: "Ubuntu-Medium",
+                italic: "Ubuntu-MediumItalic",
+            },
+            700: {
+                normal: "Ubuntu-Bold",
+                italic: "Ubuntu-BoldItalic",
+            },
+            800: {
+                normal: "Ubuntu-Bold",
+                italic: "Ubuntu-BoldItalic",
+            },
+            900: {
+                normal: "Ubuntu-Bold",
+                italic: "Ubuntu-BoldItalic",
+            },
+        },
+    },
+
+    fonts: {
+        heading: "Ubuntu",
+        body: "Ubuntu",
+        mono: "Ubuntu",
+    },
+
+    // TODO FORZar una fuente
     colors: {
         primary: {
             "50": "#a4f5c8",
@@ -84,8 +133,8 @@ export const themeNative = extendTheme({
                 }
 
             },
-            _disabled:{
-                variant:'subtle'
+            _disabled: {
+                variant: 'subtle'
             }
         },
 
@@ -114,12 +163,12 @@ export const themeNative = extendTheme({
             },
         },
 
-        Input:{
-            defaultProps:{
-                variant:'filled',
-                bg:'muted.100',
-                borderRadius:15, 
-                size : 'xl', 
+        Input: {
+            defaultProps: {
+                variant: 'filled',
+                bg: 'muted.100',
+                borderRadius: 15,
+                size: 'xl',
                 //TODO verified if compiled it has the same problems showing the shadow while writing
                 //shadow:2
             }
@@ -141,14 +190,23 @@ export const themeNative = extendTheme({
 
 
 
+export const customFonts = {
+    'Ubuntu-Light': require('../assets/fonts/Ubuntu-Light.ttf'),
+    'Ubuntu-LightItalic': require('../assets/fonts/Ubuntu-LightItalic.ttf'),
+    'Ubuntu-Regular': require('../assets/fonts/Ubuntu-Regular.ttf'),
+    'Ubuntu-Italic': require('../assets/fonts/Ubuntu-Italic.ttf'),
+    'Ubuntu-Medium': require('../assets/fonts/Ubuntu-Medium.ttf'),
+    'Ubuntu-MediumItalic': require('../assets/fonts/Ubuntu-MediumItalic.ttf'),
+    'Ubuntu-Bold': require('../assets/fonts/Ubuntu-Bold.ttf'),
+    'Ubuntu-BoldItalic': require('../assets/fonts/Ubuntu-BoldItalic.ttf'),
+}
 
-
-import {DefaultTheme } from '@react-navigation/native';
+import { DefaultTheme } from '@react-navigation/native';
 
 export const themeNavigation = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: themeNative.colors.primary[500],
-  },
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: themeNative.colors.primary[500],
+    },
 };

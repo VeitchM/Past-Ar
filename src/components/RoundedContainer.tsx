@@ -19,12 +19,9 @@ type RingProps = {
 
  const RoundedContainer = ({borderRadius, size = 200, height, borderWidth = 2, borderColor,style, children = {} }: RingProps) => {
     
-    console.log('borderColor ',borderColor);
     
-   const  theme = useTheme()
     //borderColor = borderColor || theme.colors.primary 
     borderColor = borderColor || 'muted.300'
-    console.log('borderColor2 ',borderColor);
 
     console.log(borderColor);
     const styleSpread = style ? style : {}

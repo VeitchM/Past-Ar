@@ -39,7 +39,7 @@ function CalibrationMeasurement({ navigation, route }: Props) {
                 <Heading >Esperando Medicion</Heading>
                 <Container bg='muted.100' minWidth={250} alignItems='center'>
                     <Text>Calibracion</Text>
-                    <Heading size='2xl'>{route.params.calibrationLabel}</Heading>
+                    <Heading size='2xl'>{route.params.calibrationName}</Heading>
 
                 </Container>
             </View>

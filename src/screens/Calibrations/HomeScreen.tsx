@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { useTypedSelector } from "../../features/store/storeHooks";
 
@@ -17,22 +17,42 @@ import BlockButton from "../../components/BlockButton";
 type Props = NativeStackScreenProps<StackParamList, 'CalibrationHome'>;
 
 //==== Icons ===============================
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { calibrationLocalDB } from "../../features/localDB/types";
+import { getCalibrations, getCalibrationsFromMeasurement } from "../../features/localDB/localDB";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 // TODO set Type
 export default function HomeCalibration({ navigation }: Props) {
     //Value represents id in database
-    const [calibrations, setCalibrations] = useState(
-        [{ label: 'Otoño', value: '14' },
-        { label: 'Verano', value: '19' },])
+
     //change by redux later
 
 
     //======= Hooks ==================================
     const connectionState = useTypedSelector(state => state.ble.connectionState)
+    const [calibrations, setCalibrations] = useState<calibrationLocalDB[]>([])
 
     const [selectedCalibration, setSelectedCalibration] = useState<string>()
+
+    const refreshList = useCallback(() => {
+        getCalibrationsFromMeasurement().then((calibrations) => {
+            console.log('Calibrations from Measurement', calibrations);
+        })
+        getCalibrations().then((calibrations) => {
+            console.log('Calibrations from Screen', calibrations);
+            setCalibrations(calibrations)
+
+        })
+
+        //TODO add to setCalibrations
+
+    }, [])
+
+    useFocusEffect(refreshList)
+
+
 
     //======= Functions ===========================================
 
@@ -40,8 +60,8 @@ export default function HomeCalibration({ navigation }: Props) {
         if (selectedCalibration)
             navigation.navigate('CalibrationMeasurement',
                 {
-                    calibrationID: selectedCalibration,
-                    calibrationLabel: calibrations.find(item => item.value == selectedCalibration)?.label || ''
+                    calibrationID: Number(selectedCalibration),
+                    calibrationName: calibrations.find(item => item.ID.toString() == selectedCalibration)?.name || ''
                 })
     }
 
@@ -51,10 +71,10 @@ export default function HomeCalibration({ navigation }: Props) {
         <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
             style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
 
-            <View flex={1} style={{ 
+            <View flex={1} style={{
                 // paddingTop: 50 ,
-                alignItems:'center'
-                }}>
+                alignItems: 'center'
+            }}>
 
 
 
@@ -66,11 +86,11 @@ export default function HomeCalibration({ navigation }: Props) {
                         <HStack style={{ justifyContent: "space-between", }}>
                             <Text fontSize='lg' fontWeight='bold' style={{ alignSelf: 'center' }} >Calibracion</Text>
 
-                            <Select selectedValue={selectedCalibration} onValueChange={itemValue => setSelectedCalibration(itemValue)} minWidth="150" placeholder="Elige" >
+                            <Select selectedValue={selectedCalibration?.toString()} onValueChange={itemValue => setSelectedCalibration(itemValue)} minWidth="150" placeholder="Elige" >
                                 {calibrations.map((calibration) => {
-                                    return <Select.Item key={calibration.value}
-                                        label={calibration.label}
-                                        value={calibration.value}
+                                    return <Select.Item key={calibration.ID}
+                                        label={calibration.name}
+                                        value={calibration.ID.toString()}
                                     />
                                 })}
                             </Select>

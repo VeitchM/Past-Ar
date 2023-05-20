@@ -45,8 +45,8 @@ function dropTables(tableName: TablesNames) {
     })
 }
 
-dropTables('calibrationsFromMeasurements')
-dropTables('calibrations')//
+// dropTables('calibrationsFromMeasurements')
+// dropTables('calibrations')//
 
 
 
@@ -84,7 +84,7 @@ export function insertMeasurement(measurement: Measurement) {
             })
             const values = [...Object.values(measurement), 0]
 
-            tx.executeSql(`INSERT INTO measurements (${keys}sent) values (${placeHolder}?)`, [...values],
+            tx.executeSql(`INSERT INTO measurements (${keys}sendStatus) values (${placeHolder}?)`, [...values],
                 (_, { insertId }) => {
                     console.log('Execute', insertId);
                     if (insertId)
@@ -110,7 +110,7 @@ export function insertCalibrationMeasurement(calibrationID: number, measurementI
     return new Promise<number>((resolve, reject) => {
 
         db.transaction((tx) => {
-            tx.executeSql(`INSERT INTO calibrationsMeasurements (ID,calibrationID,weight) values (?,?,?)`, [measurementID, calibrationID, 0],
+            tx.executeSql(`INSERT INTO calibrationsMeasurements (ID,calibrationID,weight) values (?,?,?)`, [6, calibrationID, 0],
                 (_, { insertId }) => {
                     console.log('Execute must match', insertId, measurementID);
                     if (insertId)
