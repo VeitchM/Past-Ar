@@ -17,7 +17,8 @@ import BlockButton from "../../components/BlockButton";
 type Props = NativeStackScreenProps<StackParamList, 'CreateCalibration'>;
 
 //==== Icons ===============================
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import NewCalibrationModal from "../../components/CalibrationModal";
 
 
 
@@ -34,7 +35,7 @@ export default function CreateCalibration({ navigation }: Props) {
     const connectionState = useTypedSelector(state => state.ble.connectionState)
 
     const [selectedCalibration, setSelectedCalibration] = useState<string>()
-    const [showModalCalibrationFromMeasurement,setShowModalCalibrationFromMeasurement] = useState(false)
+    const [showModalCalibrationFromMeasurement, setShowModalCalibrationFromMeasurement] = useState(false)
 
     useEffect(() => {
         console.log('calibrationName', calibrationName);
@@ -43,45 +44,50 @@ export default function CreateCalibration({ navigation }: Props) {
 
     return (
 
-        <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
-            <VStack style={{ marginTop: 80, alignItems: 'center' }}>
-                <Heading size='xl' fontWeight='bold' marginBottom={4} >Nombre de Calibracion</Heading>
-                <Input
+        <>
+            <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
+                style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
+                <VStack style={{ marginTop: 80, alignItems: 'center' }}>
+                    <Heading size='xl' fontWeight='light' marginBottom={4} >Nombre de Calibracion</Heading>
+                    <Input
 
-                    maxWidth={350}
-                    fontSize={calibrationName ? 'xl' : 'lg'}
-                    textAlign='center'
-                    fontWeight='bold'
-                    value={calibrationName}
-                    size='2xl'
-                    onChangeText={setCalibrationName}
-                    placeholder="Escriba el nombre de la calibracion" />
+                        maxWidth={350}
+                        fontSize={calibrationName ? 'xl' : 'lg'}
+                        textAlign='center'
+                        fontWeight='bold'
+                        value={calibrationName}
+                        size='2xl'
+                        onChangeText={setCalibrationName}
+                        placeholder="Escriba el nombre de la calibracion" />
 
-            </VStack>
+                </VStack>
 
 
-            <VStack style={{
-                // backgroundColor: 'black' ,
-                width: '100%'
-            }} bg='muted.50'>
-                <BlockButton height={100} 
-                text="A partir de Funcion"
-                icon={<Icon alignSelf='center'  as={MaterialCommunityIcons} name='function-variant' size={60}
-            color='muted.400'
-                />}
-                // textStyle={{width:200, marginLeft:5,fontSize:25}}
-                 />
-                <BlockButton height={100} 
-                text="A partir de Mediciones" 
-                icon={<Icon  alignSelf='center' as={MaterialCommunityIcons} name='ruler' size={60}
-                color='muted.400'
-                    />}
-                onPress={()=>{setShowModalCalibrationFromMeasurement(true)}}
-                />
+                <VStack style={{ width: '100%' }} bg='muted.50'>
+                    <BlockButton height={100}
+                        text="A partir de Funcion"
+                        isDisabled={!calibrationName}
+                        icon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='function-variant' size={60}
+                            color='muted.400'
+                        />}
+                    />
+                    <BlockButton height={100}
+                        isDisabled={!calibrationName}
+                        text="A partir de Mediciones"
+                        icon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='ruler' size={60}
+                            color='muted.400'
+                        />}
+                        onPress={() => { setShowModalCalibrationFromMeasurement(true) }}
+                    />
 
-            </VStack>
-        </VStack >
+                </VStack>
+            </VStack >
+            <NewCalibrationModal showModal={showModalCalibrationFromMeasurement}
+                setShowModal={setShowModalCalibrationFromMeasurement}
+                calibrationName={calibrationName}
+            />
+
+        </>
     )
 }
 

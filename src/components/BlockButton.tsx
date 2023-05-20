@@ -9,12 +9,13 @@ export type Props = {
     rightIcon ?: JSX.Element,
     icon?: JSX.Element,
     textStyle?: StyleProp<TextStyle>
+    isDisabled?:boolean
 }
 
 export default function BlockButton(props:Props) {
 
     return (
-        <Button leftIcon={props.leftIcon} rightIcon={props.rightIcon} onPress={props.onPress} 
+        <Button isDisabled={props.isDisabled} leftIcon={props.leftIcon} rightIcon={props.rightIcon} onPress={props.onPress} 
         style={{ shadowColor: 'transparent', 
         height: props.height || 70 ,
         alignItems:'center',
