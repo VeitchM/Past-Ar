@@ -89,11 +89,15 @@ export default function HomeScreen(props: Props) {
 
 
             {/* {bleConnectionState== 'disconnected' ?  */}
+
+            {/* TODO it should say conectado and when pressed show a moldal for disconnecting */}
             <VStack margin={10}>
                 {bleConnectionState == 'connected' ?
                     <Button
                         onPress={() => disconnectFromDevice()}
-                        size="lg">
+                        size="lg"
+                        // colorScheme='amber'
+                        >
                         Desvincular Pasturometro
                     </Button>
                     :

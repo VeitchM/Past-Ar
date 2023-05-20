@@ -13,7 +13,11 @@ import RoundedContainer from "../../components/RoundedContainer";
 //==== Navigation ==============================================
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackParamList } from "./ScreenStack";
+import BlockButton from "../../components/BlockButton";
 type Props = NativeStackScreenProps<StackParamList, 'CalibrationHome'>;
+
+//==== Icons ===============================
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 
 // TODO set Type
@@ -30,7 +34,7 @@ export default function HomeCalibration({ navigation }: Props) {
 
     const [selectedCalibration, setSelectedCalibration] = useState<string>()
 
-    //======= Function ===========================================
+    //======= Functions ===========================================
 
     const toCalibrationMeasurementScreen = () => {
         if (selectedCalibration)
@@ -47,7 +51,10 @@ export default function HomeCalibration({ navigation }: Props) {
         <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
             style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
 
-            <View style={{ paddingTop: 50 }}>
+            <View flex={1} style={{ 
+                // paddingTop: 50 ,
+                alignItems:'center'
+                }}>
 
 
 
@@ -84,12 +91,12 @@ export default function HomeCalibration({ navigation }: Props) {
                 </RoundedContainer >
             </View>
 
-            <VStack bg='muted.50' flex={.6} alignSelf='flex-end' width='100%'>
+            <VStack bg='muted.50' alignSelf='flex-end' width='100%'>
 
-                <CustomButton text='Calibraciones' onPress={() => { navigation.navigate('CalibrationsList') }} />
+                <BlockButton text='Calibraciones' onPress={() => { navigation.navigate('CalibrationsList') }} />
                 {/* TODO IF finalizar calibracion, o cargar datos de calibracion */}
-                <CustomButton text='Enviar calibracion'></CustomButton>
-                <CustomButton text='Ayuda'></CustomButton>
+                <BlockButton text='Enviar calibracion' />
+                <BlockButton text='Ayuda' />
             </VStack>
 
         </VStack >
@@ -99,14 +106,6 @@ export default function HomeCalibration({ navigation }: Props) {
 
 
 
-function CustomButton({ onPress = () => { }, text = '' }) {
-
-    return (
-        <Button onPress={onPress} style={{ shadowColor: 'transparent' }} borderRadius={0} variant='outline' borderWidth={0.25} colorScheme='muted' flex={1}>
-            <Heading size='md'>{text}</Heading>
-        </Button>
-    )
-}
 
 
 

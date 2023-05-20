@@ -7,12 +7,10 @@ import { SafeAreaView } from "react-native"
 import { setTryingToConnect } from "../features/store/bleSlice"
 
 
-//TODO Not used delete or modified
-/** It starts the device scanning when its shown, and stops when it is not */
-export default function NewCalibrationModal(props: { showModal: boolean, setShowModal: (value: boolean) => void }) {
+/** A modal which explain that if accepted is pressed a calibration from measurement will be created */
+export default function NewCalibrationModal(props: { showModal: boolean, setShowModal: (value: boolean) => void , calibrationName:string} ) {
 
 
-    const dispatch = useTypedDispatch()
 
 
 
@@ -21,37 +19,7 @@ export default function NewCalibrationModal(props: { showModal: boolean, setShow
 
     }, [props.showModal])
 
-    const connectDevice = (device: DeviceSerializable) => {
-        console.log('Connecting to device');
 
-        connectToDevice(device)
-        dispatch(setTryingToConnect())
-        props.setShowModal(false)
-    }
-
-    const deviceRenderer = (props: { item: DeviceSerializable, onSelected: any }) => (
-
-
-        <Button variant='unstyled' style={{ shadowColor: 'transparent' }} onPress={() => { props.onSelected(props.item) }}>
-
-
-            <VStack width={200}>
-                {props.item.name ?
-                    <>
-                        <Heading size='md'  >{props.item.name}</Heading>
-                        <HStack justifyContent="space-between">
-                            <Text>ID</Text>
-                            <Text>{props.item.id}</Text>
-                        </HStack>
-
-                    </>
-                    : <Heading size='md'  >{props.item.id}</Heading>
-                }
-            </VStack>
-        </Button>
-
-        // </Box>
-    )
 
     return (
 
@@ -69,8 +37,10 @@ export default function NewCalibrationModal(props: { showModal: boolean, setShow
                 </Modal.Header>
                 <Modal.Body>
                     {/* It throws warning to Flatlist  */}
-                    <Heading size='md' marginLeft={3} >Nombre</Heading>
-                    <Input   marginTop={2} colorScheme='primary' variant='filled'/>
+                    <Heading size='md' marginLeft={3} >{props.calibrationName}</Heading>
+                    <Text>Se presiona continuar se creara una calibracion a partir de mediciones</Text>
+                    <Text>Se presiona continuar se creara una calibracion a partir de mediciones</Text>
+
                     {/* <SafeAreaView> */}
 
                     {/* </SafeAreaView> */}
@@ -81,7 +51,7 @@ export default function NewCalibrationModal(props: { showModal: boolean, setShow
                             Crear
                         </Button>
                         <Button _text={{ color: 'white' }} size='lg' colorScheme="danger" onPress={() => { props.setShowModal(false); }}>
-                            Salir
+                            Cancelar
                         </Button>
 
                     </Button.Group>
