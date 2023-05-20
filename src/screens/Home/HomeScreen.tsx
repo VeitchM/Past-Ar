@@ -33,8 +33,6 @@ import ConnectDeviceButton from '../../components/ConnectDevice';
 export default function HomeScreen(props: Props) {
 
 
-    const theme = useTheme()
-    const color = theme.colors.muted[400]
 
     const bleConnectionState = useTypedSelector(state => state.ble.connectionState)
 
@@ -66,22 +64,23 @@ export default function HomeScreen(props: Props) {
 
 
 
-        <View bg='white' style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-
+        <VStack bg='white' flex={1} alignItems='center'>
+            <View height='60px' />
+            
             <LastMeasurement />
-
+            <View height='20px' />
             <BatteryLevel />
 
-            <Flex paddingTop={10}>
-                <Text fontSize='xl' fontWeight='extrabold' paddingLeft={10} style={{ color: color }} >MEDIA</Text>
+            <Flex paddingTop={'20px'}>
+                <Text fontSize='2xl' fontWeight='medium' paddingLeft={5}  >MEDIA</Text>
                 <RoundedContainer size={300} height={120} borderRadius={33} >
                     <Flex direction='row'>
-                        <Text fontSize='4xl' fontWeight='bold' style={{ color: color }}>
+                        <Text fontSize='4xl' fontWeight='bold' >
                             {measurementsMediaValue}</Text>
-                        <Text fontSize='2xl' fontWeight='bold' style={{ color: color }}>
+                        <Text fontSize='2xl' fontWeight='bold' >
                             cm</Text>
                     </Flex>
-                    <Text fontSize='xl' fontWeight='hairline' style={{ color: color }}>
+                    <Text fontSize='xl' fontWeight='regular' >
                         {mediaContextValue}</Text>
                 </RoundedContainer>
             </Flex>
@@ -96,8 +95,8 @@ export default function HomeScreen(props: Props) {
                     <Button
                         onPress={() => disconnectFromDevice()}
                         size="lg"
-                        // colorScheme='amber'
-                        >
+                    // colorScheme='amber'
+                    >
                         Desvincular Pasturometro
                     </Button>
                     :
@@ -106,7 +105,7 @@ export default function HomeScreen(props: Props) {
                 }
             </VStack>
 
-        </View>
+        </VStack>
 
     );
 };
