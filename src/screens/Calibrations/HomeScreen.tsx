@@ -21,7 +21,7 @@ type Props = NativeStackScreenProps<StackParamList, 'CalibrationHome'>;
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { calibrationLocalDB } from "../../features/localDB/types";
-import { getCalibrations, getCalibrationsFromMeasurement } from "../../features/localDB/localDB";
+import { getCalibrations, getCalibrationsFromMeasurement, getCalibrationsFromMeasurementExtended } from "../../features/localDB/localDB";
 import { useFocusEffect } from "@react-navigation/native";
 
 
@@ -39,14 +39,20 @@ export default function HomeCalibration({ navigation }: Props) {
     const [selectedCalibration, setSelectedCalibration] = useState<string>()
 
     const refreshList = useCallback(() => {
-        getCalibrationsFromMeasurement().then((calibrations) => {
+        getCalibrations().then((calibrations) => {
             console.log('Calibrations from Measurement', calibrations);
         })
-        getCalibrations().then((calibrations) => {
-            console.log('Calibrations from Screen', calibrations);
-            setCalibrations(calibrations)
+        getCalibrationsFromMeasurementExtended()
+            .then((calibrations) => {
+                console.log('Calibrations from Screen', calibrations);
+                setCalibrations(calibrations)
 
-        })
+            })
+            .catch((error) => {
+                console.log('Error ', error);
+            })
+
+
 
         //TODO add to setCalibrations
 

@@ -7,22 +7,12 @@ import { TablesNames, calibrationLocalDB, calibrationsFromMeasurementsLocalDB } 
 const db = SQLite.openDatabase('pastar.db');
 
 
-//DOCUMENTATION DEVELOPMENT NOTE
-//We could declare foreigns key, for that, we should import a pragma module 
+
+//We declare foreigns key, for that, we should import a pragma module 
 //with a query
 db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {
-    console.log('Foreign keys turned on')
-
-    console.log('Foreign keys activated ')
     createTables()
-
-
-
 })
-
-//TODO Make a do query which use wrapp the redundant code, the promise envolving the execution etc
-
-
 
 
 //Does it work?
@@ -31,41 +21,59 @@ db.exec([{ sql: 'SELECT load_extension("libspatialite.so")', args: [] }], false,
 
 });
 
+
+
+//========= Create and Delete tables =============================================
+
 function dropTables(tableName: TablesNames) {
+    execQuery(`DROP TABLE ${tableName};`, [])
+}
 
-    db.transaction((tx) => {
+function createTables() {
+    createTableQueries.forEach((query) => {
+        execQuery(query, [])
+    });
+}
 
 
-        tx.executeSql(`DROP TABLE ${tableName};`, [],
-            () => { console.log('Dropped table ', tableName) },
-            (_, error) => {
-                console.error('Error Creating', error)
-                return false
-            })
+
+
+//======== Query Wrapper ==========================================================
+
+function execQuery(query: string, values: Array<any> = []) {
+    return new Promise<SQLite.SQLResultSet>((resolve, reject) => {
+        let result: SQLite.SQLResultSet
+        db.transaction((tx) => {
+
+            tx.executeSql(query, values,
+                (_, _result) => {
+                    console.log('Executed', query);
+                    result = _result
+                },
+            )
+        },
+            (error) => {
+                console.error('SQLite Error', error);
+                reject(error)
+            },
+            () => {
+
+                console.log('Query succed result:', result);
+                resolve(result)
+            }
+        )
     })
 }
 
-// dropTables('calibrationsFromMeasurements')
-// dropTables('calibrations')//
-dropTables('calibrationsMeasurements')
 
 
 
-createTables();
 
-function createTables() {
-    db.transaction((tx) => {
-        createTableQueries.forEach((query) => {
 
-            tx.executeSql(query, [],
-                () => { },
-                (_, error) => {
-                    console.error('Error Creating', error);
-                    return false;
-                });
-        });
-    });
-}
+
+
+//============ INSERTS ==========================================================
+
 
 /** Insert a measurement in de localDB with the column sent set to false(0) 
  *  @param measurement A measurement struct which will be inserted into measurements table
@@ -73,7 +81,6 @@ function createTables() {
 */
 export function insertMeasurement(measurement: Measurement) {
 
-    let insertID: number | undefined
     // TODO improve
     let keys = ''
     let placeHolder = ''
@@ -83,62 +90,20 @@ export function insertMeasurement(measurement: Measurement) {
     })
     const values = [...Object.values(measurement), 0]
 
-    return new Promise<number>((resolve, reject) => {
-        db.transaction((tx) => {
+    return execQuery(`INSERT INTO measurements (${keys}sendStatus) values (${placeHolder}?)`, values)
+        .then((result) => result.insertId as number)
 
-            tx.executeSql(`INSERT INTO measurements (${keys}sendStatus) values (${placeHolder}?)`, [...values],
-                (_, { insertId }) => {
-                    console.log('Execute', insertId);
-                    insertID = insertId
-
-                },)
-
-        },
-            (error) => {
-                console.error();
-                console.error('Error Inserting', error)
-                reject(error)
-                return false
-
-            },
-            () => {
-                if (insertID) {
-
-                    console.log('Insert measurement succed');
-
-                    resolve(insertID)
-                }
-                else
-                    reject(new Error('Insert ID turn undefined'))
-
-            }
-        )
-    })
 }
 
-function execQuery(query: string, values: Array<any> = []) {
-    return new Promise<SQLite.SQLResultSet>((resolve, reject) => {
-        let result: SQLite.SQLResultSet
-        db.transaction((tx) => {
+/** Creates a calibration*/
+async function insertCalibration(name: string) {
+    return execQuery(`INSERT INTO calibrations (name) values (?)`, [name])
+        .then((result) => result.insertId)
 
-            tx.executeSql(query, values,
-                (_, result) => {
-                    console.log('Executed', query);
-                    result = result
-
-                })
-        },
-            (error) => {
-                console.error('SQLite Error', error);
-                reject(error)
-            },
-            () => {
-                resolve(result)
-            }
-        )
-
-    })
 }
+
+
+
 
 /** Insert a measurement in de localDB with the column sent set to false(0) 
  * 
@@ -147,184 +112,75 @@ function execQuery(query: string, values: Array<any> = []) {
  *  @precondition A measurement with the given ID and a calibration with the given ID must be created
  *  @returns Promise<string> with the calibrationMeasurementID within the measurments table
 */
-export function insertCalibrationMeasurement(calibrationID: number, measurementID: number) {
-    return new Promise<number>((resolve, reject) => {
-        // console.log('Inser calibration measurmentr', calibrationID, measurementID);
-
-        db.transaction((tx) => {
-            tx.executeSql(`INSERT INTO calibrationsMeasurements (ID,calibrationID,weight) values (?,?,?)`, [measurementID, calibrationID, 0],
-                (_, { insertId }) => {
-                    console.log('Execute must match', insertId, measurementID);
-                    if (insertId)
-                        resolve(insertId)
-                },
-                (_, error) => {
-                    console.error('Error Inserting', error)
-                    reject(error)
-                    return false
-                })
-        }
-        )
-    })
+export async function insertCalibrationMeasurement(calibrationID: number, measurementID: number) {
+    // console.log('Inser calibration measurmentr', calibrationID, measurementID);
+    return execQuery(`INSERT INTO calibrationsMeasurements (ID,calibrationID,weight) values (?,?,?)`, [measurementID, calibrationID, 0])
+        .then((result) => result.insertId as number)
 
 }
 
 
 
 
-export function calibrationExists(name: string) {
-    return new Promise<boolean>((resolve, reject) => {
-        db.transaction((tx) => {
-            tx.executeSql(`SELECT * FROM calibrations WHERE name = ?`, [name],
-                (_, { rows: { length, _array } }) => {
-                    console.log('Exists', _array, length);
 
-                    resolve(length > 0)
-                },
-                (_, error) => {
-                    console.error('Error on query', error)
-                    reject(error)
-                    return false
-                })
-        }
-        )
-    })
-}
-
-/** Creates a calibration */
-function insertCalibration(name: string) {
-    return new Promise<number>((resolve, reject) => {
-
-        db.transaction((tx) => {
-            tx.executeSql(`INSERT INTO calibrations (name) values (?)`, [name],
-                (_, { insertId }) => {
-                    console.log('Insert calibration', insertId, name);
-                    if (insertId)
-                        resolve(insertId)
-                },
-                (_, error) => {
-                    console.error('Error Inserting', error)
-                    reject(error)
-                    return false
-                })
-        }
-        )
-    })
-
-}
 
 /** Creates the tables needed for a Calibration made from measurements */
 export async function insertCalibrationFromMeasurements(name: string) {
-    return new Promise<number>(async (resolve, reject) => {
-        try {
 
-            const calibrationID = await insertCalibration(name)
-            if (calibrationID) {
+    const calibrationID = await insertCalibration(name)
+    if (calibrationID) {
+        return await execQuery(`INSERT INTO calibrationsFromMeasurements (ID,sendStatus) values (?,?)`, [calibrationID, 0])
+            .then((result) => result.insertId as number) //It wont return undefined, in the case it doesnt insert an error will be thrown
 
 
-                db.transaction((tx) => {
-                    tx.executeSql(`INSERT INTO calibrationsFromMeasurements (ID,sendStatus) values (?,?)`, [calibrationID, 0],
-                        (_, { insertId }) => {
-                            console.log('Execute must match', insertId, calibrationID);
-                            if (insertId)
-                                resolve(insertId)
-                        },
-                        (_, error) => {
-                            console.error('Error Inserting', error)
-                            reject(error)
-                            return false
-                        })
-                }
-                )
-            }
+    }
+    else
+        throw Error('Calibration ID ' + calibrationID)
 
-        }
-
-        catch (error) {
-            console.error('Insert Error', error);
-            reject(error)
-        }
-    })
-    // TODO Error handle
 }
 
-export function getMeasurements() {
-    db.transaction((tx) => {
+
+//============ Getters ==========================================================
 
 
-        tx.executeSql(`SELECT * FROM measurements `, [],
-            (_, { rows: { _array } }) => {
-                console.log('Get result', _array);
-            },
-            (_, error) => {
-                console.error('Error Getting', error)
-                return false
-            })
-    })
-}
+export async function getMeasurements() {
+    return execQuery(`SELECT * FROM measurements `, [])
 
-export function deleteCalibration(ID: number) {
-    return new Promise<void>((resolve, reject) => {
-
-        db.transaction((tx) => {
-
-
-            tx.executeSql(`DELETE FROM calibrations WHERE ID = ?`, [ID],
-                (_, { rows: { _array } }) => {
-                    console.log('Deleted', _array, ID);
-                    resolve()
-                },
-                (_, error) => {
-                    console.error('Error Getting', error)
-                    reject(error)
-                    return false
-                })
-        })
-    })
 }
 
 
 
-
-export function getCalibrations() {
-    return new Promise<calibrationLocalDB[]>((resolve, reject) => {
-
-        db.transaction((tx) => {
-
-
-            tx.executeSql(`SELECT * FROM calibrations `, [],
-                (_, { rows: { _array } }) => {
-                    console.log('Get result', _array);
-                    resolve(_array as calibrationLocalDB[])
-                },
-                (_, error) => {
-                    console.error('Error Getting Calibrations', error)
-                    reject(error)
-                    return false
-                })
-        })
-    })
+export async function getCalibrations() {
+    return execQuery(`SELECT * FROM calibrations `, [])
+        .then((result) => result.rows._array as calibrationLocalDB[])
 }
 
 
-export function getCalibrationsFromMeasurement() {
-    return new Promise<calibrationsFromMeasurementsLocalDB[]>((resolve, reject) => {
+export async function getCalibrationsFromMeasurement() {
+    return execQuery(`SELECT * FROM calibrationsFromMeasurements `, [])
+        .then((result) => result.rows._array as calibrationsFromMeasurementsLocalDB[])
+}
 
-        db.transaction((tx) => {
 
+export async function deleteCalibration(ID: number) {
+    return execQuery(`DELETE FROM calibrations WHERE ID = ?`, [ID])
 
-            tx.executeSql(`SELECT * FROM calibrationsFromMeasurements `, [],
-                (_, { rows: { _array } }) => {
-                    console.log('Get result', _array);
-                    resolve(_array as calibrationsFromMeasurementsLocalDB[])
-                },
-                (_, error) => {
-                    console.error('Error Getting Calibrations', error)
-                    reject(error)
-                    return false
-                })
-        })
-    })
+}
+
+export async function calibrationExists(name: string) {
+    return execQuery(`SELECT * FROM calibrations WHERE name = ?`, [name])
+        .then((result) => result.rows.length > 0)
+}
+
+/** Show the calibrations made from measurement with its name and function */
+export async function getCalibrationsFromMeasurementExtended() {
+    return execQuery(
+        `SELECT t1.* 
+    FROM calibrations AS t1 
+    INNER JOIN calibrationsFromMeasurements AS t2 
+    ON t1.ID = t2.ID;`
+        , [])
+        .then((result) => result.rows._array)
 }
 
 
