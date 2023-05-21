@@ -23,7 +23,7 @@ type RingProps = {
     //borderColor = borderColor || theme.colors.primary 
     borderColor = borderColor || 'muted.300'
 
-    console.log(borderColor);
+    // console.log(borderColor);
     const styleSpread = style ? style : {}
    
 

@@ -64,7 +64,7 @@ export const measurementSlice = createSlice({
       state.calibrationMeasurementID = null
     },
 
-    setCalibrationMeasurementID: (state,action: PayloadAction<number>)=>{
+    setCalibrationMeasurementID: (state,action: PayloadAction<number|null>)=>{
       state.calibrationMeasurementID = action.payload
     }
 

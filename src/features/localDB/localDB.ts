@@ -20,7 +20,7 @@ db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {
 
 })
 
-
+//TODO Make a do query which use wrapp the redundant code, the promise envolving the execution etc
 
 
 
@@ -47,6 +47,7 @@ function dropTables(tableName: TablesNames) {
 
 // dropTables('calibrationsFromMeasurements')
 // dropTables('calibrations')//
+dropTables('calibrationsMeasurements')
 
 
 
@@ -68,35 +69,74 @@ function createTables() {
 
 /** Insert a measurement in de localDB with the column sent set to false(0) 
  *  @param measurement A measurement struct which will be inserted into measurements table
- *  @returns Promise<string> A promise which solves to the measurementID within the measurments table
+ *  @returns Promise<number> A promise which solves to the measurementID within the measurments table
 */
 export function insertMeasurement(measurement: Measurement) {
 
-    return new Promise<number>((resolve, reject) => {
+    let insertID: number | undefined
+    // TODO improve
+    let keys = ''
+    let placeHolder = ''
+    Object.keys(measurement).forEach((key) => {
+        keys = keys + key + ','
+        placeHolder = placeHolder + '?,'
+    })
+    const values = [...Object.values(measurement), 0]
 
+    return new Promise<number>((resolve, reject) => {
         db.transaction((tx) => {
-            // TODO improve
-            let keys = ''
-            let placeHolder = ''
-            Object.keys(measurement).forEach((key) => {
-                keys = keys + key + ','
-                placeHolder = placeHolder + '?,'
-            })
-            const values = [...Object.values(measurement), 0]
 
             tx.executeSql(`INSERT INTO measurements (${keys}sendStatus) values (${placeHolder}?)`, [...values],
                 (_, { insertId }) => {
                     console.log('Execute', insertId);
-                    if (insertId)
-                        resolve(insertId)
-                },
-                (_, error) => {
-                    console.error('Error Inserting', error)
-                    reject(error)
-                    return false
-                })
-        }
+                    insertID = insertId
+
+                },)
+
+        },
+            (error) => {
+                console.error();
+                console.error('Error Inserting', error)
+                reject(error)
+                return false
+
+            },
+            () => {
+                if (insertID) {
+
+                    console.log('Insert measurement succed');
+
+                    resolve(insertID)
+                }
+                else
+                    reject(new Error('Insert ID turn undefined'))
+
+            }
         )
+    })
+}
+
+function execQuery(query: string, values: Array<any> = []) {
+    return new Promise<SQLite.SQLResultSet>((resolve, reject) => {
+        let result: SQLite.SQLResultSet
+        db.transaction((tx) => {
+
+            tx.executeSql(query, values,
+                (_, result) => {
+                    console.log('Executed', query);
+                    result = result
+
+                })
+        },
+            (error) => {
+                console.error('SQLite Error', error);
+                reject(error)
+            },
+            () => {
+                resolve(result)
+            }
+        )
+
     })
 }
 
@@ -104,13 +144,15 @@ export function insertMeasurement(measurement: Measurement) {
  * 
  *  @param calibrationID The calibration's row ID
  *  @param measurementID The measurement's row ID
+ *  @precondition A measurement with the given ID and a calibration with the given ID must be created
  *  @returns Promise<string> with the calibrationMeasurementID within the measurments table
 */
 export function insertCalibrationMeasurement(calibrationID: number, measurementID: number) {
     return new Promise<number>((resolve, reject) => {
+        // console.log('Inser calibration measurmentr', calibrationID, measurementID);
 
         db.transaction((tx) => {
-            tx.executeSql(`INSERT INTO calibrationsMeasurements (ID,calibrationID,weight) values (?,?,?)`, [6, calibrationID, 0],
+            tx.executeSql(`INSERT INTO calibrationsMeasurements (ID,calibrationID,weight) values (?,?,?)`, [measurementID, calibrationID, 0],
                 (_, { insertId }) => {
                     console.log('Execute must match', insertId, measurementID);
                     if (insertId)
@@ -264,6 +306,7 @@ export function getCalibrations() {
     })
 }
 
+
 export function getCalibrationsFromMeasurement() {
     return new Promise<calibrationsFromMeasurementsLocalDB[]>((resolve, reject) => {
 
@@ -284,6 +327,8 @@ export function getCalibrationsFromMeasurement() {
     })
 }
 
+
+//TODO make query with inner join that adds editable or not editable
 
 //TODO IT is no an UID it's an id
 

@@ -1,5 +1,11 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+// TODO put in a document, and ask
+// Screen sizes
+// MOTO e(low tier phone) 2020 720 x 1520 pixels Supported but seems too long
+// MOTO e 2014 1st gen 540 x 960 Not supported for now
+// MOTO e 3rd gen 2016 720 x 1280 Not supported for now, use the same ratio as above 16/9
+// Standard 1080*1920 Supported and Looks Good and is 16/9
 
 //Move to ScreenStack
 type RootStackParamList = {
@@ -71,7 +77,7 @@ export default function HomeScreen(props: Props) {
             <View height='20px' />
             <BatteryLevel />
 
-            <Flex paddingTop={'20px'}>
+            <Flex paddingTop={'5px'}>
                 <Text fontSize='2xl' fontWeight='medium' paddingLeft={5}  >MEDIA</Text>
                 <RoundedContainer size={300} height={120} borderRadius={33} >
                     <Flex direction='row'>
@@ -90,7 +96,7 @@ export default function HomeScreen(props: Props) {
             {/* {bleConnectionState== 'disconnected' ?  */}
 
             {/* TODO it should say conectado and when pressed show a moldal for disconnecting */}
-            <VStack margin={10}>
+            <VStack justifyContent='flex-end' marginBottom={5} flex={1}>
                 {bleConnectionState == 'connected' ?
                     <Button
                         onPress={() => disconnectFromDevice()}

@@ -4,13 +4,13 @@ import base64 from "react-native-base64";
 import { getLocation } from "../location/location";
 
 //==== Types ====================
-import {  Measurement } from "../store/types";
+import { Measurement } from "../store/types";
 import { BleError, BleErrorCode, Characteristic } from "react-native-ble-plx";
 
 //==== Store =============================
 import store from "../store/store";
 import { setBattery } from "../store/bleSlice"
-import { setLastMeasurement } from "../store/measurementSlice"
+import { setCalibrationMeasurementID, setLastMeasurement } from "../store/measurementSlice"
 
 
 //==== LocalDB =================================================
@@ -24,28 +24,38 @@ import { getMeasurements, insertCalibrationMeasurement, insertMeasurement } from
 
 
 const onCharacteristicUpdate = async (error: BleError | null, characteristic: Characteristic | null) => {
-    if ((!characteristicError(error, characteristic)) && characteristic?.value) {
-        const rawData = base64.decode(characteristic.value);
+    try {
 
-        const { battery, measurement } = await rawDataToMeasurement(rawData)
-        console.log('Main Characteristic', measurement);
+        if ((!characteristicError(error, characteristic)) && characteristic?.value) {
+            const rawData = base64.decode(characteristic.value);
 
-        store.dispatch(setLastMeasurement(measurement))
-        store.dispatch(setBattery(battery));
-        
-        const measurementID = await insertMeasurement(measurement) //TODO call bleSlice and measurementSlice
-        getMeasurements()
-        
-        
-        if(store.getState().measurement.calibrationMode){
+            const { battery, measurement } = await rawDataToMeasurement(rawData)
+            console.log('Main Characteristic', measurement);
 
-            const calibrationID = store.getState().measurement.calibrationID
-            console.log({calibrationID,measurementID});
-            
-            const calibrationMeasurementID = await insertCalibrationMeasurement(calibrationID,measurementID) 
-            // TODO verify code
+            store.dispatch(setLastMeasurement(measurement))
+            store.dispatch(setBattery(battery));
+
+            const measurementID = await insertMeasurement(measurement) //TODO call bleSlice and measurementSlice
+            // getMeasurements()
+
+            if (store.getState().measurement.calibrationMode) {
+
+                const calibrationID = store.getState().measurement.calibrationID
+                console.log({ calibrationID, measurementID });
+
+                const id = await insertCalibrationMeasurement(calibrationID, measurementID)
+                console.log('Id obteined',id);
+                
+                store.dispatch(setCalibrationMeasurementID(id))
+                
+                // TODO verify code
+            }
+
+
         }
-
+    }
+    catch (error) {
+        console.log(error);
 
     }
 }
@@ -57,7 +67,7 @@ const onCharacteristicUpdate = async (error: BleError | null, characteristic: Ch
 //ID, timeStamp, GPS(currently null), batery, humity, sensorsQuantity, and N measures(one by sensor)
 const stringFields = { DEVICE_ID: 0, BATERY: 3, SENSORS_QUANTITY: 6, MEASUREMENTS: 7 }
 
-async function rawDataToMeasurement(value: string): Promise<{ battery: number, measurement: Measurement }>{
+async function rawDataToMeasurement(value: string): Promise<{ battery: number, measurement: Measurement }> {
 
 
     const values = value.split(';')
@@ -72,7 +82,6 @@ async function rawDataToMeasurement(value: string): Promise<{ battery: number, m
 
     const measurementValue = verifyMeasurements(measurements)
 
-    //TODO it may be a measurement plus battery
 
     const battery = parseFloat(values[stringFields.BATERY])
 

@@ -1,3 +1,5 @@
+//TODO calculate resolution, and make it responsive for shorter screens
+
 
 import { useCallback, useState } from "react";
 
