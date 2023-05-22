@@ -7,6 +7,7 @@ import HomeCalibration from "./HomeScreen";
 import { Text } from "native-base";
 import CreateCalibration from "./CreateScreen";
 import CalibrationsList from "./ListScreen";
+import CreateFunctionCalibration from "./CreateFunctionScreen";
 
 
 export type StackParamList = {
@@ -15,6 +16,7 @@ export type StackParamList = {
     SetCalibrations: { sort: 'latest' | 'top' } | undefined;
     CreateCalibration : undefined;
     CalibrationsList : undefined;
+    CreateFunctionCalibration: {name:string}
 };
 
 const Stack = createNativeStackNavigator<StackParamList>();
@@ -28,6 +30,7 @@ export default function CalibrationStackScreen() {
                 <Stack.Screen name='SetCalibrations' component={SetCalibrationsScreen} />
                 <Stack.Screen name='CreateCalibration' component={CreateCalibration} />
                 <Stack.Screen name='CalibrationsList' component={CalibrationsList} />
+                <Stack.Screen name='CreateFunctionCalibration' component={CreateFunctionCalibration} />
 
 
 

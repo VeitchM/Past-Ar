@@ -103,12 +103,3 @@ export default function CalibrationsList({ navigation }: Props) {
         </VStack>
     )
 }
-
-
-
-
-
-
-
-
-

@@ -79,7 +79,7 @@ function execQuery(query: string, values: Array<any> = []) {
  *  @param measurement A measurement struct which will be inserted into measurements table
  *  @returns Promise<number> A promise which solves to the measurementID within the measurments table
 */
-export function insertMeasurement(measurement: Measurement) {
+export async function insertMeasurement(measurement: Measurement) {
 
     // TODO improve
     let keys = ''

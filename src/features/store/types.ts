@@ -1,22 +1,33 @@
-type MainCharacteristic={
+type MainCharacteristic = {
     height: number,
     timeStamp: number,
-    battery : number,
+    battery: number,
     deviceID: string
 }
 
 type Measurement = {
     height: number,
-    timestamp:number,
+    timestamp: number,
     latitude: number,
-    longitude:number,
+    longitude: number,
 
 }
 
 type ErrorBleState = {}
 
 type DeviceSerializable = {
-    id:string
+    id: string
     name: string | null
 }
-export {MainCharacteristic, ErrorBleState,DeviceSerializable,Measurement}
+
+import { InterfaceAlertProps } from "native-base/lib/typescript/components/composites/Alert/types";
+
+
+type Notification = {
+    title: string,
+    status: InterfaceAlertProps['status'],
+    id:number
+}
+
+
+export { MainCharacteristic, ErrorBleState, DeviceSerializable, Measurement, Notification }

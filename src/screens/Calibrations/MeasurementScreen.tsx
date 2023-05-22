@@ -16,7 +16,7 @@ type Props = NativeStackScreenProps<StackParamList, 'CalibrationMeasurement'>;
 
 function CalibrationMeasurement({ navigation, route }: Props) {
 
-    const SPACE_BETWEEN_TEXT = 8
+    const SPACE_BETWEEN_TEXT = 5
 
     const dispatch = useTypedDispatch()
     const calibrationMeasurmentID = useTypedSelector(state => state.measurement.calibrationMeasurementID)
@@ -40,7 +40,7 @@ function CalibrationMeasurement({ navigation, route }: Props) {
     return (
         <View bg='white' style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
 
-            <View paddingTop={10} flex={1} >
+            <View paddingTop={0} flex={1} >
 
                { !calibrationMeasurmentID ? <Heading >Esperando Medicion</Heading> : null}
                 <Container bg='muted.100' minWidth={250} alignItems='center'>
@@ -68,9 +68,10 @@ function CalibrationMeasurement({ navigation, route }: Props) {
               <Text>lalalal</Text>
             </Flex> */}
             <View width='100%' bg='muted.50' flex={1} borderTopRadius='3xl' shadow={3} >
-                <Box margin={10} justifyContent='space-between' >
-                    <Text marginY={SPACE_BETWEEN_TEXT} fontSize='xl' fontWeight='bold'>Presione el boton del pasturometro para realizar medicion</Text>
-                    <Text marginY={SPACE_BETWEEN_TEXT} fontSize='xl' fontWeight='bold'>Anote el numero en pantalla para posteriormente asociarlo al peso de pasto seco de la medicion</Text>
+                <Box flexDirection='column' margin={10} justifyContent='space-between' >
+                    <Text marginY={SPACE_BETWEEN_TEXT} fontSize='lg' fontWeight='bold'>Presione el boton del pasturometro para realizar medicion</Text>
+                    <View style={{height:5}}/>
+                    <Text marginY={SPACE_BETWEEN_TEXT} fontSize='lg' fontWeight='bold'>Anote el numero en pantalla para posteriormente asociarlo al peso de pasto seco de la medicion</Text>
                 </Box>
             </View>
 

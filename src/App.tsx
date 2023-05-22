@@ -18,6 +18,7 @@ ble // Dont delete, it force the import
 import { customFonts, themeNative, themeNavigation } from './theme';
 import ScreenTabs from './screens/ScreenTabs';
 import { useFonts } from 'expo-font';
+import AlertsManager from './components/AlertsManager';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 
@@ -28,13 +29,14 @@ export default function App() {
     return <></>
 
 
-    
+
   return (
     <Provider store={store}>
       <NativeBaseProvider theme={themeNative}>
         <NavigationContainer theme={themeNavigation} >
           <ScreenTabs />
         </NavigationContainer>
+        <AlertsManager />
       </NativeBaseProvider>
     </Provider>
   )

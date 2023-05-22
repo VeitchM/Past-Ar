@@ -40,7 +40,7 @@ const initialState: MeasurementState = {
 //================Slice================================
 
 export const measurementSlice = createSlice({
-  name: 'ble',
+  name: 'measurement',
   initialState,
   reducers: {
 
