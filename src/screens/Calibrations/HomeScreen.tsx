@@ -36,7 +36,7 @@ export default function HomeCalibration({ navigation }: Props) {
     const connectionState = useTypedSelector(state => state.ble.connectionState)
     const [calibrations, setCalibrations] = useState<calibrationLocalDB[]>([])
 
-    const [selectedCalibration, setSelectedCalibration] = useState<string>()
+    const [selectedCalibration, setSelectedCalibration] = useState<string>('')
 
     const refreshList = useCallback(() => {
         getCalibrations().then((calibrations) => {
@@ -47,30 +47,40 @@ export default function HomeCalibration({ navigation }: Props) {
                 console.log('Calibrations from Screen', calibrations);
                 setCalibrations(calibrations)
 
+
             })
+
+
+
+
             .catch((error) => {
                 console.log('Error ', error);
             })
 
 
+        //TODO bug when i select a calibration, and then delete all and go back, i can still make a measurement
 
         //TODO add to setCalibrations
 
     }, [])
 
     useFocusEffect(refreshList)
+    console.log('Value of wda', selectedCalibration);
 
 
 
     //======= Functions ===========================================
 
     const toCalibrationMeasurementScreen = () => {
-        if (selectedCalibration)
-            navigation.navigate('CalibrationMeasurement',
-                {
-                    calibrationID: Number(selectedCalibration),
-                    calibrationName: calibrations.find(item => item.ID.toString() == selectedCalibration)?.name || ''
-                })
+        console.log('Selected calibration', selectedCalibration);
+        const params = {
+            calibrationID: Number(selectedCalibration),
+            calibrationName: calibrations.find(item => item.ID.toString() == selectedCalibration)?.name || ''
+        }
+        if (params.calibrationName != '' && !isNaN(params.calibrationID))
+            navigation.navigate('CalibrationMeasurement', params)
+        else
+            setSelectedCalibration('')
     }
 
 
@@ -94,7 +104,7 @@ export default function HomeCalibration({ navigation }: Props) {
                         <HStack style={{ justifyContent: "space-between", }}>
                             <Text fontSize='lg' fontWeight='bold' style={{ alignSelf: 'center' }} >Calibracion</Text>
 
-                            <Select selectedValue={selectedCalibration?.toString()} onValueChange={itemValue => setSelectedCalibration(itemValue)} minWidth="150" placeholder="Elige" >
+                            <Select selectedValue={selectedCalibration} onValueChange={itemValue => setSelectedCalibration(itemValue)} minWidth="150" placeholder="Elige" >
                                 {calibrations.map((calibration) => {
                                     return <Select.Item key={calibration.ID}
                                         label={calibration.name}
@@ -109,8 +119,8 @@ export default function HomeCalibration({ navigation }: Props) {
                     <VStack flex={1} justifyContent='center'>
 
                         {connectionState == 'connected' ?
-                            <Button isDisabled={!selectedCalibration} onPress={toCalibrationMeasurementScreen} >
-                                {selectedCalibration ? 'Realizar Medicion' : 'Elija Calibracion'}
+                            <Button isDisabled={selectedCalibration === ''} onPress={toCalibrationMeasurementScreen} >
+                                {selectedCalibration != '' ? 'Realizar Medicion' : 'Elija Calibracion'}
                             </Button>
                             :
                             <ConnectDeviceButton />

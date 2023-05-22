@@ -20,6 +20,8 @@ function CalibrationMeasurement({ navigation, route }: Props) {
 
     const dispatch = useTypedDispatch()
     const calibrationMeasurmentID = useTypedSelector(state => state.measurement.calibrationMeasurementID)
+    const lastMeasurementHeight = useTypedSelector(state => state.measurement.lastMeasurement.height)
+
     console.log('Lalallal', calibrationMeasurmentID);
 
     useFocusEffect(
@@ -40,14 +42,18 @@ function CalibrationMeasurement({ navigation, route }: Props) {
 
             <View paddingTop={10} flex={1} >
 
-                <Heading >Esperando Medicion</Heading>
+               { !calibrationMeasurmentID ? <Heading >Esperando Medicion</Heading> : null}
                 <Container bg='muted.100' minWidth={250} alignItems='center'>
-                    <Text fontSize='lg'>Calibracion</Text>
-                    <Heading size='2xl'>{route.params.calibrationName}</Heading>
+                    <Text fontSize='lg' fontWeight='thin'>Calibracion</Text>
+                    <Heading size='2xl' fontWeight='regular' >{route.params.calibrationName}</Heading>
                     {calibrationMeasurmentID ?
                     <>
                         <Text fontSize='lg' marginTop={5} marginBottom={-2} >Identificador</Text>
                         <Heading size='3xl'>{calibrationMeasurmentID}</Heading>
+                        {/* TODO make it not ugly*/}
+
+                        <Text fontSize='md'  fontWeight='thin' marginTop={1} marginBottom={0} >Medicion</Text>
+                        <Heading size='xl' fontWeight='regular'>{lastMeasurementHeight.toFixed(1)}cm</Heading>
                     </>
                         :
                         <Heading size='md' fontWeight={400}>Esperando medicion</Heading>

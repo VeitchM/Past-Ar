@@ -42,6 +42,9 @@ export default function CreateCalibration({ navigation }: Props) {
 
     }, [calibrationName])
 
+
+
+
     return (
 
         <>
@@ -85,6 +88,7 @@ export default function CreateCalibration({ navigation }: Props) {
             <NewCalibrationModal showModal={showModalCalibrationFromMeasurement}
                 setShowModal={setShowModalCalibrationFromMeasurement}
                 calibrationName={calibrationName}
+                onCreateGoTo={()=>{navigation.navigate('CalibrationsList')}}
             />
 
         </>

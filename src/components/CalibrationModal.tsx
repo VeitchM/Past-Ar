@@ -9,7 +9,7 @@ import { calibrationExists, getCalibrations, insertCalibrationFromMeasurements }
 
 
 /** A modal which explain that if accepted a calibration from measurement will be created */
-export default function NewCalibrationModal(props: { showModal: boolean, setShowModal: (value: boolean) => void, calibrationName?: string }) {
+export default function NewCalibrationModal(props: { showModal: boolean, setShowModal: (value: boolean) => void, calibrationName?: string, onCreateGoTo?: () => void }) {
 
 
 
@@ -40,8 +40,8 @@ export default function NewCalibrationModal(props: { showModal: boolean, setShow
 
                 setIsCreating(true)
                 const calibrations = await getCalibrations()
-                console.log('Calibraciones ',calibrations);
-                
+                console.log('Calibraciones ', calibrations);
+
                 const exists = await calibrationExists(props.calibrationName)
                 if (!exists) {
                     await insertCalibrationFromMeasurements(props.calibrationName)
@@ -51,7 +51,9 @@ export default function NewCalibrationModal(props: { showModal: boolean, setShow
                     console.log('Name already exists');
                 }
                 props.setShowModal(false);
-                setIsCreating(false)
+                setIsCreating(false);
+                props.onCreateGoTo &&  props.onCreateGoTo()
+
             }
             catch (e) {
                 console.log('Error creating calibration', e);

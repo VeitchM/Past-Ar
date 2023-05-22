@@ -77,7 +77,7 @@ export default function HomeScreen(props: Props) {
             <View height='20px' />
             <BatteryLevel />
 
-            <Flex paddingTop={'5px'}>
+            <Flex>
                 <Text fontSize='2xl' fontWeight='medium' paddingLeft={5}  >MEDIA</Text>
                 <RoundedContainer size={300} height={120} borderRadius={33} >
                     <Flex direction='row'>
@@ -96,7 +96,7 @@ export default function HomeScreen(props: Props) {
             {/* {bleConnectionState== 'disconnected' ?  */}
 
             {/* TODO it should say conectado and when pressed show a moldal for disconnecting */}
-            <VStack justifyContent='flex-end' marginBottom={5} flex={1}>
+            <VStack justifyContent='flex-end' marginBottom='15%' flex={1}>
                 {bleConnectionState == 'connected' ?
                     <Button
                         onPress={() => disconnectFromDevice()}

@@ -12,6 +12,7 @@ web-build/
 
 #Added for androids builds
 android/app/build
+android
 
 # macOS
 .DS_Store
