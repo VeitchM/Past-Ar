@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { LogBox, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { NativeBaseProvider, Text } from 'native-base';
+import { NativeBaseProvider, Text, View } from 'native-base';
 
 import { Provider } from 'react-redux';
 import store from './features/store/store';
@@ -33,8 +33,9 @@ export default function App() {
   return (
     <Provider store={store}>
       <NativeBaseProvider theme={themeNative}>
+
         <NavigationContainer theme={themeNavigation} >
-          <ScreenTabs />
+            <ScreenTabs />
         </NavigationContainer>
         <AlertsManager />
       </NativeBaseProvider>

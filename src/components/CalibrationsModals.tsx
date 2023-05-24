@@ -8,6 +8,8 @@ import { setTryingToConnect } from "../features/store/bleSlice"
 import { calibrationExists, getCalibrations, insertCalibrationFromMeasurements } from "../features/localDB/localDB"
 
 import { MaterialIcons } from '@expo/vector-icons';
+import { CalibrationLocalDBExtended } from "../features/localDB/types"
+import PolynomialFunction from "./PolynomialFunction"
 
 
 /** A modal which explain that if accepted a calibration from measurement will be created */
@@ -82,21 +84,27 @@ export function NewCalibrationModal(props: { showModal: boolean, setShowModal: (
 }
 
 
-export function DeleteCalibrationModal(props: { onDelete:(id:number)=>void,id: number, name: string, showModal: boolean, setShowModal: (value: boolean) => void }) {
-        
-    return <BaseModal title='Borrar Calibracion' calibrationName={props.name} showModal={props.showModal} setShowModal={props.setShowModal}
+type PropsInfoModal = { info?: CalibrationLocalDBExtended, showModal: boolean, setShowModal: (value: boolean) => void }
+type PropsDeleteModal = { onDelete: (id: number) => void } & PropsInfoModal
+
+export function DeleteCalibrationModal(props: PropsDeleteModal) {
+
+    return <BaseModal title='Borrar Calibracion' calibrationName={props.info?.name} showModal={props.showModal} setShowModal={props.setShowModal}
         lines={[
-            `Si presiona Borrar se borraran de manera local e irreversible la calibracion: ${props.name}`,
+            `Si presiona Borrar se borraran de manera local e irreversible la calibracion: ${props.info?.name}`,
             `Hagalo si esta seguro que asi lo quiere`
         ]}>
         <>
-            <Button  _text={{ color: 'white' }} size='lg' colorScheme='info'
+            <Button _text={{ color: 'white' }} size='lg' colorScheme='info'
                 onPress={() => { props.setShowModal(false) }}>
                 Cancelar
             </Button>
             <Button leftIcon={<Icon as={MaterialIcons} name='delete' />} _text={{ color: 'white' }} size='lg'
-             colorScheme="danger"
-              onPress={() => { props.setShowModal(false); props.onDelete(props.id)}}>
+                colorScheme="danger"
+                onPress={() => {
+                    props.setShowModal(false);
+                    props.info?.ID && props.onDelete(props.info?.ID)
+                }}>
                 Borrar
             </Button>
 
@@ -104,11 +112,37 @@ export function DeleteCalibrationModal(props: { onDelete:(id:number)=>void,id: n
     </BaseModal>
 }
 
+//TODO move to other place, where it makes  sense, such a types file
+export enum CalibrationTypesEnum { fromMeasurements, fromFunction, fromCloud }
+export const calibrationTypesNames = [' a partir de Mediciones', ' a partir de Funcion', ' descargada']
+
+
+export function InfoCalibrationModal(props: PropsInfoModal) {
+    let type = 'Calibracion creada'
+    props.info?.fromFunction && (type += calibrationTypesNames[CalibrationTypesEnum.fromFunction])
+    props.info?.fromMeasurement && (type += calibrationTypesNames[CalibrationTypesEnum.fromMeasurements])
+
+
+    return <BaseModal title='Calibracion' calibrationName={props.info?.name} showModal={props.showModal} setShowModal={props.setShowModal}
+        lines={[type]}
+        customBody={
+            <>
+                {props.info?.function && <PolynomialFunction coeficients={props.info?.function.split(`,`).map((number) => Number(number))} />}
+            </>
+        }
+
+    >
+        <Button _text={{ color: 'white' }} size='lg' colorScheme='info'
+            onPress={() => { props.setShowModal(false) }}>
+            Entendido
+        </Button>
+    </BaseModal>
+}
 
 //----------------------------------------------------------------------------------------------
 
 
-function BaseModal(props: { title: string, showModal: boolean, setShowModal: (value: boolean) => void, calibrationName?: string, lines: string[], children: JSX.Element }) {
+function BaseModal(props: { title: string, showModal: boolean, setShowModal: (value: boolean) => void, calibrationName?: string, customBody?: JSX.Element, lines?: string[], children: JSX.Element }) {
 
 
     return (
@@ -129,10 +163,11 @@ function BaseModal(props: { title: string, showModal: boolean, setShowModal: (va
 
                     <Heading fontWeight='light' size='md' >Nombre</Heading>
                     <Heading size='2xl'>{props.calibrationName}</Heading>
-                    {props.lines.map((line) => {
+                    {props.lines?.map((line) => {
 
                         return <Text key={line} marginTop='20px' fontSize='lg'>{line}</Text>
                     })}
+                    {props.customBody}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button.Group space={2}>

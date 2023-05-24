@@ -174,8 +174,8 @@ export async function getCalibrations() {
     //TODO We should consider unsing a type column in calibration for not doing this query
     return execQuery(
     `SELECT calibrations.*,
-     (cfm.ID IS NULL) AS fromMeasurement ,
-     (cff.ID IS NULL) AS fromFunction 
+     (cfm.ID IS NOT NULL) AS fromMeasurement ,
+     (cff.ID IS NOT NULL) AS fromFunction 
     FROM calibrations
     LEFT JOIN calibrationsFromMeasurements AS cfm ON cfm.ID = calibrations.ID
     LEFT JOIN calibrationsFromFunction AS cff ON cff.ID = calibrations.ID

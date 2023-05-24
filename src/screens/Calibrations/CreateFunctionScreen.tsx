@@ -13,6 +13,7 @@ import { Alert } from "native-base";
 import { isValidElement, useCallback, useEffect, useMemo, useState } from "react";
 import CreateCalibration from "./CreateScreen";
 import { calibrationExists, insertCalibrationFromFunction } from "../../features/localDB/localDB";
+import PolynomialFunction from "../../components/PolynomialFunction";
 type Props = NativeStackScreenProps<StackParamList, 'CreateFunctionCalibration'>;
 
 
@@ -72,7 +73,7 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
     return (
         <View bg='white' style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
 
-            <View paddingTop={0} flex={1} >
+            <View style={{minHeight:300, flex:.2}} >
 
                 <Text fontSize='lg' >Calibracion</Text>
                 <Heading marginBottom={2}>{route.params.name}</Heading >
@@ -117,7 +118,7 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
             </Flex> */}
             <View width='100%' bg='muted.50' flex={1} borderTopRadius='3xl' shadow={3} >
                 <Box flexDirection='column' margin={10} justifyContent='space-between' >
-                    <Text marginY={SPACE_BETWEEN_TEXT} fontSize='lg' fontWeight='bold'>Utilize "." para decimales y ";" para separar los coeficientes. </Text>
+                    <Text marginY={SPACE_BETWEEN_TEXT} fontSize='lg' fontWeight='bold'>Utilize "." para decimales y "," para separar los coeficientes. </Text>
                     <View style={{ height: 5 }} />
                     <Heading textAlign='center'>Ejemplo</Heading>
                     <Text textAlign='center' fontSize='lg' fontWeight='bold'>Y=3+5.5X+6.1X^2-0.0043X^3</Text>
@@ -139,34 +140,3 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
 export default CreateFunctionCalibration
 
 
-function PolynomialFunction(props: { coeficients: number[] }) {
-    return (
-
-        <HStack marginY={2}>
-            
-            {props.coeficients?.map((coeficient, index) => 
-                { return coeficient != 0 ? 
-
-                    <HStack  key={index}>
-                    {index == 0 || 0 > coeficient ?
-                        null
-                        :
-                        <Text fontSize='2xl'>+</Text>
-                    }
-                    <Text fontSize='2xl'>
-                    {coeficient}
-                    {index == 0 ? '' : 'X'}
-                    </Text>
-                    <Text fontSize='sm'>
-                    {index <= 1 ? '' : index}
-                    </Text >
-                    </HStack>
-                    :
-                    null
-                }
-            )
-            }
-        </HStack >
-    )
-
-}

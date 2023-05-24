@@ -22,7 +22,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackParamList } from "./ScreenStack";
 import { deleteCalibration, getCalibrations, getCalibrationsFromMeasurement } from "../../features/localDB/localDB";
 import { ListRenderItem } from "react-native";
-import { DeleteCalibrationModal, NewCalibrationModal } from "../../components/CalibrationsModals";
+import { DeleteCalibrationModal, InfoCalibrationModal, NewCalibrationModal } from "../../components/CalibrationsModals";
 import { useFocusEffect } from "@react-navigation/native";
 import { CalibrationLocalDB, CalibrationLocalDBExtended } from "../../features/localDB/types";
 type Props = NativeStackScreenProps<StackParamList, 'CalibrationsList'>;
@@ -33,7 +33,9 @@ export default function CalibrationsList({ navigation }: Props) {
     //Value represents id in database
     const [calibrations, setCalibrations] = useState<CalibrationLocalDBExtended[]>()
 
-    const [modalProps, setModalProps] = useState({ name: '', id: 0, showModal: false })
+    const [selectedCalibration, setSelectedCalibration] = useState<CalibrationLocalDBExtended>()
+    const [showInfoModal, setShowInfoModal] = useState(false)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
 
 
     const refreshList = useCallback(() => {
@@ -64,24 +66,28 @@ export default function CalibrationsList({ navigation }: Props) {
         const { item } = props
         return (
 
-            <Pressable onPress={() => { console.log('aaaya') }} >
+            <Pressable onPress={() => {
+                console.log('aaaya')
+                setSelectedCalibration(item)
+                setShowInfoModal(true)
+            }}
+            >
                 <HStack style={{ height: 60, flex: 1, paddingHorizontal: 30 }} backgroundColor='white' justifyContent='space-between' alignItems='center' >
 
                     <HStack>
-
+            {/* I Could use a condition in just the icon name, but with cloud it will be a ternary */}
                         {item.fromFunction == 1 ||
-                            <Icon marginRight={2} alignSelf='center' size='xl' as={MaterialCommunityIcons} name='function-variant' />}
-                        {item.fromMeasurement == 1 ||
                             <Icon marginRight={2} alignSelf='center' size='xl' as={MaterialCommunityIcons} name='ruler' />}
+                        {item.fromMeasurement == 1 ||
+                            <Icon marginRight={2} alignSelf='center' size='xl' as={MaterialCommunityIcons} name='function-variant' />}
 
                         <Heading >{item.name}</Heading>
                     </HStack>
                     <IconButton
-                        onPress={() => setModalProps({
-                            id: props.item.ID,
-                            showModal: true,
-                            name: props.item.name
-                        })}
+                        onPress={() => {
+                            setSelectedCalibration(item)
+                            setShowDeleteModal(true)
+                        }}
                         colorScheme='red'
                         _icon={{
                             as: MaterialIcons,
@@ -98,32 +104,40 @@ export default function CalibrationsList({ navigation }: Props) {
 
 
 
-    return (<>
-        <DeleteCalibrationModal
-            setShowModal={(show: boolean) => { setModalProps((prev) => { return { ...prev, showModal: show } }) }}
-            {...modalProps}
-            onDelete={onDelete} />
-        <VStack alignItems='center' backgroundColor='white' flex={1} >
-            {calibrations ?
+    return (
+        <>
+            <DeleteCalibrationModal
+                setShowModal={setShowDeleteModal}
+                info={selectedCalibration}
+                showModal={showDeleteModal}
+                onDelete={onDelete} />
+            <InfoCalibrationModal
+                setShowModal={setShowInfoModal}
+                info={selectedCalibration}
+                showModal={showInfoModal}
+            />
 
-                <FlatList maxHeight='85%' minHeight='10%' width='100%' data={calibrations} renderItem={Item} />
-                :
-                <VStack height={500} justifyContent='center' >
-                    <Spinner size={90} />
-                </VStack>
+            <VStack alignItems='center' backgroundColor='white' flex={1} >
+                {calibrations ?
 
-            }
-            <IconButton
-                _icon={{
-                    as: Entypo,
-                    name: "plus",
-                    size: '4xl'
-                }}
-                rounded='full' variant='solid' style={{ width: 60, height: 60 }} onPress={() => { navigation.navigate('CreateCalibration') }}>
-                {/* <Entypo name="plus" size={35} color='white' /> */}
-            </IconButton>
+                    <FlatList maxHeight='85%' minHeight='10%' width='100%' data={calibrations} renderItem={Item} />
+                    :
+                    <VStack height={500} justifyContent='center' >
+                        <Spinner size={90} />
+                    </VStack>
 
-        </VStack>
-    </>
+                }
+                <IconButton
+                    _icon={{
+                        as: Entypo,
+                        name: "plus",
+                        size: '4xl'
+                    }}
+                    rounded='full' variant='solid' style={{ width: 60, height: 60 }} onPress={() => { navigation.navigate('CreateCalibration') }}>
+                    {/* <Entypo name="plus" size={35} color='white' /> */}
+                </IconButton>
+
+            </VStack>
+        </>
     )
 }
