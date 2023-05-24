@@ -20,7 +20,7 @@ type Props = NativeStackScreenProps<StackParamList, 'CalibrationHome'>;
 
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { calibrationLocalDB } from "../../features/localDB/types";
+import { CalibrationLocalDB } from "../../features/localDB/types";
 import { getCalibrations, getCalibrationsFromMeasurement, getCalibrationsFromMeasurementExtended } from "../../features/localDB/localDB";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -34,7 +34,7 @@ export default function HomeCalibration({ navigation }: Props) {
 
     //======= Hooks ==================================
     const connectionState = useTypedSelector(state => state.ble.connectionState)
-    const [calibrations, setCalibrations] = useState<calibrationLocalDB[]>([])
+    const [calibrations, setCalibrations] = useState<CalibrationLocalDB[]>([])
 
     const [selectedCalibration, setSelectedCalibration] = useState<string>('')
 

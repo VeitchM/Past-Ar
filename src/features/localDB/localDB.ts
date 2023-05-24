@@ -2,7 +2,7 @@
 import * as SQLite from 'expo-sqlite';
 
 import { Measurement } from '../store/types'
-import { TablesNames, calibrationLocalDB, calibrationsFromMeasurementsLocalDB } from './types';
+import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, calibrationsFromMeasurementsLocalDB } from './types';
 
 const db = SQLite.openDatabase('pastar.db');
 
@@ -96,11 +96,28 @@ export async function insertMeasurement(measurement: Measurement) {
 }
 
 /** Creates a calibration*/
-async function insertCalibration(name: string) {
-    return execQuery(`INSERT INTO calibrations (name) values (?)`, [name])
+async function insertCalibration(name: string, functionDefinition: string | null = null) {
+    //TODO refactorize
+    return execQuery(`INSERT INTO calibrations (name,function) values (?,?)`, [name, functionDefinition])
         .then((result) => result.insertId)
 
 }
+
+/** Creates a calibration from function*/
+export async function insertCalibrationFromFunction(name: string, functionDefinition: string) {
+    const calibrationID = await insertCalibration(name, functionDefinition)
+    if (calibrationID) {
+        return await execQuery(`INSERT INTO calibrationsFromFunction (ID) values (?)`, [calibrationID])
+            .then((result) => result.insertId as number) //It wont return undefined, in the case it doesnt insert an error will be thrown
+
+
+    }
+    else
+        throw Error('Calibration ID ' + calibrationID)
+
+}
+
+
 
 
 
@@ -151,8 +168,20 @@ export async function getMeasurements() {
 
 
 export async function getCalibrations() {
-    return execQuery(`SELECT * FROM calibrations `, [])
-        .then((result) => result.rows._array as calibrationLocalDB[])
+    // return execQuery(`SELECT * FROM calibrations `
+    // , [])
+    //     .then((result) => result.rows._array as CalibrationLocalDB[])
+    //TODO We should consider unsing a type column in calibration for not doing this query
+    return execQuery(
+    `SELECT calibrations.*,
+     (cfm.ID IS NULL) AS fromMeasurement ,
+     (cff.ID IS NULL) AS fromFunction 
+    FROM calibrations
+    LEFT JOIN calibrationsFromMeasurements AS cfm ON cfm.ID = calibrations.ID
+    LEFT JOIN calibrationsFromFunction AS cff ON cff.ID = calibrations.ID
+     `
+    , [])
+        .then((result) => result.rows._array as CalibrationLocalDBExtended[])
 }
 
 
@@ -207,6 +236,11 @@ const createTableQueries = [
     `CREATE TABLE IF NOT EXISTS calibrationsFromMeasurements (
         ID INTEGER PRIMARY KEY,
         sendStatus INTEGER,
+        FOREIGN KEY (ID) REFERENCES calibrations(ID) ON DELETE CASCADE
+
+      );`,
+    `CREATE TABLE IF NOT EXISTS calibrationsFromFunction (
+        ID INTEGER PRIMARY KEY,
         FOREIGN KEY (ID) REFERENCES calibrations(ID) ON DELETE CASCADE
 
       );`,

@@ -15,9 +15,14 @@ export type MeasurmentLocalDB = SendStatusLocalDB & {
 }
 
 
-export type calibrationLocalDB = BaseLocalDB & {
+export type CalibrationLocalDB = BaseLocalDB & {
     name:string,
-    function?:string,
+    function:string | null,
+}
+
+export type CalibrationLocalDBExtended = CalibrationLocalDB & {
+    fromFunction:number,
+    fromMeasurement:number,
 }
 
 export type calibrationsFromMeasurementsLocalDB = SendStatusLocalDB & {

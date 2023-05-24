@@ -26,7 +26,6 @@ import { InterfaceAlertProps } from "native-base/lib/typescript/components/compo
 type Notification = {
     title: string,
     status: InterfaceAlertProps['status'],
-    id:number
 }
 
 

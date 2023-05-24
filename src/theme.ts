@@ -168,7 +168,12 @@ export const themeNative = extendTheme({
                 variant: 'filled',
                 bg: 'muted.100',
                 borderRadius: 15,
-                size: 'xl',
+                size: '2xl',
+                textAlign:'center',
+                fontWeight:'bold',
+                maxWidth:350,
+                _invalid:{color:'error.400'}
+
                 //TODO verified if compiled it has the same problems showing the shadow while writing
                 //shadow:2
             }

@@ -18,7 +18,7 @@ type Props = NativeStackScreenProps<StackParamList, 'CreateCalibration'>;
 
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import NewCalibrationModal from "../../components/CalibrationModal";
+import {NewCalibrationModal} from "../../components/CalibrationsModals";
 import { InterfaceAlertProps } from "native-base/lib/typescript/components/composites/Alert/types";
 
 
@@ -49,27 +49,16 @@ export default function CreateCalibration({ navigation }: Props) {
     return (
 
         <>
-            {/* 
-            
-            TODO Make a place where i throw all the alerts in redux
-            <Slide in={true}>
-                <CustomAlert status='error' title='I dont know' />
-                <CustomAlert status='warning' title='I dont know' />
 
-                <CustomAlert status='success' title='I dont know' />
-                <CustomAlert status='info' title='I dont know' />
 
-            </Slide> */}
+
             <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
                 style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
                 <VStack style={{ marginTop: 80, alignItems: 'center' }}>
                     <Heading size='xl' fontWeight='light' marginBottom={4} >Nombre de Calibracion</Heading>
                     <Input
 
-                        maxWidth={350}
                         fontSize={calibrationName ? 'xl' : 'lg'}
-                        textAlign='center'
-                        fontWeight='bold'
                         value={calibrationName}
                         size='2xl'
                         onChangeText={setCalibrationName}
@@ -80,11 +69,16 @@ export default function CreateCalibration({ navigation }: Props) {
 
                 <VStack style={{ width: '100%' }} bg='muted.50'>
                     <BlockButton height={100}
+
                         text="A partir de Funcion"
                         isDisabled={!calibrationName}
                         icon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='function-variant' size={60}
                             color='muted.400'
+
                         />}
+                        onPress={() => { calibrationName 
+                            && navigation.navigate('CreateFunctionCalibration', { name: calibrationName }) }}
+
                     />
                     <BlockButton height={100}
                         isDisabled={!calibrationName}
@@ -115,23 +109,3 @@ export default function CreateCalibration({ navigation }: Props) {
 
 
 
-function CustomAlert(props: { status: InterfaceAlertProps['status'], title: string }) {
-    return (
-        <>
-            <Alert w="100%" status={props.status} variant='solid'>
-                <VStack space={2} flexShrink={1} w="100%">
-                    <HStack flexShrink={1} space={2} justifyContent="space-between">
-                        <HStack space={2} flexShrink={1}>
-                            <Alert.Icon mt="1" />
-                            <Text fontSize="md" color='white' >
-                                {props.title}
-                            </Text>
-                        </HStack>
-                        <IconButton variant="unstyled" _focus={{
-                            borderWidth: 0
-                        }} icon={<CloseIcon size="3" color='white' />}  />
-                    </HStack>
-                </VStack>
-            </Alert>
-        </>)
-}
