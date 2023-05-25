@@ -64,18 +64,19 @@ const onCharacteristicUpdate = async (error: BleError | null, characteristic: Ch
 // We received a string with values separated by ;
 //With this format pasturometro-00e5;20221206123456;null;23;22.0000;68.0000;4;44.6500;46.0600;46.0600;47.4700
 //the filds are: 
-//ID, timeStamp, GPS(currently null), batery, humity, sensorsQuantity, and N measures(one by sensor)
-const stringFields = { DEVICE_ID: 0, BATERY: 3, SENSORS_QUANTITY: 6, MEASUREMENTS: 7 }
+//ID, timeStamp, GPS(currently null), batery,temperature, humity, sensorsQuantity, and N measures(one by sensor)
+const stringFields = { DEVICE_ID: 0, BATERY: 3, SENSORS_QUANTITY: 7, MEASUREMENTS: 8 }
 
 async function rawDataToMeasurement(value: string): Promise<{ battery: number, measurement: Measurement }> {
-
-
+    //TODO catch if i received empty
     const values = value.split(';')
+    console.log('Received values',values);
+    
     const measurementsQuantity = parseFloat(values[stringFields.SENSORS_QUANTITY])
     console.log('Recieved: ', value);
 
     const measurements = values.slice(
-        stringFields.MEASUREMENTS,
+        stringFields.MEASUREMENTS-1,
         stringFields.MEASUREMENTS + measurementsQuantity
     ).map((measurement) => parseFloat(measurement))
 
@@ -100,6 +101,8 @@ async function rawDataToMeasurement(value: string): Promise<{ battery: number, m
 const verifyMeasurements = (measurements: number[]) => {
     let sum = 0
     let validNumbers = 0
+    console.log('Measurements: ',measurements);
+    //TODO sensor
     measurements.forEach((number) => {
         //TODO validation of each sensor if()
         sum += number

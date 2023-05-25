@@ -103,6 +103,7 @@ export default function HomeScreen(props: Props) {
                         size="lg"
                     // colorScheme='amber'
                     >
+                        {/* TODO ver cuando cambia */}
                         Desvincular Pasturometro
                     </Button>
                     :
