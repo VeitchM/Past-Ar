@@ -2,7 +2,7 @@
 import * as SQLite from 'expo-sqlite';
 
 import { Measurement } from '../store/types'
-import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, calibrationsFromMeasurementsLocalDB } from './types';
+import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, calibrationsFromMeasurementsLocalDB, MeasurementLocalDB } from './types';
 
 const db = SQLite.openDatabase('pastar.db');
 
@@ -216,6 +216,17 @@ export async function getCalibrationsFromMeasurementExtended() {
 //TODO make query with inner join that adds editable or not editable
 
 //TODO IT is no an UID it's an id
+/**  Returns the list of measurements taken for a Calibration made from measurments
+ * 
+*/
+export async function getCalibrationsMeasurements(calibrationID:number){
+    return execQuery(`
+    SELECT t2.* 
+    FROM calibrationsMeasurements AS t1
+    INNER JOIN measurements as t2 ON t1.ID = t2.ID
+    WHERE  t1.calibrationID = ${calibrationID} `)
+    .then(result=>result.rows._array as Array<MeasurementLocalDB>)
+}
 
 
 

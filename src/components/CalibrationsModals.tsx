@@ -10,6 +10,7 @@ import { calibrationExists, getCalibrations, insertCalibrationFromMeasurements }
 import { MaterialIcons } from '@expo/vector-icons';
 import { CalibrationLocalDBExtended } from "../features/localDB/types"
 import PolynomialFunction from "./PolynomialFunction"
+import CalibrationsMeasurements from "./CalibrationMeasurements"
 
 
 /** A modal which explain that if accepted a calibration from measurement will be created */
@@ -127,7 +128,11 @@ export function InfoCalibrationModal(props: PropsInfoModal) {
         lines={[type]}
         customBody={
             <>
-                {props.info?.function && <PolynomialFunction coeficients={props.info?.function.split(`,`).map((number) => Number(number))} />}
+                {props.info?.function ? <PolynomialFunction coeficients={props.info?.function.split(`,`).map((number) => Number(number))} />
+                :
+                props.info?.ID && <CalibrationsMeasurements calibrationID={props.info?.ID} />                
+                }
+
             </>
         }
 

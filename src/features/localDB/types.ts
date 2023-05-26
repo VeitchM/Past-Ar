@@ -8,7 +8,7 @@ type SendStatusLocalDB = BaseLocalDB & {
     sendStatus: 1 | 2 | 0,
 }
 
-export type MeasurmentLocalDB = SendStatusLocalDB & {
+export type MeasurementLocalDB = SendStatusLocalDB & {
     height: number,
     latitude: number,
     timestamp: number,

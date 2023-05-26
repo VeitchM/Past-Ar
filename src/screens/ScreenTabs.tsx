@@ -9,6 +9,7 @@ import CalibrationStackScreen from './Calibrations/ScreenStack';
 import { FontAwesome, FontAwesome5,MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { StatusBar, Text } from 'native-base';
 import HomeCalibration from './Calibrations/HomeScreen';
+import UserScreen from './User/User';
 
 
 const Tab = createBottomTabNavigator();
@@ -69,7 +70,7 @@ export default function ScreenTabs() {
                 />
                 <Tab.Screen
                     name="User"
-                    component={HomeScreen}
+                    component={UserScreen}
                     options={{
                         tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Usuario</Text>,
                         tabBarIcon: ({ focused, color, size }) => <FontAwesome5 size={37} name='user-alt' color={color} focused={focused} style={{ marginBottom: -5 }} />,
