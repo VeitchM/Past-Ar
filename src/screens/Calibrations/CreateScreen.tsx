@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 
-import { useTypedSelector } from "../../features/store/storeHooks";
+import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
 
 
 //==== Components ===========================================
@@ -18,8 +18,10 @@ type Props = NativeStackScreenProps<StackParamList, 'CreateCalibration'>;
 
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import {NewCalibrationModal} from "../../components/CalibrationsModals";
+import { NewCalibrationModal } from "../../components/CalibrationsModals";
 import { InterfaceAlertProps } from "native-base/lib/typescript/components/composites/Alert/types";
+import { calibrationExists } from "../../features/localDB/localDB";
+import { addNotification } from "../../features/store/notificationSlice";
 
 
 
@@ -33,15 +35,44 @@ export default function CreateCalibration({ navigation }: Props) {
 
     const [calibrationName, setCalibrationName] = useState<string>()
 
-    const connectionState = useTypedSelector(state => state.ble.connectionState)
+    const dispatch = useTypedDispatch()
 
-    const [selectedCalibration, setSelectedCalibration] = useState<string>()
     const [showModalCalibrationFromMeasurement, setShowModalCalibrationFromMeasurement] = useState(false)
 
     useEffect(() => {
         console.log('calibrationName', calibrationName);
 
     }, [calibrationName])
+
+
+    /**Function used by onPressCreateFromFunction and onPressCreateFrom */
+    function onPressCreate(callback: () => void) {
+        if (calibrationName) {
+            calibrationExists(calibrationName)
+                .then((exists) => {
+                    if (!exists)
+                        callback()
+                    else
+                        dispatch(addNotification({ title: 'Ya existe Calibracion con el mismo nombre', status: 'error' }))
+                })
+                .catch((e) => console.error(e)
+                )
+
+
+        }
+        else
+            console.error('Shouldnt happen, calibration name empty');
+    }
+
+    function onPressCreateFromFunction() {
+        onPressCreate(() => { navigation.navigate('CreateFunctionCalibration', { name: calibrationName as string }) })
+
+    }
+
+    function onPressCreateFromMeasurement() {
+        onPressCreate(() => setShowModalCalibrationFromMeasurement(true))
+
+    }
 
 
 
@@ -76,8 +107,7 @@ export default function CreateCalibration({ navigation }: Props) {
                             color='muted.400'
 
                         />}
-                        onPress={() => { calibrationName 
-                            && navigation.navigate('CreateFunctionCalibration', { name: calibrationName }) }}
+                        onPress={onPressCreateFromFunction}
 
                     />
                     <BlockButton height={100}
@@ -86,7 +116,7 @@ export default function CreateCalibration({ navigation }: Props) {
                         icon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='ruler' size={60}
                             color='muted.400'
                         />}
-                        onPress={() => { setShowModalCalibrationFromMeasurement(true) }}
+                        onPress={onPressCreateFromMeasurement}
                     />
 
                 </VStack>

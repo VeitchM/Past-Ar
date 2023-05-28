@@ -11,6 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { CalibrationLocalDBExtended } from "../features/localDB/types"
 import PolynomialFunction from "./PolynomialFunction"
 import CalibrationsMeasurements from "./CalibrationMeasurements"
+import { addNotification } from "../features/store/notificationSlice"
 
 
 /** A modal which explain that if accepted a calibration from measurement will be created */
@@ -19,6 +20,8 @@ export function NewCalibrationModal(props: { showModal: boolean, setShowModal: (
 
 
     // ====== Hooks =======================================================
+
+    const dispatch = useTypedDispatch()
 
     const [isCreating, setIsCreating] = useState(false)
 
@@ -39,7 +42,7 @@ export function NewCalibrationModal(props: { showModal: boolean, setShowModal: (
                     await insertCalibrationFromMeasurements(props.calibrationName)
                 }
                 else {
-                    //TODO ya existe el nombre 
+                    dispatch(addNotification({status:'error',title:'El nombre ya existe'}))
                     console.log('Name already exists');
                 }
                 props.setShowModal(false);

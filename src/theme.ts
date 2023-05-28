@@ -49,7 +49,6 @@ export const themeNative = extendTheme({
         mono: "Ubuntu",
     },
 
-    // TODO FORZar una fuente
     colors: {
         primary: {
             "50": "#a4f5c8",

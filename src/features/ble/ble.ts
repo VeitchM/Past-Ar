@@ -63,6 +63,7 @@ const onAnomalousDisconnection = (deviceId: string) => {
     // docummentation lies, if i disconnect the device it also gives null error.
     if (store.getState().ble.connectionState != 'disconnected' && device) {
       store.dispatch(setTryingToConnect());
+      store.dispatch(addNotification({title:'El Pasturometro se ha desconectado',status:'error'}))
       tryToReconnect({ id: device.id, name: device.name }, RECONNECTIONS_INTENTS);
     }
 
@@ -79,6 +80,7 @@ function tryToReconnect(device: DeviceSerializable, intentsLeft: number) {
       connectToDevice(device).then((deviceConnected) => {
 
         console.log('Try to reconnect:  interNum: ', intentsLeft, ' success: ', !!deviceConnected)
+        store.dispatch(addNotification({title:'El Pasturometro ha restablecido la conexion',status:'info'}))
         if (!deviceConnected)
           tryToReconnect(device, intentsLeft - 1)
         else {
@@ -208,6 +210,7 @@ const disconnectFromDevice = async () => {
 
 
 import { onCharacteristicUpdate } from "./characteristicHandlers";
+import { addNotification } from "../store/notificationSlice";
 
 /** Set callbacks in monitors for each characteristic, it is called by the connectToDevice function
 *

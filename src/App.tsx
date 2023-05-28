@@ -18,7 +18,7 @@ ble // Dont delete, it force the import
 import { customFonts, themeNative, themeNavigation } from './theme';
 import ScreenTabs from './screens/ScreenTabs';
 import { useFonts } from 'expo-font';
-import AlertsManager from './components/AlertsManager';
+import AlertsManager from './components/NotificationManager';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 

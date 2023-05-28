@@ -53,7 +53,7 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
                     await insertCalibrationFromFunction(route.params.name, coeficients.toString())
                 }
                 else {
-                    //TODO ya existe el nombre 
+                    //TODO ya existe el nombre, notification
                     console.log('Name already exists');
                 }
                 setIsCreating(false);

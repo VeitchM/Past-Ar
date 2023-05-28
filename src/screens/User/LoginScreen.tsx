@@ -1,6 +1,12 @@
 import { Box, Center, Heading, VStack, FormControl, Link, Input, Button, HStack, Text } from "native-base";
+import { useTypedDispatch } from "../../features/store/storeHooks";
+import { addNotification } from "../../features/store/notificationSlice";
 
 export default function LoginScreen() {
+
+
+const dispatch = useTypedDispatch()
+
   return (
     <Center w="100%" bg='white' flex={1}>
       {/* <VStack justifyContent=> */}
@@ -41,8 +47,11 @@ export default function LoginScreen() {
 
         <VStack mt={10}>
 
-          <Button mt="2">
-            Sign in
+          <Button mt="2"
+          onPress={()=>{dispatch(addNotification({title:'No se ha podido conectar con el servidor',status:'error'}))}}
+          
+          >
+            Ingresar
           </Button>
           <HStack mt="6" justifyContent="center">
             <Text fontSize="sm" color="coolGray.600" _dark={{

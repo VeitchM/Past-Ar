@@ -2,13 +2,15 @@ import { configureStore } from '@reduxjs/toolkit'
 import bleReducer from './bleSlice'
 import measurementReducer from './measurementSlice'
 import notificationReducer from './notificationSlice'
+import backendReducer from './backendSlice'
 // ...
 
 const store = configureStore({
   reducer: {
     ble: bleReducer,
     measurement: measurementReducer,
-    notification : notificationReducer
+    notification : notificationReducer,
+    backend: backendReducer
   }
 })
 

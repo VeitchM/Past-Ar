@@ -49,7 +49,7 @@ export const notificationSlice = createSlice({
          */
         deleteNotification: (state, action: PayloadAction<Notification>) => {
             state.notifications = state.notifications.filter((notification) =>
-                areEqual(action.payload, notification)
+                !areEqual(action.payload, notification)
             )
 
         },
