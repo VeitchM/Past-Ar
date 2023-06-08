@@ -37,8 +37,16 @@ export const calibrationsMeasurementsTableDefinition: TableDefinition = {
     columns: [
         ID,
         { name: 'calibrationID', type: 'INTEGER' },
-        { name: 'weigh', type: 'REAL' },
+        { name: 'weight', type: 'REAL' },
 
+    ]
+}
+export const paddocksTableDefinition: TableDefinition = {
+    tableName: 'paddocks',
+    columns: [
+        ID,
+        { name: 'name', type: 'TEXT' },
+        { name: 'vertices_list', type: 'TEXT' },
     ]
 }
 
@@ -48,7 +56,7 @@ const tablesDefinitions: TableDefinition[] = [
     calibrationsTableDefinition,
     calibrationsFromMeasurementsTableDefinition,
     calibrationsMeasurementsTableDefinition,
-
+    paddocksTableDefinition
 ]
 
 
@@ -56,7 +64,7 @@ const tablesDefinitions: TableDefinition[] = [
 
 /** Creates a createTable query based on the Table definition passed as parameter */
 function createTableQuery(tableDefinition: TableDefinition) {
-    let columnsString : string[] = []
+    let columnsString: string[] = []
     tableDefinition.columns.forEach((column) => {
         columnsString.push(`${column.name} ${column.type}`)
     })
@@ -70,8 +78,8 @@ function createTableQuery(tableDefinition: TableDefinition) {
 export const createTablesQueries = tablesDefinitions.map((table) => createTableQuery(table))
 
 function createInsertQuery(table: TableDefinition) {
-    const columnsNames = table.columns.map((column) => column.name!=ID.name && column.name).toString()
-    let placeHolders = Array(table.columns.length-1).fill('?')
+    const columnsNames = table.columns.map((column) => column.name != ID.name && column.name).toString()
+    let placeHolders = Array(table.columns.length - 1).fill('?')
     return `insert into ${table} (${columnsNames}) values (${placeHolders.toString()})`
 }
 
@@ -82,5 +90,5 @@ export const insertQueries
     calibrations: createInsertQuery(calibrationsTableDefinition),
     calibrationsFromMeasurements: createInsertQuery(calibrationsFromMeasurementsTableDefinition),
     calibrationsMeasurements: createInsertQuery(calibrationsMeasurementsTableDefinition),
-   
+    paddocks: createInsertQuery(paddocksTableDefinition)
 }

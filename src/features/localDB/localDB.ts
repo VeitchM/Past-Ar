@@ -2,7 +2,8 @@
 import * as SQLite from 'expo-sqlite';
 
 import { Measurement } from '../store/types'
-import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, calibrationsFromMeasurementsLocalDB, MeasurementLocalDB } from './types';
+import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, calibrationsFromMeasurementsLocalDB, MeasurementLocalDB, PaddockLocalDB } from './types';
+import { LatLng } from 'react-native-maps';
 
 const db = SQLite.openDatabase('pastar.db');
 
@@ -156,6 +157,13 @@ export async function insertCalibrationFromMeasurements(name: string) {
 
 }
 
+export async function insertPaddock( paddockName: string,vertices_list: LatLng[], paddockId?: number) {
+    //TODO
+    let json = JSON.stringify(vertices_list)
+    return execQuery(`INSERT INTO paddocks (ID,name,vertices_list) values (?,?,?)`, [paddockId, paddockName, json])
+        .then((result) => result.insertId as number)
+
+}
 
 //============ Getters ==========================================================
 
@@ -191,10 +199,7 @@ export async function getCalibrationsFromMeasurement() {
 }
 
 
-export async function deleteCalibration(ID: number) {
-    return execQuery(`DELETE FROM calibrations WHERE ID = ?`, [ID])
 
-}
 
 export async function calibrationExists(name: string) {
     return execQuery(`SELECT * FROM calibrations WHERE name = ?`, [name])
@@ -228,7 +233,29 @@ export async function getCalibrationsMeasurements(calibrationID:number){
     .then(result=>result.rows._array as Array<MeasurementLocalDB>)
 }
 
+export async function getPaddocks() {
+    return execQuery(
+    `SELECT ID, name, vertices_list FROM paddocks`
+    , [])
+        .then((result) => result.rows._array as PaddockLocalDB[])
+}
 
+//============ Deletes ==========================================================
+
+export async function deleteCalibration(ID: number) {
+    return execQuery(`DELETE FROM calibrations WHERE ID = ?`, [ID])
+
+}
+
+export async function deletePaddock(ID: number) {
+    return execQuery(`DELETE FROM paddocks WHERE ID = ?`, [ID])
+
+}
+
+export async function deleteAllPaddocks() {
+    return execQuery(`DELETE FROM paddocks`)
+
+}
 
 const createTableQueries = [
     `CREATE TABLE IF NOT EXISTS measurements (
@@ -262,6 +289,10 @@ const createTableQueries = [
         FOREIGN KEY (calibrationID) REFERENCES calibrationsFromMeasurements(ID) ON DELETE CASCADE,
         FOREIGN KEY (ID) REFERENCES measurements(ID) ON DELETE CASCADE
       );`,
-
+      `CREATE TABLE IF NOT EXISTS paddocks (
+        ID INTEGER PRIMARY KEY,
+        name TEXT,
+        vertices_list TEXT
+      );`,
 
 ]

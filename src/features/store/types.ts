@@ -28,5 +28,8 @@ type Notification = {
     status: InterfaceAlertProps['status'],
 }
 
+type Paddock = { name: string, vertices: 
+    {latitude: number, longitude: number}[]
+}
 
-export { MainCharacteristic, ErrorBleState, DeviceSerializable, Measurement, Notification }
+export { MainCharacteristic, ErrorBleState, DeviceSerializable, Measurement, Notification, Paddock }
