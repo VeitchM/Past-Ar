@@ -1,11 +1,24 @@
 import { Box, Center, Heading, VStack, FormControl, Link, Input, Button, HStack, Text } from "native-base";
 import { useTypedDispatch } from "../../features/store/storeHooks";
 import { addNotification } from "../../features/store/notificationSlice";
+import { useEffect, useState } from "react";
+import { login } from "../../features/backend/backend";
 
 export default function LoginScreen() {
 
 
-const dispatch = useTypedDispatch()
+  const dispatch = useTypedDispatch()
+
+
+
+  const [password, setPassword] = useState<string>()
+  const [email, setEmail] = useState<string>()
+
+
+  useEffect(() => {
+    console.log('Email changed', email)
+  }, [email])
+
 
   return (
     <Center w="100%" bg='white' flex={1}>
@@ -26,13 +39,19 @@ const dispatch = useTypedDispatch()
 
           <VStack space={3} mt="5">
             {/* <VStack> */}
+
+
             <FormControl>
               <FormControl.Label>Email ID</FormControl.Label>
-              <Input />
+              <Input value={email} onChangeText={setEmail} />
             </FormControl>
+
+
+
+
             <FormControl>
               <FormControl.Label>Contraseña</FormControl.Label>
-              <Input type="password" />
+              <Input type="password" value={password} onChangeText={setPassword} />
               <Link _text={{
                 fontSize: "xs",
                 fontWeight: "500",
@@ -48,8 +67,15 @@ const dispatch = useTypedDispatch()
         <VStack mt={10}>
 
           <Button mt="2"
-          onPress={()=>{dispatch(addNotification({title:'No se ha podido conectar con el servidor',status:'error'}))}}
-          
+            isDisabled={!email || !password}
+            onPress={() => {
+              console.log(email,password);
+              
+              // dispatch(addNotification({ title: 'No se ha podido conectar con el servidor', status: 'error'
+              login(email!, password!)
+            }
+            }
+
           >
             Ingresar
           </Button>
