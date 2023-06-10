@@ -7,16 +7,29 @@ import { Device } from 'react-native-ble-plx'
 
 //===== Could be moved to types.ts ========================
 
-type Tokens = {
-  refreshToken?: string
-  accessToken?: string,
-  expiresIn?: number,
-  refreshExpiresIn?: number
+
+export type TokensResponse = {
+  access_token: string,
+  expires_in: number,
+  /** Seconds */
+  refresh_expires_in: number,
+  /** Seconds */
+  refresh_token: string
 }
 
-type User = {
-  uid: string,
-  name: string,
+export type Tokens = {
+  refreshToken?: string
+  accessToken?: string,
+  /** JS date timestamp */
+  expirationTimestamp?: number,
+  /** JS date timestamp */
+  refreshExpirationTimestamp?: number
+}
+
+export type User = {
+  id: string,
+  firstName: string,
+  lastName: string,
   email: string,
   roles: string[]
   groupUid: string
@@ -25,15 +38,22 @@ type User = {
 interface BackendState {
   tokens?: Tokens,
   user?: User
+  signIn:boolean
 
 
   //TODO Separate in measurment slice, and ble slice, manage database from redux
   //Create redux folder and put all the slices there, add to measurement a receiving calibration variable that change on focus, and if true insert CalibrationMeasure
 
 }
+
+
 //=========================================================
 
-const initialState: BackendState = {}
+const initialState: BackendState = {
+  signIn:false
+
+
+}
 
 
 //================Slice================================
@@ -50,15 +70,25 @@ export const backedSlice = createSlice({
       state.user = action.payload
     },
 
+    setSignIn: (state, action: PayloadAction<boolean>) => {
+      state.signIn = action.payload
+    },
+
     /** Sets the tokens */
-    setTokens: (state, action: PayloadAction<Tokens>) => {
-      state.tokens = action.payload
+    setTokens: (state, action: PayloadAction<TokensResponse>) => {
+      const serverTokens = action.payload
+      state.tokens = {
+        refreshToken: serverTokens.refresh_token,
+        accessToken: serverTokens.access_token,
+        expirationTimestamp: Date.now() + serverTokens.expires_in * 1000,
+        refreshExpirationTimestamp: Date.now() + serverTokens.refresh_expires_in * 1000
+      }
     },
 
 
   }
 })
 
-export const { setTokens, setUser } = backedSlice.actions
+export const { setTokens, setUser,setSignIn } = backedSlice.actions
 
 export default backedSlice.reducer

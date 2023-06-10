@@ -13,7 +13,7 @@ export default function LoginScreen() {
 
   const [password, setPassword] = useState<string>()
   const [email, setEmail] = useState<string>()
-
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     console.log('Email changed', email)
@@ -43,7 +43,7 @@ export default function LoginScreen() {
 
             <FormControl>
               <FormControl.Label>Email ID</FormControl.Label>
-              <Input value={email} onChangeText={setEmail} />
+              <Input value={email} keyboardType='email-address' onChangeText={setEmail} />
             </FormControl>
 
 
@@ -68,13 +68,14 @@ export default function LoginScreen() {
 
           <Button mt="2"
             isDisabled={!email || !password}
+            isLoading={isLoading}
             onPress={() => {
-              console.log(email,password);
-              
-              // dispatch(addNotification({ title: 'No se ha podido conectar con el servidor', status: 'error'
+              setIsLoading(true)
               login(email!, password!)
-            }
-            }
+                .then(() => {
+                  setIsLoading(false)
+                })
+            }}
 
           >
             Ingresar
