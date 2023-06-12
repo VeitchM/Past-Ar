@@ -48,6 +48,6 @@ export type TableDefinition = {
 
 
 
-export type TablesNames = 'measurements' | 'calibrations' | 'calibrationsFromMeasurements' | 'calibrationsMeasurements'
+export type TablesNames = 'user'|'measurements' | 'calibrations' | 'calibrationsFromMeasurements' | 'calibrationsMeasurements'
 
 type SQLTypes = 'REAL' | 'TEXT' | 'INTEGER' | 'INTEGER PRIMARY KEY'

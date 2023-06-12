@@ -1,12 +1,11 @@
-import { addNotification } from "../store/notificationSlice";
-import store from "../store/store";
-import { mobileAPI } from "./config";
-import { getErrorLabel } from "./constants";
-import { login } from "./login";
+
+import { signin } from "./signin";
+import { onInit } from "./onInit";
 
 
+onInit()
 
 
-export {login}
+export {signin}
 
 

@@ -22,6 +22,7 @@ db.exec([{ sql: 'SELECT load_extension("libspatialite.so")', args: [] }], false,
 });
 
 
+// dropTables('user')
 
 //========= Create and Delete tables =============================================
 
@@ -40,7 +41,7 @@ function createTables() {
 
 //======== Query Wrapper ==========================================================
 
-function execQuery(query: string, values: Array<any> = []) {
+export function execQuery(query: string, values: Array<any> = []) {
     return new Promise<SQLite.SQLResultSet>((resolve, reject) => {
         let result: SQLite.SQLResultSet
         db.transaction((tx) => {
@@ -262,6 +263,19 @@ const createTableQueries = [
         FOREIGN KEY (calibrationID) REFERENCES calibrationsFromMeasurements(ID) ON DELETE CASCADE,
         FOREIGN KEY (ID) REFERENCES measurements(ID) ON DELETE CASCADE
       );`,
-
+      `CREATE TABLE IF NOT EXISTS user (
+        localId INTEGER PRIMARY KEY ,
+        id TEXT,
+        firstName TEXT,
+        lastName TEXT,
+        email TEXT,
+        groupUid TEXT,
+        roles TEXT,
+        accessToken TEXT,
+        refreshToken TEXT,
+        expirationTimestamp INTEGER,
+        refreshExpirationTimestamp INTEGER,
+        signedIn INTEGER
+      );`,
 
 ]

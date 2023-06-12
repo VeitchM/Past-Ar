@@ -75,14 +75,9 @@ export const backedSlice = createSlice({
     },
 
     /** Sets the tokens */
-    setTokens: (state, action: PayloadAction<TokensResponse>) => {
-      const serverTokens = action.payload
-      state.tokens = {
-        refreshToken: serverTokens.refresh_token,
-        accessToken: serverTokens.access_token,
-        expirationTimestamp: Date.now() + serverTokens.expires_in * 1000,
-        refreshExpirationTimestamp: Date.now() + serverTokens.refresh_expires_in * 1000
-      }
+    setTokens: (state, action: PayloadAction<Tokens>) => {
+      state.tokens= action.payload
+     
     },
 
 

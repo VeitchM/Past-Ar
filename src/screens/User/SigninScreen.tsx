@@ -2,9 +2,9 @@ import { Box, Center, Heading, VStack, FormControl, Link, Input, Button, HStack,
 import { useTypedDispatch } from "../../features/store/storeHooks";
 import { addNotification } from "../../features/store/notificationSlice";
 import { useEffect, useState } from "react";
-import { login } from "../../features/backend/backend";
+import { signin } from "../../features/backend/backend";
 
-export default function LoginScreen() {
+export default function SigninScreen() {
 
 
   const dispatch = useTypedDispatch()
@@ -25,7 +25,7 @@ export default function LoginScreen() {
       {/* <VStack justifyContent=> */}
 
       <Box flex={0.8} maxHeight='500px' justifyContent='space-between'
-        safeArea p="2" py="0" w="90%" maxW="290">
+        safeArea p="2" py="0" w="90%" maxW="330">
         <VStack>
 
           <Heading
@@ -71,7 +71,7 @@ export default function LoginScreen() {
             isLoading={isLoading}
             onPress={() => {
               setIsLoading(true)
-              login(email!, password!)
+              signin(email!, password!)
                 .then(() => {
                   setIsLoading(false)
                 })

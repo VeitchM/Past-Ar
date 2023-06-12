@@ -1,3 +1,4 @@
+import { persistUserData, getUserData as getUserDatafromDB } from "../localDB/backend";
 import { Tokens, TokensResponse, User, setSignIn, setTokens, setUser } from "../store/backendSlice";
 import { addNotification } from "../store/notificationSlice";
 import store from "../store/store";
@@ -11,7 +12,7 @@ import jwtDecode from "jwt-decode";
 
 
 
-export async function login(email: string, password: string) {
+export async function signin(email: string, password: string) {
     return fetch(`${mobileAPI}/auth/login`,
         createPayload('POST',
             { email: email, password: password }
@@ -24,7 +25,7 @@ export async function login(email: string, password: string) {
 
             }
             else {
-                logedIn(resObject)
+                signedIn(resObject)
                 // store.dispatch()
             }
 
@@ -41,29 +42,38 @@ export async function login(email: string, password: string) {
 }
 
 
-/** It sets the redux with the proper info once the user signin, it also start
+/** It sets the redux with the proper info once the user signin, it also persists the user info and tokens
  * 
 */
-function logedIn(res: TokensResponse) {
+function signedIn(res: TokensResponse) {
 
-    store.dispatch(setTokens(res))
-    console.log('Tokens', store.getState().backend.tokens)
-    store.dispatch(setUser(getUserInfo(res.access_token!)))
+    const tokens = tokensFromBackendToStore(res)
+    const userData = getUserData(tokens.accessToken!)
+    
+    store.dispatch(setTokens(tokens))
+    store.dispatch(setUser(userData))
     store.dispatch(setSignIn(true))
 
+
+
+    persistUserData({ ...tokens, ...userData, signedIn: true })
+
+    // getUserDatafromDB().then(res => console.log('From database', res))
+
+
     /** TODO should i refresh token on background, or log in each time it the token roots */
-    refreshToken()
 
     setTimeout(() => {
+        refreshToken()
 
-    }, res.expires_in * 500)
+    }, res.expires_in * 800)
 
 }
 
 /** Get user info from the provided token
  * @returns  User info
  */
-function getUserInfo(token: string) {
+function getUserData(token: string) {
     // Get from server
     // It works but is unnecessary
     // fetch(`${mobileAPI}/auth/verifyToken`,
@@ -85,19 +95,33 @@ function getUserInfo(token: string) {
 function refreshToken() {
     const backendState = store.getState().backend
     console.log('Refresh token sent for refresh token API:');
-    console.log(backendState.tokens?.refreshToken );
+    console.log(backendState.tokens?.refreshToken);
 
-    
+
     if (backendState.signIn) {
         fetch(`${mobileAPI}/auth/refreshToken`,
-            createPayload('POST', { refresh_token: 'Bearer '+backendState.tokens?.refreshToken }))
+            createPayload('POST', { refresh_token: 'Bearer ' + backendState.tokens?.refreshToken }))
             .then(async (res) => {
                 const resObject = await res.json()
                 console.log('Refresh token from server', resObject);
+
+                //TODO should do this recursive call, which is cut when signin is set to false
                 //logedIn(resObject)
             })
     }
 
 
+
+}
+
+/** It translate the tokens given by the backend to the ones saved on the store */
+function tokensFromBackendToStore(serverTokens: TokensResponse) : Tokens {
+
+    return {
+        refreshToken: serverTokens.refresh_token,
+        accessToken: serverTokens.access_token,
+        expirationTimestamp: Date.now() + serverTokens.expires_in * 1000,
+        refreshExpirationTimestamp: Date.now() + serverTokens.refresh_expires_in * 1000
+    }
 
 }
