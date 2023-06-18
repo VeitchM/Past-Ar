@@ -1,6 +1,8 @@
 import { Box, Center, Heading, VStack, FormControl, Link, Input, Button, HStack, Text, Divider } from "native-base";
 import { signout } from "../../features/backend/signout";
 import { useTypedSelector } from "../../features/store/storeHooks";
+import { getMeasurements } from "../../features/localDB/backend";
+import { synchronizeMeasurements } from "../../features/backend/synchronize";
 
 export default function signedinScreen() {
   const userData = useTypedSelector(state => state.backend.user)
@@ -49,6 +51,14 @@ export default function signedinScreen() {
 
       
         </VStack>
+      {/* TODO DELETE LATER */}
+      <Button
+        // TODO show a modal before signing out
+        colorScheme='info'
+        onPress={synchronizeMeasurements}
+      >
+        Sincronizar
+      </Button>
       <Button
         // TODO show a modal before signing out
         colorScheme='danger'
@@ -56,6 +66,8 @@ export default function signedinScreen() {
       >
         Cerrar sesion
       </Button>
+
+
       </Box>
 
     </Center>

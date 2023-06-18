@@ -5,7 +5,7 @@ type BaseLocalDB = {
 }
 
 type SendStatusLocalDB = BaseLocalDB & {
-    sendStatus: 1 | 2 | 0,
+    sendStatus: 1 | 2 | 0 | 3,
 }
 
 export type MeasurementLocalDB = SendStatusLocalDB & {
@@ -25,7 +25,7 @@ export type CalibrationLocalDBExtended = CalibrationLocalDB & {
     fromMeasurement:number,
 }
 
-export type calibrationsFromMeasurementsLocalDB = SendStatusLocalDB & {
+export type CalibrationsFromMeasurementsLocalDB = SendStatusLocalDB & {
     name:string,
     function:string,
 }
@@ -45,6 +45,7 @@ export type TableDefinition = {
 
     //columns: Array<keyof HeartRateLocalDB> //TODO i could especify which columns exists
 }
+
 
 
 

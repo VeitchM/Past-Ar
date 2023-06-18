@@ -1,5 +1,7 @@
 
 import { useCallback, useEffect, useState } from "react";
+import { ListRenderItem } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { useTypedSelector } from "../../features/store/storeHooks";
 
@@ -9,26 +11,20 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 //==== Components ===========================================
-import { View, Text, Heading, Flex, Button, Select, HStack, VStack, FlatList, IconButton, Divider, Icon, Pressable, Spinner } from "native-base";
-import ConnectDeviceButton from "../../components/ConnectDevice";
-import RoundedContainer from "../../components/RoundedContainer";
+import { Heading, HStack, VStack, FlatList, IconButton, Divider, Icon, Pressable, Spinner } from "native-base";
+import { DeleteCalibrationModal, InfoCalibrationModal } from "../../components/CalibrationsModals";
 
 
-
-
+//==== LocalDB ==========================================
+import { deleteCalibration, getCalibrations } from "../../features/localDB/localDB";
+import { CalibrationLocalDBExtended } from "../../features/localDB/types";
 
 //==== Navigation ==============================================
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackParamList } from "./ScreenStack";
-import { deleteCalibration, getCalibrations, getCalibrationsFromMeasurement } from "../../features/localDB/localDB";
-import { ListRenderItem } from "react-native";
-import { DeleteCalibrationModal, InfoCalibrationModal, NewCalibrationModal } from "../../components/CalibrationsModals";
-import { useFocusEffect } from "@react-navigation/native";
-import { CalibrationLocalDB, CalibrationLocalDBExtended } from "../../features/localDB/types";
 type Props = NativeStackScreenProps<StackParamList, 'CalibrationsList'>;
 
 
-// TODO set Type
 export default function CalibrationsList({ navigation }: Props) {
     //Value represents id in database
     const [calibrations, setCalibrations] = useState<CalibrationLocalDBExtended[]>()
@@ -39,16 +35,13 @@ export default function CalibrationsList({ navigation }: Props) {
 
 
     const refreshList = useCallback(() => {
-        getCalibrationsFromMeasurement().then((calibrations) => {
-            console.log('Calibrations from Measurement', calibrations);
-        })
+
         getCalibrations().then((calibrations) => {
             console.log('Calibrations from Screen', calibrations);
             setCalibrations(calibrations)
 
         })
 
-        //TODO add to setCalibrations
 
     }, [])
 
@@ -62,7 +55,7 @@ export default function CalibrationsList({ navigation }: Props) {
     }
 
 
-    function Item(props: { item: CalibrationLocalDBExtended }) {
+    const Item = useCallback((props: { item: CalibrationLocalDBExtended }) => {
         const { item } = props
         return (
 
@@ -75,10 +68,10 @@ export default function CalibrationsList({ navigation }: Props) {
                 <HStack style={{ height: 60, flex: 1, paddingHorizontal: 30 }} backgroundColor='white' justifyContent='space-between' alignItems='center' >
 
                     <HStack>
-            {/* I Could use a condition in just the icon name, but with cloud it will be a ternary */}
-                        {item.fromFunction == 1 ||
+                        {/* I Could use a condition in just the icon name, but with cloud it will be a ternary */}
+                        {item.fromFunction != 1 &&
                             <Icon marginRight={2} alignSelf='center' size='xl' as={MaterialCommunityIcons} name='ruler' />}
-                        {item.fromMeasurement == 1 ||
+                        {item.fromMeasurement != 1 &&
                             <Icon marginRight={2} alignSelf='center' size='xl' as={MaterialCommunityIcons} name='function-variant' />}
 
                         <Heading >{item.name}</Heading>
@@ -99,7 +92,7 @@ export default function CalibrationsList({ navigation }: Props) {
                 <Divider />
             </Pressable>
         )
-    }
+    },[setSelectedCalibration,setShowDeleteModal])
 
 
 

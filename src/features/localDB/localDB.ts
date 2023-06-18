@@ -2,7 +2,7 @@
 import * as SQLite from 'expo-sqlite';
 
 import { Measurement } from '../store/types'
-import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, calibrationsFromMeasurementsLocalDB, MeasurementLocalDB } from './types';
+import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, CalibrationsFromMeasurementsLocalDB, MeasurementLocalDB } from './types';
 
 const db = SQLite.openDatabase('pastar.db');
 
@@ -41,17 +41,24 @@ function createTables() {
 
 //======== Query Wrapper ==========================================================
 
-export function execQuery(query: string, values: Array<any> = []) {
-    return new Promise<SQLite.SQLResultSet>((resolve, reject) => {
-        let result: SQLite.SQLResultSet
-        db.transaction((tx) => {
+export async function execQuery(query: string, values: Array<any> = []) {
+    return execTransaction([query], [values]).then((result) => result[0])
+}
 
-            tx.executeSql(query, values,
-                (_, _result) => {
-                    console.log('Executed', query);
-                    result = _result
-                },
-            )
+/** Executes a transaction with the given queries. Return an array */
+export async function execTransaction(queries: string[], values: Array<any>[] = [[]]) {
+    return new Promise<SQLite.SQLResultSet[]>((resolve, reject) => {
+        let result: SQLite.SQLResultSet[] = Array<SQLite.SQLResultSet>(queries.length)
+        db.transaction((tx) => {
+            queries.map((query, index) => {
+
+                tx.executeSql(query, values[index],
+                    (_, _result) => {
+                        console.log('Executed', query);
+                        result[index] = _result
+                    },
+                )
+            })
         },
             (error) => {
                 console.error('SQLite Error', error);
@@ -65,6 +72,7 @@ export function execQuery(query: string, values: Array<any> = []) {
         )
     })
 }
+
 
 
 
@@ -131,7 +139,6 @@ export async function insertCalibrationFromFunction(name: string, functionDefini
  *  @returns Promise<string> with the calibrationMeasurementID within the measurments table
 */
 export async function insertCalibrationMeasurement(calibrationID: number, measurementID: number) {
-    // console.log('Inser calibration measurmentr', calibrationID, measurementID);
     return execQuery(`INSERT INTO calibrationsMeasurements (ID,calibrationID,weight) values (?,?,?)`, [measurementID, calibrationID, 0])
         .then((result) => result.insertId as number)
 
@@ -169,27 +176,19 @@ export async function getMeasurements() {
 
 
 export async function getCalibrations() {
-    // return execQuery(`SELECT * FROM calibrations `
-    // , [])
-    //     .then((result) => result.rows._array as CalibrationLocalDB[])
-    //TODO We should consider unsing a type column in calibration for not doing this query
     return execQuery(
-    `SELECT calibrations.*,
+        `SELECT calibrations.*,
      (cfm.ID IS NOT NULL) AS fromMeasurement ,
      (cff.ID IS NOT NULL) AS fromFunction 
     FROM calibrations
     LEFT JOIN calibrationsFromMeasurements AS cfm ON cfm.ID = calibrations.ID
     LEFT JOIN calibrationsFromFunction AS cff ON cff.ID = calibrations.ID
      `
-    , [])
+        , [])
         .then((result) => result.rows._array as CalibrationLocalDBExtended[])
 }
 
 
-export async function getCalibrationsFromMeasurement() {
-    return execQuery(`SELECT * FROM calibrationsFromMeasurements `, [])
-        .then((result) => result.rows._array as calibrationsFromMeasurementsLocalDB[])
-}
 
 
 export async function deleteCalibration(ID: number) {
@@ -205,12 +204,12 @@ export async function calibrationExists(name: string) {
 /** Show the calibrations made from measurement with its name and function */
 export async function getCalibrationsFromMeasurementExtended() {
     return execQuery(
-        `SELECT t1.* 
+        `SELECT t1.*,t2.sendStatus 
     FROM calibrations AS t1 
     INNER JOIN calibrationsFromMeasurements AS t2 
     ON t1.ID = t2.ID;`
         , [])
-        .then((result) => result.rows._array)
+        .then((result) => result.rows._array as CalibrationsFromMeasurementsLocalDB[] )
 }
 
 
@@ -220,13 +219,13 @@ export async function getCalibrationsFromMeasurementExtended() {
 /**  Returns the list of measurements taken for a Calibration made from measurments
  * 
 */
-export async function getCalibrationsMeasurements(calibrationID:number){
+export async function getCalibrationsMeasurements(calibrationID: number) {
     return execQuery(`
     SELECT t2.* 
     FROM calibrationsMeasurements AS t1
     INNER JOIN measurements as t2 ON t1.ID = t2.ID
     WHERE  t1.calibrationID = ${calibrationID} `)
-    .then(result=>result.rows._array as Array<MeasurementLocalDB>)
+        .then(result => result.rows._array as Array<MeasurementLocalDB>)
 }
 
 
@@ -263,7 +262,7 @@ const createTableQueries = [
         FOREIGN KEY (calibrationID) REFERENCES calibrationsFromMeasurements(ID) ON DELETE CASCADE,
         FOREIGN KEY (ID) REFERENCES measurements(ID) ON DELETE CASCADE
       );`,
-      `CREATE TABLE IF NOT EXISTS user (
+    `CREATE TABLE IF NOT EXISTS user (
         localId INTEGER PRIMARY KEY ,
         id TEXT,
         firstName TEXT,

@@ -8,9 +8,9 @@ export async function onInit() {
     const userData = await getUserData()
     console.log('User data on Init', userData);
 
-    if (userData)
+    if (userData && (userData?.tokens?.refreshExpirationTimestamp! > Date.now()) )
     {
-        store.dispatch(setTokens(userData.tokens))
+    store.dispatch(setTokens(userData.tokens))
         store.dispatch(setUser(userData.user))
         store.dispatch(setSignIn(!!userData.signedIn))
     }

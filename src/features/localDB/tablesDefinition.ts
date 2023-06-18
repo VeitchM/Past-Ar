@@ -75,7 +75,7 @@ function createInsertQuery(table: TableDefinition) {
     return `insert into ${table} (${columnsNames}) values (${placeHolders.toString()})`
 }
 
-
+/** TODO not used, it could be deleted */
 export const insertQueries
     = {
     measurement: createInsertQuery(measurementsTableDefinition),
@@ -84,3 +84,10 @@ export const insertQueries
     calibrationsMeasurements: createInsertQuery(calibrationsMeasurementsTableDefinition),
    
 }
+
+
+export enum tablesNames { USER='user',
+MEASUREMENTS='measurements' ,
+CALIBRATIONS= 'calibrations' , 
+CALIBRATIONS_FROM_MEASUREMENTS= 'calibrationsFromMeasurements' , 
+CALIBRATIONS_MEASUREMENTS='calibrationsMeasurements'}

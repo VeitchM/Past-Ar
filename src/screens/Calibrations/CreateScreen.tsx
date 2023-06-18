@@ -1,13 +1,14 @@
 
 import { useEffect, useState } from "react";
 
-import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
+//==== Redux ======================================================
+import { useTypedDispatch} from "../../features/store/storeHooks";
+import { addNotification } from "../../features/store/notificationSlice";
 
 
 //==== Components ===========================================
-import { View, Text, Heading, Flex, Button, Select, HStack, VStack, Input, Icon, Slide, Alert, IconButton, CloseIcon } from "native-base";
-import ConnectDeviceButton from "../../components/ConnectDevice";
-import RoundedContainer from "../../components/RoundedContainer";
+import {  Heading, VStack, Input, Icon} from "native-base";
+import { NewCalibrationModal } from "../../components/CalibrationsModals";
 
 
 //==== Navigation ==============================================
@@ -18,20 +19,14 @@ type Props = NativeStackScreenProps<StackParamList, 'CreateCalibration'>;
 
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { NewCalibrationModal } from "../../components/CalibrationsModals";
-import { InterfaceAlertProps } from "native-base/lib/typescript/components/composites/Alert/types";
-import { calibrationExists } from "../../features/localDB/localDB";
-import { addNotification } from "../../features/store/notificationSlice";
 
+import { calibrationExists } from "../../features/localDB/localDB";
 
 
 // TODO set Type
 export default function CreateCalibration({ navigation }: Props) {
     //Value represents id in database
-    const [calibrations, setCalibrations] = useState(
-        [{ label: 'Otoño', value: '14' },
-        { label: 'Verano', value: '19' },])
-    //change by redux later
+
 
     const [calibrationName, setCalibrationName] = useState<string>()
 

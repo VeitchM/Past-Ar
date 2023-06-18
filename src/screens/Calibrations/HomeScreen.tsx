@@ -21,15 +21,12 @@ type Props = NativeStackScreenProps<StackParamList, 'CalibrationHome'>;
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { CalibrationLocalDB } from "../../features/localDB/types";
-import { getCalibrations, getCalibrationsFromMeasurement, getCalibrationsFromMeasurementExtended } from "../../features/localDB/localDB";
+import { getCalibrations,  getCalibrationsFromMeasurementExtended } from "../../features/localDB/localDB";
 import { useFocusEffect } from "@react-navigation/native";
 
 
-// TODO set Type
 export default function HomeCalibration({ navigation }: Props) {
-    //Value represents id in database
 
-    //change by redux later
 
 
     //======= Hooks ==================================
@@ -44,6 +41,7 @@ export default function HomeCalibration({ navigation }: Props) {
         })
         getCalibrationsFromMeasurementExtended()
             .then((calibrations) => {
+    
                 console.log('Calibrations from Screen', calibrations);
                 setCalibrations(calibrations)
 
@@ -58,9 +56,7 @@ export default function HomeCalibration({ navigation }: Props) {
             })
 
 
-        //TODO bug when i select a calibration, and then delete all and go back, i can still make a measurement
 
-        //TODO add to setCalibrations
 
     }, [])
 
@@ -133,7 +129,7 @@ export default function HomeCalibration({ navigation }: Props) {
 
                 <BlockButton text='Calibraciones' onPress={() => { navigation.navigate('CalibrationsList') }} />
                 {/* TODO IF finalizar calibracion, o cargar datos de calibracion */}
-                <BlockButton text='Enviar calibracion' />
+                <BlockButton onPress={() => { navigation.navigate('ForSendingCalibrations') }} text='Enviar calibracion' />
                 <BlockButton text='Ayuda' />
             </VStack>
 
