@@ -48,7 +48,7 @@ export default function CreateCalibration({ navigation }: Props) {
                     if (!exists)
                         callback()
                     else
-                        dispatch(addNotification({ title: 'Ya existe Calibracion con el mismo nombre', status: 'error' }))
+                        dispatch(addNotification({ title: 'Ya existe Calibración con el mismo nombre', status: 'error' }))
                 })
                 .catch((e) => console.error(e)
                 )
@@ -81,7 +81,7 @@ export default function CreateCalibration({ navigation }: Props) {
             <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
                 style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
                 <VStack style={{ marginTop: 80, alignItems: 'center' }}>
-                    <Heading size='xl' fontWeight='light' marginBottom={4} >Nombre de Calibracion</Heading>
+                    <Heading size='xl' fontWeight='light' marginBottom={4} >Nombre de Calibración</Heading>
                     <Input
 
                         fontSize={calibrationName ? 'xl' : 'lg'}
@@ -96,7 +96,7 @@ export default function CreateCalibration({ navigation }: Props) {
                 <VStack style={{ width: '100%' }} bg='muted.50'>
                     <BlockButton height={100}
 
-                        text="A partir de Funcion"
+                        text="A partir de Función"
                         isDisabled={!calibrationName}
                         icon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='function-variant' size={60}
                             color='muted.400'

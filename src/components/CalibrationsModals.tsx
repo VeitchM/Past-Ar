@@ -93,7 +93,7 @@ type PropsDeleteModal = { onDelete: (id: number) => void } & PropsInfoModal
 
 export function DeleteCalibrationModal(props: PropsDeleteModal) {
 
-    return <BaseModal title='Borrar Calibracion' calibrationName={props.info?.name} showModal={props.showModal} setShowModal={props.setShowModal}
+    return <BaseModal title='Borrar Calibración' calibrationName={props.info?.name} showModal={props.showModal} setShowModal={props.setShowModal}
         lines={[
             `Si presiona Borrar se borraran de manera local e irreversible la calibracion: ${props.info?.name}`,
             `Hagalo si esta seguro que asi lo quiere`
@@ -118,18 +118,20 @@ export function DeleteCalibrationModal(props: PropsDeleteModal) {
 
 //TODO move to other place, where it makes  sense, such a types file
 export enum CalibrationTypesEnum { fromMeasurements, fromFunction, fromCloud }
-export const calibrationTypesNames = [' a partir de Mediciones', ' a partir de Funcion', ' descargada']
+export const calibrationTypesNames = [' a partir de Mediciones', ' a partir de Función', ' descargada']
 
 
 export function InfoCalibrationModal(props: PropsInfoModal) {
-    let type = 'Calibracion creada'
+    let type = 'Calibración creada'
     if (props.info && 'fromFunction' in props.info && props.info?.fromFunction) 
         props.info?.fromFunction && (type += calibrationTypesNames[CalibrationTypesEnum.fromFunction])
     else  
         type += calibrationTypesNames[CalibrationTypesEnum.fromMeasurements]
     
+        console.log('Info calibration modal',props.info);
+        
 
-    return <BaseModal title='Calibracion' calibrationName={props.info?.name} showModal={props.showModal} setShowModal={props.setShowModal}
+    return <BaseModal title='Calibración' calibrationName={props.info?.name} showModal={props.showModal} setShowModal={props.setShowModal}
         lines={[type]}
         customBody={
             <>

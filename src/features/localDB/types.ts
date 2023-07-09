@@ -35,6 +35,8 @@ export type calibrationsMeasurementsLocalDB = SendStatusLocalDB & {
     weight: number,
 }
 
+export type calibrationsFromFunctionFromBackend = BaseLocalDB & {uid: string}
+
 
 
 export type ColumnDefinition = { name: string, type: SQLTypes }

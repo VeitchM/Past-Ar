@@ -51,7 +51,6 @@ export default function ForSendingCalibrationsScreen({ navigation }: Props) {
     const refreshList = useCallback(() => {
 
         getCalibrationsFromMeasurementExtended().then((calibrations) => {
-            console.log('Calibrations from Screen', calibrations);
             setCalibrations(calibrations)
 
 
@@ -64,28 +63,28 @@ export default function ForSendingCalibrationsScreen({ navigation }: Props) {
 
 
 
-    const changeItemSendStatus =   useCallback(
+    const changeItemSendStatus = useCallback(
         (item: CalibrationsFromMeasurementsLocalDB, sendStatus: SendStatus) => {
-        console.log('Change',calibrations);
-        
-        setCalibrations(calibrations => calibrations?.map((calibration) => {
-            if (calibration.ID === item.ID) {
-                calibration.sendStatus = sendStatus
-            }
-            return calibration
-        }))
+            console.log('Change', calibrations);
 
-    }
-    , [calibrations])
+            setCalibrations(calibrations => calibrations?.map((calibration) => {
+                if (calibration.ID === item.ID) {
+                    calibration.sendStatus = sendStatus
+                }
+                return calibration
+            }))
+
+        }
+        , [calibrations])
 
     const onChangeSendStatus = useCallback((item: CalibrationsFromMeasurementsLocalDB) => {
         const sendStatus = item.sendStatus === SendStatus.NOT_SENT ? SendStatus.FOR_SENDING : SendStatus.NOT_SENT
-        changeItemSendStatus(item,sendStatus)
+        changeItemSendStatus(item, sendStatus)
 
         setSendStatus(sendStatus, tablesNames.CALIBRATIONS_FROM_MEASUREMENTS, item.ID)
             .catch(err => {
                 dispatch(addNotification({ status: 'Error', title: 'No se ha podido agregar a la cola de envio la calibracion: ' + item.name }))
-                changeItemSendStatus(item,item.sendStatus)
+                changeItemSendStatus(item, item.sendStatus)
                 console.error(err);
 
 
@@ -130,7 +129,7 @@ export default function ForSendingCalibrationsScreen({ navigation }: Props) {
 
     return (
         <>
-           {/* Modal explaining what does it do */}
+            {/* Modal explaining what does it do */}
             <InfoCalibrationModal
                 setShowModal={setShowInfoModal}
                 info={selectedCalibration}

@@ -1,13 +1,14 @@
-import { HStack, Text } from "native-base"
+import { HStack, ScrollView, Text } from "native-base"
 
 export default function PolynomialFunction(props: { coeficients: number[] }) {
     return (
-
-        <HStack marginY={2}>
+    
+        // <HStack marginY={2}>
+<ScrollView  horizontal>
             
             {props.coeficients?.map((coeficient, index) => 
                 { return coeficient != 0 ? 
-
+                    
                     <HStack  key={index}>
                     {index == 0 || 0 > coeficient ?
                         null
@@ -15,7 +16,7 @@ export default function PolynomialFunction(props: { coeficients: number[] }) {
                         <Text fontSize='2xl'>+</Text>
                     }
                     <Text fontSize='2xl'>
-                    {coeficient}
+                    {coeficient.toFixed(2)}
                     {index == 0 ? '' : 'X'}
                     </Text>
                     <Text fontSize='sm'>
@@ -25,9 +26,10 @@ export default function PolynomialFunction(props: { coeficients: number[] }) {
                     :
                     null
                 }
-            )
+                )
             }
-        </HStack >
+            </ScrollView>
+        // </HStack >
     )
 
 }

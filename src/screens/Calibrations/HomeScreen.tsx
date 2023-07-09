@@ -61,7 +61,6 @@ export default function HomeCalibration({ navigation }: Props) {
     }, [])
 
     useFocusEffect(refreshList)
-    console.log('Value of wda', selectedCalibration);
 
 
 
@@ -95,10 +94,10 @@ export default function HomeCalibration({ navigation }: Props) {
 
                 <RoundedContainer size={329} height={264} borderRadius={33}>
                     <VStack flex={1} justifyContent='space-around' >
-                        <Heading paddingTop={5} flex={0.5} size='md'>Cargar Medicion de Calibracion</Heading>
+                        <Heading paddingTop={5} flex={0.5} size='md'>Cargar Medicion de Calibración</Heading>
 
                         <HStack style={{ justifyContent: "space-between", }}>
-                            <Text fontSize='lg' fontWeight='bold' style={{ alignSelf: 'center' }} >Calibracion</Text>
+                            <Text fontSize='lg' fontWeight='bold' style={{ alignSelf: 'center' }} >Calibración</Text>
 
                             <Select selectedValue={selectedCalibration} onValueChange={itemValue => setSelectedCalibration(itemValue)} minWidth="150" placeholder="Elige" >
                                 {calibrations.map((calibration) => {
@@ -116,7 +115,7 @@ export default function HomeCalibration({ navigation }: Props) {
 
                         {connectionState == 'connected' ?
                             <Button isDisabled={selectedCalibration === ''} onPress={toCalibrationMeasurementScreen} >
-                                {selectedCalibration != '' ? 'Realizar Medicion' : 'Elija Calibracion'}
+                                {selectedCalibration != '' ? 'Realizar Medicion' : 'Elija Calibración'}
                             </Button>
                             :
                             <ConnectDeviceButton />
@@ -127,7 +126,7 @@ export default function HomeCalibration({ navigation }: Props) {
 
             <VStack bg='muted.50' alignSelf='flex-end' width='100%'>
 
-                <BlockButton text='Calibraciones' onPress={() => { navigation.navigate('CalibrationsList') }} />
+                <BlockButton text='Calibraciónes' onPress={() => { navigation.navigate('CalibrationsList') }} />
                 {/* TODO IF finalizar calibracion, o cargar datos de calibracion */}
                 <BlockButton onPress={() => { navigation.navigate('ForSendingCalibrations') }} text='Enviar calibracion' />
                 <BlockButton text='Ayuda' />

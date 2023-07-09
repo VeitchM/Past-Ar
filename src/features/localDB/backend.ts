@@ -1,8 +1,9 @@
 import { executeNativeBackPress } from "react-native-screens";
-import { MeasurementForBack } from "../backend/types";
+import { CalibrationForBack, MeasurementForBack } from "../backend/types";
 import { Tokens, User } from "../store/backendSlice";
 import { execQuery, execTransaction } from "./localDB";
 import { tablesNames } from "./tablesDefinition";
+import { calibrationsFromFunctionFromBackend } from "./types";
 
 
 type UserTable = (Tokens & User & { signedIn: boolean, localId: number })
@@ -29,11 +30,10 @@ console.log('Placeholder', placeHolder);
 
 
 export function persistUserData(userData: Omit<UserTable, 'localId'>) {
-    console.log('Keys to string', columns.toString());
 
     const query = `INSERT OR REPLACE INTO user (localId,${columns.toString()}) values (${placeHolder})`
     const values = [0, ...columns.map((column) => column == 'roles' ? userData[column].toString() : userData[column])]
-    console.log('Test vector', values);
+    // console.log('Persisted user data', values);
 
 
 
@@ -132,16 +132,19 @@ export async function setSendStatus(sendStatus: SendStatus, table: SendableTable
 }
 
 /**It gets a vector with all the calibrations and its measurements that are ready for being sent*/
-export async function getCalibrationsForBack() {
+export async function getCalibrationsForBack(): Promise<{ calibrationID: number, forBackendData: CalibrationForBack }[]> {
 
 
     const calibrationsIDs = (await execTransaction([`
     SELECT ${tablesNames.CALIBRATIONS}.* 
-    FROM ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS},${tablesNames.CALIBRATIONS} 
+    FROM ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS}
+    JOIN ${tablesNames.CALIBRATIONS} ON ${tablesNames.CALIBRATIONS}.ID = ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS}.ID
     WHERE sendStatus = ${SendStatus.FOR_SENDING}`,
 
     `UPDATE ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS} SET sendStatus = ${SendStatus.SENDING} WHERE sendStatus = ${SendStatus.FOR_SENDING}`
     ]))[0].rows._array
+
+    console.log('CalibrationsIDs', calibrationsIDs);
 
 
     const queries = calibrationsIDs.map((row) => `
@@ -149,7 +152,7 @@ export async function getCalibrationsForBack() {
     FROM ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS} 
     JOIN ${tablesNames.CALIBRATIONS_MEASUREMENTS} ON ${tablesNames.CALIBRATIONS_MEASUREMENTS}.calibrationID = ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS}.ID
     JOIN ${tablesNames.MEASUREMENTS} ON ${tablesNames.CALIBRATIONS_MEASUREMENTS}.ID = ${tablesNames.MEASUREMENTS}.ID
-    WHERE ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS}.id = ${row.id}
+    WHERE ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS}.ID = ${row.ID}
     `)
 
 
@@ -158,13 +161,13 @@ export async function getCalibrationsForBack() {
     return execTransaction(queries).then((results) => {
         return results.map((result, index) => {
             return {
-                calibrationID: calibrationsIDs[index].index,
+                calibrationID: calibrationsIDs[index].ID as number,
                 forBackendData: {
 
-                    name: calibrationsIDs[index].name,
+                    name: calibrationsIDs[index].name as string,
                     measurements: result.rows._array.map(row => {
                         return {
-                            id: row.ID,
+                            id: row.ID.toString() as string,
                             measurement: measurementToBackendFormat(row)
                         }
                     })
@@ -178,4 +181,37 @@ export async function getCalibrationsForBack() {
 
 
 
+}
+
+/** It convert a calibration from measurement to a a from function from server */
+export async function updateToCalibrationFunctionFromServer(calibrationID: number, backendCalibrationID: string) {
+    const timestamp = new Date().valueOf()
+    console.log({calibrationID,backendCalibrationID});
+    
+    return execTransaction([
+        `DELETE FROM ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS} WHERE ID = ?`,
+        `INSERT INTO ${tablesNames.CALIBRATIONS_FROM_FUNCTIONS} (ID) VALUES (?)`,
+        `INSERT INTO ${tablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER} (ID,updateTimestamp,uid) VALUES (?,?,?)`
+    ], [
+        [calibrationID],
+        [calibrationID],
+        [calibrationID,timestamp,backendCalibrationID]])
+
+
+}
+
+/** It gets the rows from the local db which comes from the server */
+export async function getCalibrationsFromBackInLocalDB(){
+    return execTransaction([
+        `SELECT * FROM ${tablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER}`
+    ]).then((result)=>result[0].rows._array as calibrationsFromFunctionFromBackend[])
+
+}
+
+
+export async function updateCalibrationFunction(id: number, curve: string){
+    return execTransaction([
+        `UPDATE FROM ${tablesNames.CALIBRATIONS} SET FUNCTION = ${curve}  WHERE ID = ${id}`
+    ]).then((result)=>result[0].rows._array as calibrationsFromFunctionFromBackend[])
+  
 }

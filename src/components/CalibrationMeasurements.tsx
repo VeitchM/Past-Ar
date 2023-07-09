@@ -23,13 +23,16 @@ export default function CalibrationsMeasurements(props: { calibrationID: number 
     }, [])
 
     return (
+
         <VStack marginTop={3}>
-            <Heading size='md'>Mediciones Realizadas</Heading>
+            {measurements && measurements.length > 0 ?
+                <Heading size='md'>Mediciones Realizadas</Heading> : null
+            }
             {measurements?.map((measurement) => <Item
-                // key={measurement.ID} 
-                item={measurement} />) || 
+                key={measurement.ID}
+                item={measurement} />) ||
                 <Spinner margin={10} color='info.500' size={100} />
-                }
+            }
         </VStack>
     )
 }

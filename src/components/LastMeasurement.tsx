@@ -54,13 +54,8 @@ export const LastMeasurement = () => {
 
         setTimePassed(calculateTime())
         const interval = setInterval(() => {
+            setTimePassed(calculateTime())
 
-            const milisecondsPassed = Date.now() - new Date(timestamp).valueOf()
-
-            console.log('Mili', milisecondsPassed, new Date(timestamp));
-            setTimePassed(calculateTime)
-
-            console.log('Time Passed', timePassed);
         }, UPDATE_TIME);
         return () => {
             clearInterval(interval);

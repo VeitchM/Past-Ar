@@ -11,3 +11,10 @@ export type CalibrationForBack = {
     name: string,
     measurements: { id: string, measurement: MeasurementForBack }[]
 }
+
+
+export type CalibrationFromBack = CalibrationForBack & {
+    uid: string,
+    curve: number[]
+
+}

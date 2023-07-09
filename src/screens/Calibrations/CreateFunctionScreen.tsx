@@ -75,7 +75,7 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
 
             <View style={{minHeight:300, flex:.2}} >
 
-                <Text fontSize='lg' >Calibracion</Text>
+                <Text fontSize='lg' >Calibración</Text>
                 <Heading marginBottom={2}>{route.params.name}</Heading >
                 <Heading size='md' fontWeight='regular' >Introduzca coeficiente de Polinomios</Heading>
                 <FormControl
@@ -107,7 +107,7 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
                     marginTop={3}
                     isDisabled={!validForCreatingCalibration}
                     onPress={createCalibration}
-                >Crear Calibracion</Button>
+                >Crear Calibración</Button>
 
 
 

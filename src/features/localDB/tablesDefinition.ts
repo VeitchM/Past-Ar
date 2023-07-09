@@ -90,4 +90,6 @@ export enum tablesNames { USER='user',
 MEASUREMENTS='measurements' ,
 CALIBRATIONS= 'calibrations' , 
 CALIBRATIONS_FROM_MEASUREMENTS= 'calibrationsFromMeasurements' , 
-CALIBRATIONS_MEASUREMENTS='calibrationsMeasurements'}
+CALIBRATIONS_MEASUREMENTS='calibrationsMeasurements',
+CALIBRATIONS_FROM_FUNCTIONS= 'calibrationsFromFunction',
+CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER='calibrationsFromFunctionFromBackend'}

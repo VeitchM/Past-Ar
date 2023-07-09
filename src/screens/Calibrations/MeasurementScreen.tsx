@@ -44,7 +44,7 @@ function CalibrationMeasurement({ navigation, route }: Props) {
 
                { !calibrationMeasurmentID ? <Heading >Esperando Medicion</Heading> : null}
                 <Container bg='muted.100' minWidth={250} alignItems='center'>
-                    <Text fontSize='lg' fontWeight='thin'>Calibracion</Text>
+                    <Text fontSize='lg' fontWeight='thin'>Calibración</Text>
                     <Heading size='2xl' fontWeight='regular' >{route.params.calibrationName}</Heading>
                     {calibrationMeasurmentID ?
                     <>

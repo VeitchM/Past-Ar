@@ -37,7 +37,6 @@ export default function CalibrationsList({ navigation }: Props) {
     const refreshList = useCallback(() => {
 
         getCalibrations().then((calibrations) => {
-            console.log('Calibrations from Screen', calibrations);
             setCalibrations(calibrations)
 
         })

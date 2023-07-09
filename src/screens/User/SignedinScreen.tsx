@@ -2,7 +2,7 @@ import { Box, Center, Heading, VStack, FormControl, Link, Input, Button, HStack,
 import { signout } from "../../features/backend/signout";
 import { useTypedSelector } from "../../features/store/storeHooks";
 import { getMeasurements } from "../../features/localDB/backend";
-import { synchronizeMeasurements } from "../../features/backend/synchronize";
+import { synchronizeCalibrations, synchronizeMeasurements } from "../../features/backend/synchronize";
 
 export default function signedinScreen() {
   const userData = useTypedSelector(state => state.backend.user)
@@ -36,12 +36,12 @@ export default function signedinScreen() {
         </VStack>
 
         <VStack bgColor='warmGray.50' marginX={-5} padding={5} rounded={10}>
-          <Text fontSize='lg'   color={textColor} marginBottom='-6px'>Email</Text>
-          <Text fontSize='2xl'   color={textColor} fontWeight='normal'>{userData?.email}</Text>
+          <Text fontSize='lg' color={textColor} marginBottom='-6px'>Email</Text>
+          <Text fontSize='2xl' color={textColor} fontWeight='normal'>{userData?.email}</Text>
 
-<Divider marginY={4}/>
-          <Text fontSize='lg'   color={textColor} marginBottom='-6px'>Roles</Text>
-          <Text fontSize='2xl'   color={textColor} fontWeight='normal'>{userData?.roles.toString()}</Text>
+          <Divider marginY={4} />
+          <Text fontSize='lg' color={textColor} marginBottom='-6px'>Roles</Text>
+          <Text fontSize='2xl' color={textColor} fontWeight='normal'>{userData?.roles.toString()}</Text>
 
         </VStack>
 
@@ -49,23 +49,27 @@ export default function signedinScreen() {
           <Text fontSize='lg' marginBottom='-6px'>Última Sincronización</Text>
           <Text fontSize='2xl' fontWeight='normal'>Place holder</Text>
 
-      
+
         </VStack>
-      {/* TODO DELETE LATER */}
-      <Button
-        // TODO show a modal before signing out
-        colorScheme='info'
-        onPress={synchronizeMeasurements}
-      >
-        Sincronizar
-      </Button>
-      <Button
-        // TODO show a modal before signing out
-        colorScheme='danger'
-        onPress={signout}
-      >
-        Cerrar sesion
-      </Button>
+        {/* TODO DELETE LATER */}
+        <Button
+          // TODO show a modal before signing out
+          colorScheme='info'
+          onPress={() => {
+            synchronizeMeasurements()
+            synchronizeCalibrations()
+
+          }}
+        >
+          Sincronizar
+        </Button>
+        <Button
+          // TODO show a modal before signing out
+          colorScheme='danger'
+          onPress={signout}
+        >
+          Cerrar sesion
+        </Button>
 
 
       </Box>

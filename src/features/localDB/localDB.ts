@@ -3,6 +3,7 @@ import * as SQLite from 'expo-sqlite';
 
 import { Measurement } from '../store/types'
 import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, CalibrationsFromMeasurementsLocalDB, MeasurementLocalDB } from './types';
+import { tablesNames } from './tablesDefinition';
 
 const db = SQLite.openDatabase('pastar.db');
 
@@ -22,18 +23,16 @@ db.exec([{ sql: 'SELECT load_extension("libspatialite.so")', args: [] }], false,
 });
 
 
-// dropTables('user')
+// dropTables('calibrations')
 
 //========= Create and Delete tables =============================================
 
-function dropTables(tableName: TablesNames) {
+function dropTables(tableName: TablesNames): void {
     execQuery(`DROP TABLE ${tableName};`, [])
 }
 
 function createTables() {
-    createTableQueries.forEach((query) => {
-        execQuery(query, [])
-    });
+    execTransaction(createTableQueries)
 }
 
 
@@ -113,7 +112,7 @@ async function insertCalibration(name: string, functionDefinition: string | null
 }
 
 /** Creates a calibration from function*/
-export async function insertCalibrationFromFunction(name: string, functionDefinition: string) {
+export async function insertCalibrationFromFunction(name: string, functionDefinition?: string) {
     const calibrationID = await insertCalibration(name, functionDefinition)
     if (calibrationID) {
         return await execQuery(`INSERT INTO calibrationsFromFunction (ID) values (?)`, [calibrationID])
@@ -126,6 +125,15 @@ export async function insertCalibrationFromFunction(name: string, functionDefini
 
 }
 
+export async function insertCalibrationFromFunctionFromServer(name: string, functionDefinition: string,uid:string){
+  
+        const id = await insertCalibrationFromFunction(name,functionDefinition)
+        if (id) {
+            return await execQuery(`INSERT INTO ${tablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER} (ID,UID) values (?,?)`, [id,uid])
+                .then((result) => result.insertId as number) //It wont return undefined, in the case it doesnt insert an error will be thrown
+        }
+    
+}
 
 
 
@@ -276,5 +284,12 @@ const createTableQueries = [
         refreshExpirationTimestamp INTEGER,
         signedIn INTEGER
       );`,
+      `CREATE TABLE IF NOT EXISTS calibrationsFromFunctionFromBackend (
+        ID INTEGER PRIMARY KEY,
+        updateTimestamp INTEGER,
+        uid TEXT,
+        FOREIGN KEY (ID) REFERENCES calibrationsFromFunction(ID) ON DELETE CASCADE
+      );`,
+
 
 ]
