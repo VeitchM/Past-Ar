@@ -63,11 +63,7 @@ function signedIn(res: TokensResponse) {
 
     console.log('Signed in',new Date());
     
-
     // getUserDatafromDB().then(res => console.log('From database', res))
-
-
-    /** TODO should i refresh token on background, or log in each time it the token roots */
 
     setTimeout(() => {
 

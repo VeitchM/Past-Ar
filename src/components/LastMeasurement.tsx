@@ -33,6 +33,9 @@ export const LastMeasurement = () => {
                 timePassed = 'hace '
 
                 const milisecondsPassed = Date.now() - new Date(timestamp).valueOf()
+                const hoursPassed = milisecondsPassed / (3600*1000)
+                console.log({milisecondsPassed, hoursPassed});
+                
                 if (milisecondsPassed < 60000)
                     timePassed += Math.floor(milisecondsPassed / 1000) + ' segundos'
                 else if (milisecondsPassed < 1000 * 60 * 60) {
@@ -40,11 +43,11 @@ export const LastMeasurement = () => {
                     timePassed += `${minutes} minuto${minutes > 1 ? 's' : ''}`
                 }
                 else if (milisecondsPassed < 1000 * 60 * 60 * 24) {
-                    const hours = Math.floor(milisecondsPassed / 1000 * 60 * 60)
+                    const hours = Math.floor(milisecondsPassed / (1000 * 60 * 60))
                     timePassed += `${hours} hora${hours > 1 ? 's' : ''}`
                 }
                 else {
-                    const days = Math.floor(milisecondsPassed / 1000 * 60 * 60 * 24)
+                    const days = Math.floor(milisecondsPassed / (1000 * 60 * 60 * 24))
                     timePassed += `${days} día${days > 1 ? 's' : ''}`
                 }
             }

@@ -10,6 +10,7 @@ import { useTypedDispatch,  } from "../../features/store/storeHooks";
 import {  useEffect, useMemo, useState } from "react";
 import PolynomialFunction from "../../components/PolynomialFunction";
 import { calibrationExists, insertCalibrationFromFunction } from "../../features/localDB/calibrations";
+import { addNotification } from "../../features/store/notificationSlice";
 type Props = NativeStackScreenProps<StackParamList, 'CreateFunctionCalibration'>;
 
 
@@ -49,14 +50,14 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
                     await insertCalibrationFromFunction(route.params.name, coeficients.toString())
                 }
                 else {
-                    //TODO ya existe el nombre, notification
-                    console.log('Name already exists');
+                    
                 }
                 setIsCreating(false);
                 navigation.navigate('CalibrationsList')
             }
             catch (e) {
                 console.log('Error creating calibration', e);
+                dispatch(addNotification({title:'La calibracion ya existe',status:'warning'}))
                 //TODO mostrar error notificacion
                 console.error(e);
 

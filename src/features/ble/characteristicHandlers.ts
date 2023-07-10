@@ -11,10 +11,10 @@ import { BleError, BleErrorCode, Characteristic } from "react-native-ble-plx";
 import store from "../store/store";
 import { setBattery } from "../store/bleSlice"
 import { setCalibrationMeasurementID, setLastMeasurement } from "../store/measurementSlice"
+import { insertCalibrationMeasurement, insertMeasurement } from "../localDB/measurements";
 
 
 //==== LocalDB =================================================
-import { getMeasurements, insertCalibrationMeasurement, insertMeasurement } from "../localDB/localDB";
 
 
 

@@ -1,9 +1,8 @@
 
 import * as SQLite from 'expo-sqlite';
-
-import { Measurement } from '../store/types'
-import {  CalibrationLocalDB, CalibrationLocalDBExtended, CalibrationsFromMeasurementsLocalDB, MeasurementLocalDB, SendableTables } from './types';
+import { SendableTables } from './types';
 import { TablesNames } from './tablesDefinition';
+import { onInit } from '../backend/onInit';
 
 const db = SQLite.openDatabase('pastar.db');
 

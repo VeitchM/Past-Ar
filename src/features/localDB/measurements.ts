@@ -2,6 +2,7 @@ import { MeasurementForBack } from "../backend/types";
 import { Measurement } from "../store/types";
 import { SendStatus, execQuery, execTransaction } from "./localDB";
 import { TablesNames } from "./tablesDefinition";
+import { MeasurementLocalDB } from "./types";
 
 /** Get the unsent measurements from localDB, and marks them as sending  */
 export async function getMeasurementsForBack(): Promise<MeasurementForBack[]> {
@@ -31,6 +32,12 @@ export function measurementToBackendFormat(row: any): MeasurementForBack {
         height: row.height as number,
         location: [row.longitude,row.latitude] as [number, number],
     }
+}
+
+/** Get last measurement from localdb */
+export async function getLastMeasurement(){
+    return execQuery(`SELECT * FROM ${TablesNames.MEASUREMENTS} WHERE timestamp = (SELECT MAX(timestamp) FROM ${TablesNames.MEASUREMENTS})`)
+    .then(result => result.rows._array[0] as undefined | MeasurementLocalDB )
 }
 
 

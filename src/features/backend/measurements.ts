@@ -38,7 +38,6 @@ async function postMeasurements(measurements: MeasurementForBack[]) {
             console.log('Response from Server on postMeasurement', resObject);
             return resObject
 
-            //TODO should do this recursive call, which is cut when signin is set to false
             //logedIn(resObject)
         })
 }

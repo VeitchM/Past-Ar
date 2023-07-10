@@ -13,6 +13,7 @@ type SendStatusLocalDB = BaseLocalDB & {
 export type MeasurementLocalDB = SendStatusLocalDB & {
     height: number,
     latitude: number,
+    longitude: number,
     timestamp: number,
 }
 

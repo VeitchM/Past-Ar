@@ -1,6 +1,4 @@
-//TODO Make a place where i throw all the alerts in redux
-
-import { Slide, View } from "native-base";
+import {  View } from "native-base";
 import AppAlert from "./AppNotification";
 import { useTypedSelector } from "../features/store/storeHooks";
 
