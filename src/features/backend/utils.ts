@@ -17,7 +17,7 @@ export const  createPayload = (method: RESTMethod, body?: Object) => {
         },
         ...(body && {body: JSON.stringify(body)}),
     }
-    console.log('Payload',payload);
+    // console.log('Payload',payload);
     return payload;
     
 }

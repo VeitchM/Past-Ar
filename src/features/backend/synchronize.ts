@@ -1,7 +1,9 @@
-import { SendStatus, getCalibrationsForBack, getCalibrationsFromBackInLocalDB, getMeasurements, setSending, updateCalibrationFunction, updateToCalibrationFunctionFromServer } from "../localDB/backend";
+import { SendStatus, getMeasurements, setSendStatus, setSending } from "../localDB/backend";
+import { getCalibrationsForBack, getCalibrationsFromBackInLocalDB, updateCalibrationFunction, updateToCalibrationFunctionFromServer } from "../localDB/calibrations";
 import { execQuery, insertCalibrationFromFunction, insertCalibrationFromFunctionFromServer } from "../localDB/localDB";
 import { tablesNames } from "../localDB/tablesDefinition";
 import { Measurement } from "../store/types";
+import { getCalibrationsFromBack, postCalibration, updateLocalCalibrations } from "./calibrations";
 import { mobileAPI } from "./config";
 import { CalibrationForBack, CalibrationFromBack, MeasurementForBack } from "./types";
 import { createPayload } from "./utils";
@@ -20,7 +22,7 @@ export function getPadocks() {
         createPayload('GET'))
         .then(async (res) => {
             const resObject = await res.json()
-            console.log('Refresh token from server', resObject);
+            console.log('Paddocks from server', resObject);
 
             //TODO should do this recursive call, which is cut when signin is set to false
             //logedIn(resObject)
@@ -38,7 +40,7 @@ function postPadock(paddock: any) {
         createPayload('POST', paddock))
         .then(async (res) => {
             const resObject = await res.json()
-            console.log('Refresh token from server', resObject);
+            console.log('Res from server post paddock', resObject);
 
             //TODO should do this recursive call, which is cut when signin is set to false
             //logedIn(resObject)
@@ -50,15 +52,19 @@ export async function synchronizeMeasurements() {
     try {
 
         const measurements = await getMeasurements()
-        const res = await postMeasurements(measurements)
-        console.log(res);
+        console.log('Unsent measurements',JSON.stringify(measurements));
+        
+        if (measurements.length > 0) {
 
-        //TODO verify response is okay
-        if (res.code)
-            setSending(false, 'measurements')
+            const res = await postMeasurements(measurements)
+            console.log(res);
 
-        else
-            setSending(true, 'measurements')
+            if (res.code)
+                setSending(false, 'measurements')
+
+            else
+                setSending(true, 'measurements')
+        }
 
     }
     catch (e) {
@@ -87,6 +93,8 @@ export async function synchronizeCalibrations() {
     try {
 
         const calibrations = await getCalibrationsForBack()
+        console.log('Calibrations in localdb ', calibrations);
+
 
 
 
@@ -125,81 +133,16 @@ export async function synchronizeCalibrations() {
             }
             catch (e) {
                 console.error(e)
-                await execQuery(`UPDATE ${tablesNames.CALIBRATIONS_FROM_MEASUREMENTS} SET sendStatus = ${SendStatus.FOR_SENDING} WHERE ID = ${calibration.calibrationID}`)
+                await setSendStatus(SendStatus.FOR_SENDING, tablesNames.CALIBRATIONS_FROM_MEASUREMENTS, calibration.calibrationID)
             }
         })
         const responseAllCalibrations = await getCalibrationsFromBack()
         if ('data' in responseAllCalibrations)
             updateLocalCalibrations(responseAllCalibrations.data.content)
         console.log('Response from server get calibration all', JSON.stringify(responseAllCalibrations));
-
     }
     catch (e) {
-        setSending(false, 'calibrationsFromMeasurements')
-        console.log(e)
+        setSending(false, tablesNames.CALIBRATIONS_FROM_MEASUREMENTS)
+        console.error(e)
     }
 }
-
-/** Post the given measurements and returns a promise with the parsed json response from the server */
-async function postCalibration(calibration: CalibrationForBack) {
-    return fetch(`${mobileAPI}/calibrations`,
-        createPayload('POST', calibration))
-        .then(async (res) => {
-            const resObject = await res.json()
-            console.log('Response from Server on postMeasurement', resObject);
-            return resObject as { data: string, message: string } | { code: string }
-
-            //TODO should do this recursive call, which is cut when signin is set to false
-            //logedIn(resObject)
-        })
-}
-/** It gets calibrations from the backend */
-async function getCalibrationsFromBack(calibrationUID?: string) {
-    // const url = `${mobileAPI}/calibrations/${calibrationUID}`
-    const url = `${mobileAPI}/calibrations${calibrationUID ? '/' + calibrationUID : ''}`
-
-    console.log('URL donde se hizo el get', url);
-
-    return fetch(url,
-        createPayload('GET'))
-        .then(async (res) => {
-            const resObject = await res.json()
-            console.log('Response from Server on get Calibration', resObject.toString());
-            return resObject 
-
-        })
-}
-
-
-
-export async function updateLocalCalibrations(calibrationsFromBack: CalibrationFromBack[]) {
-    try {
-        const calibrationsFromBackInLocalDB = await getCalibrationsFromBackInLocalDB()
-
-        calibrationsFromBack.forEach((calibration) => {
-            const calibrationFound = calibrationsFromBackInLocalDB.find((item) => calibration.uid === item.uid)
-            console.log('Update local calibrations ',calibration);
-            
-
-            if (calibrationFound) {
-                console.log('Update local calibration ', calibrationFound);
-
-                updateCalibrationFunction(calibrationFound.ID, calibration.curve.toString())
-            }
-            else {
-
-                insertCalibrationFromFunctionFromServer(calibration.name,  calibration.curve?.toString(),calibration.uid)
-            }
-
-
-
-        })
-
-    }
-    catch (err) {
-        console.error('Error on updateLocalCalibrations', err);
-
-    }
-}
-
-

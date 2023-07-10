@@ -24,6 +24,7 @@ db.exec([{ sql: 'SELECT load_extension("libspatialite.so")', args: [] }], false,
 
 
 // dropTables('calibrations')
+// dropTables(tablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER)
 
 //========= Create and Delete tables =============================================
 

@@ -103,7 +103,7 @@ export function refreshToken() {
             createPayload('POST', { refresh_token: '' + backendState.tokens?.refreshToken }))
             .then(async (res) => {
                 const resObject = await res.json()
-                console.log('Refresh token from server', resObject);
+                // console.log('Refresh token from server', resObject);
 
                 //TODO should do this recursive call, which is cut when signin is set to false
                 if (store.getState().backend.signIn) {

@@ -1,3 +1,5 @@
+import { tablesNames } from "./tablesDefinition"
+
 type BaseLocalDB = {
     ID: number,
 
@@ -51,6 +53,6 @@ export type TableDefinition = {
 
 
 
-export type TablesNames = 'user'|'measurements' | 'calibrations' | 'calibrationsFromMeasurements' | 'calibrationsMeasurements'
+export type TablesNames = 'user'|'measurements' | 'calibrations' | 'calibrationsFromMeasurements' | 'calibrationsMeasurements' | tablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER
 
 type SQLTypes = 'REAL' | 'TEXT' | 'INTEGER' | 'INTEGER PRIMARY KEY'
