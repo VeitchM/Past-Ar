@@ -1,8 +1,7 @@
 import { Box, Center, Heading, VStack, FormControl, Link, Input, Button, HStack, Text, Divider } from "native-base";
 import { signout } from "../../features/backend/signout";
 import { useTypedSelector } from "../../features/store/storeHooks";
-import { getMeasurements } from "../../features/localDB/backend";
-import { synchronizeCalibrations, synchronizeMeasurements } from "../../features/backend/synchronize";
+import { synchronize,   } from "../../features/backend/synchronize";
 
 export default function signedinScreen() {
   const userData = useTypedSelector(state => state.backend.user)
@@ -55,11 +54,7 @@ export default function signedinScreen() {
         <Button
           // TODO show a modal before signing out
           colorScheme='info'
-          onPress={() => {
-            synchronizeMeasurements()
-            synchronizeCalibrations()
-
-          }}
+          onPress={synchronize}
         >
           Sincronizar
         </Button>

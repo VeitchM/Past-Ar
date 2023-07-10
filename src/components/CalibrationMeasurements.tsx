@@ -1,7 +1,7 @@
 import { Divider, FlatList, HStack, Heading, Spinner, Text, VStack, View } from "native-base";
 import { useEffect, useState } from "react";
-import { getCalibrationsMeasurements } from "../features/localDB/localDB";
 import { CalibrationLocalDB, MeasurementLocalDB } from "../features/localDB/types";
+import { getCalibrationsMeasurements } from "../features/localDB/calibrations";
 
 export default function CalibrationsMeasurements(props: { calibrationID: number }) {
 

@@ -21,8 +21,8 @@ type Props = NativeStackScreenProps<StackParamList, 'CalibrationHome'>;
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { CalibrationLocalDB } from "../../features/localDB/types";
-import { getCalibrations,  getCalibrationsFromMeasurementExtended } from "../../features/localDB/localDB";
 import { useFocusEffect } from "@react-navigation/native";
+import { getCalibrations, getCalibrationsFromMeasurementExtended } from "../../features/localDB/calibrations";
 
 
 export default function HomeCalibration({ navigation }: Props) {

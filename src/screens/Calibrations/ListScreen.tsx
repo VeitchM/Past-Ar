@@ -16,12 +16,12 @@ import { DeleteCalibrationModal, InfoCalibrationModal } from "../../components/C
 
 
 //==== LocalDB ==========================================
-import { deleteCalibration, getCalibrations } from "../../features/localDB/localDB";
 import { CalibrationLocalDBExtended } from "../../features/localDB/types";
 
 //==== Navigation ==============================================
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackParamList } from "./ScreenStack";
+import { deleteCalibration, getCalibrations } from "../../features/localDB/calibrations";
 type Props = NativeStackScreenProps<StackParamList, 'CalibrationsList'>;
 
 

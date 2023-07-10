@@ -19,8 +19,8 @@ type Props = NativeStackScreenProps<StackParamList, 'CreateCalibration'>;
 
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { calibrationExists } from "../../features/localDB/calibrations";
 
-import { calibrationExists } from "../../features/localDB/localDB";
 
 
 // TODO set Type

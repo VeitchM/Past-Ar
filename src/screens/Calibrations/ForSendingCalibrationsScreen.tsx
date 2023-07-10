@@ -20,16 +20,16 @@ import { DeleteCalibrationModal, InfoCalibrationModal } from "../../components/C
 
 
 //==== LocalDB ==========================================
-import { deleteCalibration, getCalibrations, getCalibrationsFromMeasurementExtended } from "../../features/localDB/localDB";
 import { CalibrationLocalDBExtended, CalibrationsFromMeasurementsLocalDB, calibrationsMeasurementsLocalDB } from "../../features/localDB/types";
 
 //==== Navigation ==============================================
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackParamList } from "./ScreenStack";
-import { SendStatus, setSendStatus } from "../../features/localDB/backend";
-import { tablesNames } from "../../features/localDB/tablesDefinition";
+import { TablesNames } from "../../features/localDB/tablesDefinition";
 import { addNotification } from "../../features/store/notificationSlice";
 import { Notification } from "../../features/store/types";
+import { getCalibrationsFromMeasurementExtended } from "../../features/localDB/calibrations";
+import { SendStatus, setSendStatus } from "../../features/localDB/localDB";
 type Props = NativeStackScreenProps<StackParamList, 'ForSendingCalibrations'>;
 
 
@@ -81,7 +81,7 @@ export default function ForSendingCalibrationsScreen({ navigation }: Props) {
         const sendStatus = item.sendStatus === SendStatus.NOT_SENT ? SendStatus.FOR_SENDING : SendStatus.NOT_SENT
         changeItemSendStatus(item, sendStatus)
 
-        setSendStatus(sendStatus, tablesNames.CALIBRATIONS_FROM_MEASUREMENTS, item.ID)
+        setSendStatus(sendStatus, TablesNames.CALIBRATIONS_FROM_MEASUREMENTS, item.ID)
             .catch(err => {
                 dispatch(addNotification({ status: 'Error', title: 'No se ha podido agregar a la cola de envio la calibracion: ' + item.name }))
                 changeItemSendStatus(item, item.sendStatus)

@@ -5,13 +5,13 @@ import { connectToDevice, scanForPeripherals, stopScanningForPeripherals } from 
 import { Button, FlatList, HStack, Heading, Icon, Input, Modal, Spinner, Text, VStack } from "native-base"
 import { SafeAreaView } from "react-native"
 import { setTryingToConnect } from "../features/store/bleSlice"
-import { calibrationExists, getCalibrations, insertCalibrationFromMeasurements } from "../features/localDB/localDB"
 
 import { MaterialIcons } from '@expo/vector-icons';
 import { CalibrationLocalDBExtended, CalibrationsFromMeasurementsLocalDB } from "../features/localDB/types"
 import PolynomialFunction from "./PolynomialFunction"
 import CalibrationsMeasurements from "./CalibrationMeasurements"
 import { addNotification } from "../features/store/notificationSlice"
+import { calibrationExists, insertCalibrationFromMeasurements } from "../features/localDB/calibrations"
 
 
 /** A modal which explain that if accepted a calibration from measurement will be created */

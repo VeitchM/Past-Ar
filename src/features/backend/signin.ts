@@ -1,4 +1,4 @@
-import { persistUserData, getUserData as getUserDatafromDB } from "../localDB/backend";
+import { persistUserData } from "../localDB/user";
 import { Tokens, TokensResponse, User, setSignIn, setTokens, setUser } from "../store/backendSlice";
 import { addNotification } from "../store/notificationSlice";
 import store from "../store/store";

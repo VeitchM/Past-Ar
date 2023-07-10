@@ -1,5 +1,4 @@
 
-import { useFocusEffect } from "@react-navigation/native";
 
 //=========== Components ========================================
 import { Box, Button, Container, Flex, FormControl, HStack, Heading, Input, Text, View } from "native-base"
@@ -7,13 +6,10 @@ import { Box, Button, Container, Flex, FormControl, HStack, Heading, Input, Text
 //======= Navigation Prop
 import { StackParamList } from "./ScreenStack";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
-import { setCalibrationMeasurementID, setCalibrationModeOff, setCalibrationModeOn } from "../../features/store/measurementSlice";
-import { Alert } from "native-base";
-import { isValidElement, useCallback, useEffect, useMemo, useState } from "react";
-import CreateCalibration from "./CreateScreen";
-import { calibrationExists, insertCalibrationFromFunction } from "../../features/localDB/localDB";
+import { useTypedDispatch,  } from "../../features/store/storeHooks";
+import {  useEffect, useMemo, useState } from "react";
 import PolynomialFunction from "../../components/PolynomialFunction";
+import { calibrationExists, insertCalibrationFromFunction } from "../../features/localDB/calibrations";
 type Props = NativeStackScreenProps<StackParamList, 'CreateFunctionCalibration'>;
 
 
