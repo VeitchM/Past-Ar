@@ -23,6 +23,9 @@ export async function postCalibration(calibration: CalibrationForBack) {
 }
 /** It gets calibrations from the backend */
 export async function getCalibrationsFromBack(calibrationUID?: string) {
+
+    //TODO make it paginated 
+    //TODO  Verify what happens if i ask for an ID
     // const url = `${mobileAPI}/calibrations/${calibrationUID}`
     const url = `${mobileAPI}/calibrations${calibrationUID ? '/' + calibrationUID : ''}`
 

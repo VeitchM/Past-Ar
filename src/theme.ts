@@ -173,8 +173,7 @@ export const themeNative = extendTheme({
                 maxWidth:350,
                 _invalid:{color:'error.400'}
 
-                //TODO verified if compiled it has the same problems showing the shadow while writing
-                //shadow:2
+              
             }
         }
 
