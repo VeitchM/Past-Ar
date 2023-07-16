@@ -4,6 +4,7 @@ import measurementReducer from './measurementSlice'
 import notificationReducer from './notificationSlice'
 import paddockReducer from './paddockSlice'
 import backendReducer from './backendSlice'
+import filterReducer from './filterSlice'
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     measurement: measurementReducer,
     notification : notificationReducer,
     backend: backendReducer,
-    paddock: paddockReducer
+    paddock: paddockReducer,
+    filter: filterReducer
   }
 })
 

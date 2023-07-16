@@ -7,6 +7,7 @@ import HomeScreen from './Home/HomeScreen';
 import UserScreen from './User/User';
 import PaddockScreenStack from './Paddocks/ScreenStack';
 import CalibrationStackScreen from './Calibrations/ScreenStack';
+import StatisticsStackScreen from './Statistics/ScreenStack';
 
 //TODO Change screen titles
 
@@ -46,8 +47,8 @@ export default function ScreenTabs() {
                     }}
                 />
                 <Tab.Screen
-                    name="Data"
-                    component={HomeScreen}
+                    name="Statistics"
+                    component={StatisticsStackScreen}
                     options={{
                         tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Datos</Text>,
                         tabBarIcon: ({ focused, color, size }) => <FontAwesome size={40} name='pie-chart' color={color} focused={focused} style={{ marginBottom: -9 }} />,

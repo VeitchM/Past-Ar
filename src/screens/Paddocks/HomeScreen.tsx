@@ -1,33 +1,42 @@
 import React from "react";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect, useRef, useState } from 'react';
-import { Heading, IconButton, VStack } from 'native-base';
+import { Heading, Icon, IconButton, VStack, View } from 'native-base';
 import { getLocation } from '../../features/location/location';
-import { View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Float } from 'react-native/Libraries/Types/CodegenTypes';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
-import { updatePaddock } from '../../features/store/paddockSlice';
+import { addPaddock, updatePaddock } from '../../features/store/paddockSlice';
 import { getPaddocks } from '../../features/localDB/localDB';
 import { Paddock } from '../../features/store/types';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, useFocusEffect } from '@react-navigation/native';
 import { showAlert, showXmas } from '../../features/utils/Logger';
 import { StackParamList } from './ScreenStack';
-import BottomSheetItem from './BottomSheetItem';
+import BottomSheetItem from './Partials/BottomSheetItem';
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
-import MapView, { PROVIDER_GOOGLE, Polygon, Marker, LatLng } from 'react-native-maps';
+import MapView, { LatLng, Region } from 'react-native-maps';
+import GoogleMapsView from "./Partials/GoogleMapsView";
+import fontColorContrast from 'font-color-contrast'
+import DownloadTilesButton from "./Partials/DownloadTilesButton";
 
-type Props = NativeStackScreenProps<StackParamList>;
+type Props = NativeStackScreenProps<StackParamList, 'PaddockHome'>;
 
 export default function PaddockScreen(props: Props) {
 
     //-------CONST & HOOKS---------//
     const mapRef = useRef<MapView>(null);
-    const [markerList, setMarkerList] = useState<{ latitude: number, longitude: number }[]>([{ latitude: 0, longitude: 0 }])
     const paddockList = useTypedSelector(state => state.paddock.paddocks);
-    const dispatch = useTypedDispatch();
     const snapPoints = ['12%', '60%'];
     const sheetRef = useRef<BottomSheet>(null);
+    const filterState = useTypedSelector(state => state.filter);
+    const [region, setRegion] = useState<Region & { zoom?: number }>({ latitude: 0, longitude: 0, latitudeDelta: 0.02, longitudeDelta: 0.02 });
+    const dispatch = useTypedDispatch();
+    const [zoom, setZoom] = useState(1);
+    const [update, setUpdate] = useState(true);
+    const [close, setClose] = useState(false);
+    const [infoOpen, setInfoOpen] = useState(false);
+    const [currentCoords, setCurrentCoords] = useState<LatLng>({ latitude: 0, longitude: 0 });
 
     //---------FUNCTIONS----------//
     useEffect(() => {
@@ -37,20 +46,38 @@ export default function PaddockScreen(props: Props) {
             },
             headerRight: () => { return (<></>) }
         })
-
-        fetchLocation();
-        setMarkerList([]);
         initializePaddockList();
+        fetchLocation();
+        updateRegion();
+        //deletePaddock(1);
+        // insertMeasurement({height:10,timestamp:1000,latitude:5,longitude:5})
         showPaddockList();
     }, [])
 
+    useFocusEffect(
+        React.useCallback(() => {
+            initializePaddockList();
+            fetchLocation();
+            return () => { };
+        }, [])
+    );
+
+    const updateRegion = () => {
+        mapRef.current?.getCamera().then((cam) => {
+            setRegion({ latitude: cam.center.latitude, longitude: cam.center.longitude, zoom: cam.zoom, latitudeDelta: 0.02, longitudeDelta: 0.02 })
+            if (cam.zoom) setZoom(cam.zoom);
+        })
+        setUpdate(true);
+    }
+
     function initializePaddockList() {
         getPaddocks().then((result) => {
+            let i = 1
             result.forEach((value) => {
+                //console.log('VALOR',i++);
                 let vertices: LatLng[] = JSON.parse(value.vertices_list!)
-                let paddockData: Paddock = { name: value.name, vertices: vertices }
-                dispatch(updatePaddock({ data: paddockData, paddockId: value.ID - 1 }))
-                //showXmas('INSIDE', p.vertices);
+                let paddockData: Paddock = { ID: value.ID, name: value.name, vertices: vertices }
+                if (vertices.length > 0) dispatch(addPaddock({ data: paddockData }));
             });
         })
     }
@@ -67,7 +94,7 @@ export default function PaddockScreen(props: Props) {
     }
 
     const fetchLocation = () => {
-        getLocation().then((value) => { changeRegion(value.coords.latitude, value.coords.longitude) });
+        getLocation().then((value) => { changeRegion(value.coords.latitude, value.coords.longitude) }).catch((error) => { fetchLocation() });
     }
 
     function changeRegion(lat: Float, lng: Float) {
@@ -79,100 +106,116 @@ export default function PaddockScreen(props: Props) {
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421
         })
+        setCurrentCoords({ latitude: latitude, longitude: longitude });
     }
 
-    
+    function LocationButton() {
+        return (
+            <View flexDir={'row'} rounded={'full'} style={{ bottom: 170, left: 0, alignItems: 'center', position: 'absolute', justifyContent: 'center', backgroundColor: '#ffffff', borderWidth: 0, borderColor: '#ffffffB5', alignSelf: 'flex-start', margin: 10, marginRight: 5, padding: 10 }}>
+                <TouchableOpacity activeOpacity={0.5} onPress={fetchLocation} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+                    <Icon as={FontAwesome5} size={10} name={'compass'} color='coolGray.600' />
+                </TouchableOpacity>
+            </View>
+        );
+    }
+    function InfoButton() {
+        return (
+            <View flexDir={'row'} rounded={'full'} style={{ bottom: 100, left: 0, alignItems: 'center', position: 'absolute', justifyContent: 'center', backgroundColor: '#ffffff', borderWidth: 0, borderColor: '#ffffffB5', alignSelf: 'flex-start', margin: 10, marginRight: 5, padding: 10 }}>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => { setInfoOpen(!infoOpen) }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+                    <Icon as={FontAwesome5} size={10} name={'info-circle'} color='coolGray.600' />
+                    {!infoOpen ? <></> :
+                        <Heading size={'sm'} color={'#34495e'} marginLeft={1} marginRight={1}>
+                            {`lat: ${currentCoords.latitude + '\n'}lng: ${currentCoords.longitude}`}
+                        </Heading>
+                    }
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
     //----------JSX-----------//
     return (
-        <VStack bg='black' flex={1} alignItems='center'>
-            <MapView
-                mapPadding={{ top: 115, right: 10, bottom: 0, left: 0 }}
-                mapType={'satellite'}
-                ref={mapRef}
-                style={{ width: '100%', height: '100%' }}
-                provider={PROVIDER_GOOGLE}
-                showsUserLocation
-                initialRegion={{
-                    latitude: 0,
-                    longitude: 0,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421
-                }}
-            >
-                {
-                    markerList ?
-                        markerList.map((marker, index) => {
-                            return (
-                                <Marker
-                                    coordinate={marker}
-                                    title={"coordenadas"}
-                                    description={marker.latitude + ' ' + marker.longitude}
-                                    pinColor='#30A2FF'
-                                    key={'M' + index}
-                                />
-                            );
-                        })
-                        : <></>
-                }
-                {
-                    paddockList.map((paddock, index) => {
-                        return (
-                            <View key={index}>
-                                <Polygon
-                                    coordinates={paddock.vertices}
-                                    strokeColor={colors[index]}
-                                    fillColor={colors[index] + "75"}
-                                    strokeWidth={1}
-                                ></Polygon>
-                            </View>
-                        )
-                    })
-                }
-            </MapView>
+        <VStack bg='white' flex={1} alignItems='center'>
 
-            <BottomSheet
-                ref={sheetRef}
-                snapPoints={snapPoints}
-                backgroundStyle={{ backgroundColor: '#5d6d7eCC' }}
-                handleIndicatorStyle={{ backgroundColor: '#fff' }}
-            >
-                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', height: 50, marginBottom: 10 }}>
-                    <Heading
-                        size="lg"
-                        color="coolGray.100"
-                        style={{ textShadowColor: 'black', textShadowOffset: { width: -0.5, height: 0.5 }, textShadowRadius: 5 }}
-                    >
-                        Lista de Potreros
-                    </Heading>
-                    <IconButton backgroundColor={'#239b56'} borderColor={'#239b5655'} borderWidth={3}
+            <GoogleMapsView key={'A' + filterState.enabled + filterState.from + filterState.until + update} mapRef={mapRef} paddockList={paddockList} onDrag={updateRegion} />
+
+            <View style={{ position: 'absolute', right: 10, bottom: 110, backgroundColor: '#ffffffDD' }} rounded={'full'} padding={3}>
+                <View style={{ alignItems: 'center', marginBottom: 5 }}>
+                    <IconButton backgroundColor={'#27ae60'} borderColor={'#27ae6088'} borderWidth={3}
                         _icon={{
                             as: Entypo,
                             name: "plus",
-                            size: '4xl'
+                            size: '5xl'
                         }}
-                        rounded='full' variant='solid' style={{ width: 50, height: 50 }} onPress={() => {
+                        rounded='full' variant='solid' style={{ width: 70, height: 70 }} onPress={() => {
                             props.navigation.dispatch(
                                 CommonActions.navigate({
                                     name: 'CreatePaddock',
                                     params: {
-                                        paddockId: -1
+                                        paddockId: -1,
+                                        create: true
                                     }
                                 })
                             )
                         }}>
                     </IconButton>
+                    {/* {!close ? <Heading style={{ position: 'absolute', fontSize: 16, color: '#fff', bottom: -25 }}>Crear</Heading> : <></>} */}
                 </View>
-                <BottomSheetFlatList contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }}
+                <View style={{ alignItems: 'center', marginBottom: 5 }}>
+                    {filterState.enabled ? <View style={{ height: 5, backgroundColor: '#f1c40f', width: 25, borderRadius: 6, zIndex: 999, top: 58 }} /> : <></>}
+                    <IconButton backgroundColor={'#6c3483'} borderColor={'#6c348388'} borderWidth={3}
+                        _icon={{
+                            as: FontAwesome5,
+                            name: "filter",
+                            size: 'xl'
+                        }}
+                        rounded='full' variant='solid' style={{ width: 70, height: 70 }} onPress={() => {
+                            props.navigation.dispatch(
+                                CommonActions.navigate({
+                                    name: 'FiltersScreen',
+                                    params: {
+                                        paddockId: 1
+                                    }
+                                })
+                            )
+                        }}>
+                    </IconButton>
+                    {/* {!close ? <Heading style={{ position: 'absolute', fontSize: 16, color: '#fff', bottom: -25 }}>Filtrar</Heading> : <></>} */}
+                </View>
+                <View style={{ alignItems: 'center' }}>
+                    <DownloadTilesButton mapRegion={region} onFinish={() => { }} onLongPress={updateRegion} />
+                    {/* {!close ? <Heading style={{ position: 'absolute', fontSize: 16, color: '#fff', bottom: -25 }}>Mapa</Heading> : <></>} */}
+                </View>
+            </View>
+            <LocationButton />
+            <InfoButton />
+            <BottomSheet
+                ref={sheetRef}
+                snapPoints={snapPoints}
+                backgroundStyle={{ backgroundColor: '#27ae60EE' }}
+                handleIndicatorStyle={{ backgroundColor: '#fff' }}
+                onChange={(index) => { setClose(index == 0) }}
+            >
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', height: 50, marginBottom: 25 }}>
+                    <Heading
+                        size="xl"
+                        color="coolGray.100"
+                        style={{ marginLeft: 20, marginRight: 5, bottom: 2, textShadowOffset: { width: -0.5, height: 0.5 }, textShadowRadius: 5 }}
+                    >
+                        Potreros
+                    </Heading>
+                </View>
+                <BottomSheetFlatList contentContainerStyle={{ alignItems: 'center', paddingBottom: 25 }}
                     keyExtractor={(item, index) => 'FLIST' + index.toString()}
-                    data={paddockList.map((value) => { return { name: value.name, vertices: value.vertices } })}
+                    data={paddockList}
                     renderItem={({ item, index }) => (
-                        < BottomSheetItem
+                        <BottomSheetItem
                             title={item?.name}
                             index={index}
-                            foreColor={'coolGray.500'}
-                            color={colors[index]}
+                            foreColor={'coolGray.800'}
+                            color={colors.filter((value) => { return fontColorContrast(value) != '#ffffff' })[index]}
                             onLocatePress={() => {
-                                setMarkerList(paddockList[index].vertices);
+                                //setMarkerList(paddockList[index].vertices);
                                 changeRegion(paddockList[index].vertices[0].latitude, paddockList[index].vertices[0].longitude)
                                 sheetRef.current?.snapToIndex(0);
                             }}
@@ -193,9 +236,7 @@ export default function PaddockScreen(props: Props) {
                 </BottomSheetFlatList>
 
             </BottomSheet>
-            <View style={{ position: 'absolute', top: 100, left: 5, alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff', borderWidth: 4, borderColor: '#ffffffB5', borderRadius: 8, alignSelf: 'flex-start', height: 80, margin: 10, paddingLeft: 15, paddingRight: 15, maxWidth: '100%' }}>
-                <Heading size={'sm'} color={'#34495e'}>Vista de Potreros</Heading>
-            </View>
+
         </VStack>
     );
 };

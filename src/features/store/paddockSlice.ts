@@ -18,10 +18,19 @@ const initialState: PaddockState = {
 
 //================Slice================================
 
-interface PayloadType {
+interface PayloadUpdateType {
     paddockId: number
     data: Paddock,
-    extra?: Object
+    index?: number,
+    error?: string
+}
+interface PayloadAddType {
+    data: Paddock,
+    index?: number,
+    error?: string
+}
+interface PayloadDeleteType {
+    paddockId: number
 }
 
 export const paddockSlice = createSlice({
@@ -29,31 +38,31 @@ export const paddockSlice = createSlice({
     initialState,
     reducers: {
 
-        updatePaddock: (state, action: PayloadAction<PayloadType>) => {
+        updatePaddock: (state, action: PayloadAction<PayloadUpdateType>) => {
             let pId = action.payload.paddockId;
             let temp = [...state.paddocks];
-            if (pId < 0){
-                pId = state.paddocks.length; 
+            if (pId >= 0 && temp[pId]) {
+                temp[pId] = action.payload.data;
+                state.paddocks = temp;
             }
-            temp[pId] = action.payload.data;
-            state.paddocks = temp;
-            action.payload.paddockId = pId;
-            action.payload = { ...action.payload }
+            else {
+                action.payload = { ...action.payload, error: 'PaddockId not found.' }
+            }
         },
-        addPaddock: (state, action: PayloadAction<PayloadType>) => {
-            let temp = [...state.paddocks];
-            temp[0] = action.payload.data;
-
-            state.paddocks = [...state.paddocks, action.payload.data]
-            action.payload = { ...action.payload, extra: { index: state.paddocks.length - 1 } }
+        addPaddock: (state, action: PayloadAction<PayloadAddType>) => {
+            let temp = [...state.paddocks]; let id = (action.payload.data.ID || -1);
+            if (!temp.some((_) => { return _.ID == action.payload.data.ID })) {
+                temp = [...temp, action.payload.data];
+                action.payload = { ...action.payload, index: state.paddocks.length }
+                state.paddocks = temp;
+            }
         },
-        deletePaddock: (state, action: PayloadAction<Paddock>) => {
+        deletePaddock: (state, action: PayloadAction<PayloadDeleteType>) => {
 
             console.log('---------------')
             console.log(action.payload)
             let temp = [...state.paddocks];
-            temp[0] = action.payload;
-            state.paddocks = temp;
+            state.paddocks = temp.filter((value, index) => { return index != action.payload.paddockId })
             console.log('---------------')
 
         },

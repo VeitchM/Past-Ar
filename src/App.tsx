@@ -16,19 +16,19 @@ LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by mes
 
 export default function App() {
   const [fontLoaded] = useFonts(customFonts)
-  
+
   if (!fontLoaded)
     return <></>
   return (
-    <GestureHandlerRootView style={{flex:1}}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
-      <NativeBaseProvider theme={themeNative}>
-        <NavigationContainer theme={themeNavigation} >
+        <NativeBaseProvider theme={themeNative}>
+          <NavigationContainer theme={themeNavigation} >
             <ScreenTabs />
-        </NavigationContainer>
-        <AlertsManager />
-      </NativeBaseProvider>
-    </Provider>
+          </NavigationContainer>
+          <AlertsManager />
+        </NativeBaseProvider>
+      </Provider>
     </GestureHandlerRootView>
   )
 }

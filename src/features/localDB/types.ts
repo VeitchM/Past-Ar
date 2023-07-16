@@ -37,6 +37,7 @@ export type calibrationsMeasurementsLocalDB = SendStatusLocalDB & {
 }
 
 export type PaddockLocalDB = BaseLocalDB & {
+    ID: number,
     name:string,
     vertices_list: string | null,
 }

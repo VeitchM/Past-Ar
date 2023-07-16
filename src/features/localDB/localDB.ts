@@ -157,10 +157,16 @@ export async function insertCalibrationFromMeasurements(name: string) {
 
 }
 
-export async function insertPaddock( paddockName: string,vertices_list: LatLng[], paddockId?: number) {
-    //TODO
+export async function insertPaddock( paddockName: string,vertices_list: LatLng[]) {
     let json = JSON.stringify(vertices_list)
-    return execQuery(`INSERT INTO paddocks (ID,name,vertices_list) values (?,?,?)`, [paddockId, paddockName, json])
+    return execQuery(`INSERT INTO paddocks (name,vertices_list) values (?,?)`, [paddockName, json])
+        .then((result) => result.insertId as number)
+
+}
+
+export async function modifyPaddock( paddockName: string,vertices_list: LatLng[], paddockId: number) {
+    let json = JSON.stringify(vertices_list)
+    return execQuery(`UPDATE paddocks SET vertices_list = (?), name = (?) WHERE ID = (?)`, [json, paddockName, paddockId])
         .then((result) => result.insertId as number)
 
 }
@@ -170,10 +176,13 @@ export async function insertPaddock( paddockName: string,vertices_list: LatLng[]
 
 export async function getMeasurements() {
     return execQuery(`SELECT * FROM measurements `, [])
-
 }
 
-
+export async function getMeasurementsBetween(from: number,until:number=(new Date()).getTime()) {
+    return execQuery(`SELECT * FROM measurements WHERE timestamp BETWEEN (?) AND (?)`, [
+        from, until
+    ])
+}
 
 export async function getCalibrations() {
     // return execQuery(`SELECT * FROM calibrations `
@@ -247,12 +256,11 @@ export async function deleteCalibration(ID: number) {
 
 }
 
-export async function deletePaddock(ID: number) {
-    return execQuery(`DELETE FROM paddocks WHERE ID = ?`, [ID])
-
+export async function removePaddock(ID: number) {
+    return execQuery(`DELETE FROM paddocks WHERE ID = (?)`, [ID])
 }
 
-export async function deleteAllPaddocks() {
+export async function removeAllPaddocks() {
     return execQuery(`DELETE FROM paddocks`)
 
 }
