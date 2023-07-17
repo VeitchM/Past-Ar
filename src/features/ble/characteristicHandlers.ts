@@ -12,6 +12,7 @@ import store from "../store/store";
 import { setBattery } from "../store/bleSlice"
 import { setCalibrationMeasurementID, setLastMeasurement } from "../store/measurementSlice"
 import { insertCalibrationMeasurement, insertMeasurement } from "../localDB/measurements";
+import { addNotification } from "../store/notificationSlice";
 
 
 //==== LocalDB =================================================
@@ -54,7 +55,7 @@ const onCharacteristicUpdate = async (error: BleError | null, characteristic: Ch
                     // TODO verify code
                 }
             }
-           //ELSE problem with measurement, rawDataToMeasurement returned undefined
+            //ELSE problem with measurement, rawDataToMeasurement returned undefined
 
 
         }
@@ -103,7 +104,7 @@ async function rawDataToMeasurement(value: string): Promise<{ battery: number, m
 
         const location = await getLocation()
         const measurement: Measurement = {
-            height: distanceCorrection(measurementValue, humidity,temperature),
+            height: distanceCorrection(measurementValue, humidity, temperature),
             timestamp: Date.now(),
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -118,15 +119,17 @@ async function rawDataToMeasurement(value: string): Promise<{ battery: number, m
 }
 
 const verifyMeasurements = (measurements: number[]) => {
-    const TOLERANCE = 3
+    const TOLERANCE = 3.5
 
     let sum = 0
     let validNumbers = 0
     console.log('Measurements: ', measurements);
+ 
 
     if (measurements.length > 0) {
 
-        const median = measurements[Math.floor(measurements.length / 2)]
+        const median = measurements.sort()[Math.floor(measurements.length / 2)]
+        console.log({median,measurements});       
 
         measurements.forEach((number) => {
             //TODO validation of each sensor if()
@@ -137,8 +140,15 @@ const verifyMeasurements = (measurements: number[]) => {
         })
     }
 
-    //
-    return validNumbers > 1 ? sum / validNumbers : undefined
+    // TODO add Warning: A sensor was giving an invalid value, verify it is not obstructed 
+    if (validNumbers < measurements.length)
+        store.dispatch(addNotification({ title: `Un sensor a dado una medida invalida, verifique que no este obstruido.`, status: "warning" }))
+    if (validNumbers > 1)
+        return sum / validNumbers
+    else {
+        store.dispatch(addNotification({ title: `Fallo en realizar medicion, verifique que los sensores no esten obstruidos.`, status: "error" }))
+        return undefined
+    }
 }
 
 

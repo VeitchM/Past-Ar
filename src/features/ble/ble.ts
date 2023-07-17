@@ -80,12 +80,11 @@ function tryToReconnect(device: DeviceSerializable, intentsLeft: number) {
       connectToDevice(device).then((deviceConnected) => {
 
         console.log('Try to reconnect:  interNum: ', intentsLeft, ' success: ', !!deviceConnected)
-        store.dispatch(addNotification({title:'El Pasturometro ha restablecido la conexion',status:'info'}))
         if (!deviceConnected)
-          tryToReconnect(device, intentsLeft - 1)
+        tryToReconnect(device, intentsLeft - 1)
         else {
           console.log('Reconnected');
-          // TODO Require data measured while disconnected from device
+          store.dispatch(addNotification({title:'El Pasturometro ha restablecido la conexion',status:'info'}))
         }
       })
 
