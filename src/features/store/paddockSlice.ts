@@ -66,13 +66,17 @@ export const paddockSlice = createSlice({
             console.log('---------------')
 
         },
+        emptyPaddocks: (state) => {
+            state.paddocks = []
+        },
     }
 })
 
 export const {
     updatePaddock,
     addPaddock,
-    deletePaddock
+    deletePaddock,
+    emptyPaddocks
 } = paddockSlice.actions
 
 export default paddockSlice.reducer

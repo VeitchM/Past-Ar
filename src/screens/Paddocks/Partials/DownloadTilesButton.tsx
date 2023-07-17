@@ -3,15 +3,14 @@ import { StyleSheet, Slider, ActivityIndicator } from 'react-native'
 import * as FileSystem from 'expo-file-system'
 import { Button } from 'react-native-elements'
 import { Region } from 'react-native-maps'
-import { Card, IconButton, View, Text, Toast } from 'native-base';
+import { Card, IconButton, View, Text, Toast, Icon } from 'native-base';
 import { showAlert, showXmas } from '../../../features/utils/Logger';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import MapUtils from '../../../features/utils/MapUtils'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 type Props = {
     mapRegion: Region & { zoom?: number }
-    onFinish: () => void
     onLongPress: VoidFunction
 }
 
@@ -20,7 +19,7 @@ export const AppConstants = {
     MAP_URL: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile',
 }
 
-const DownloadTilesButton: FC<Props> = ({ mapRegion, onFinish,onLongPress }) => {
+const DownloadTilesButton: FC<Props> = ({ mapRegion, onLongPress }) => {
 
     const [numZoomLevels, setZoomLevels] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
@@ -72,30 +71,20 @@ const DownloadTilesButton: FC<Props> = ({ mapRegion, onFinish,onLongPress }) => 
         alert('Finalizó la descarga del mapa, está viendo la versión offline.')
 
         setIsLoading(false)
-        onFinish()
     }
 
     const saveButton = (title: string, onPress: VoidFunction): JSX.Element => {
-        const color = ('#b03a2e').trim();
         return (
-            <TouchableOpacity onPress={onPress} activeOpacity={0.5} onLongPress={() => {
-                FileSystem.deleteAsync(AppConstants.TILE_FOLDER);
-                Toast.show({ description: 'Deleted succesfully.' });
-                onLongPress();
-            }}>
-                <IconButton backgroundColor={color}
-                    borderColor={color+'88'}
-                    borderWidth={3}
-                    _icon={{
-                        as: Entypo,
-                        name: isLoading ? undefined : 'download',
-                        size: '2xl'
-                    }}
-                    rounded='full' variant='solid' style={{ width: 70, height: 70, }}>
-                </IconButton>
-                <ActivityIndicator animating={isLoading} size='large' style={{ bottom: 17, left: 17, position: 'absolute' }} color="#ffffff" />
-            </TouchableOpacity>
-            // <Text textAlign={'center'} numberOfLines={2} color={'white'} fontSize={'lg'} style={{ width: 100, textShadowColor: 'black', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 5 }}> {title} </Text>
+            <View flexDir={'row'} rounded={'full'} style={{ bottom: 240, left: 0, alignItems: 'center', position: 'absolute', justifyContent: 'center', backgroundColor: '#ffffff', alignSelf: 'flex-start', margin: 10, marginRight: 5, padding: 10,height:60,width:60 }}>
+                <TouchableOpacity onPress={onPress} activeOpacity={0.5} onLongPress={() => {
+                    FileSystem.deleteAsync(AppConstants.TILE_FOLDER);
+                    Toast.show({ description: 'Deleted succesfully.' });
+                    onLongPress();
+                }}>
+                    <Icon as={FontAwesome5} size={8} name={isLoading ? undefined : 'download'} color='coolGray.600' />
+                    <ActivityIndicator animating={isLoading} size='large' style={{ bottom: 17, left: 17, position: 'absolute' }} color="#ffffff" />
+                </TouchableOpacity>
+            </View>
         )
     }
 

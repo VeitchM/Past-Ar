@@ -2,12 +2,12 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackParamList } from './ScreenStack';
 import { VStack, Text, Heading, Input, View, IconButton, Icon, ScrollView, FlatList, HStack, Button, Toast } from 'native-base';
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableHighlight } from 'react-native';
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { CommonActions, useFocusEffect } from '@react-navigation/native';
 import { useTypedDispatch, useTypedSelector } from '../../features/store/storeHooks';
 import { LatLng } from 'react-native-maps';
-import { addPaddock, deletePaddock, updatePaddock } from '../../features/store/paddockSlice';
+import { addPaddock, deletePaddock, emptyPaddocks, updatePaddock } from '../../features/store/paddockSlice';
 import { addNotification } from '../../features/store/notificationSlice';
 import { getLocation } from '../../features/location/location';
 import { insertPaddock, modifyPaddock, removePaddock } from '../../features/localDB/localDB';
@@ -25,31 +25,41 @@ export default function CreatePaddock(props: Props) {
     const [paddockName, setPaddockName] = useState('name');
     const [currentLocation, setCurrentLocation] = useState<LatLng>({ longitude: 0, latitude: 0 });
     const [vertices, setVertices] = useState<LatLng[]>([]);
+    const [currentPaddockId, setCurrentPaddockId] = useState(-1);
 
     useEffect(() => {
         navigation.setOptions({
-            headerRight: () => {
-                return (
-                    <TouchableOpacity style={{ marginRight: 16 }} onPress={() => { }}>
-                        <Text>Details</Text>
-                    </TouchableOpacity>
-                )
-            }
+            headerLeft: backButton
         })
+        setCurrentPaddockId(paddockId);
         setVertices(!create && paddockId >= 0 ? paddockList[paddockId].vertices : []);
         setPaddockName(!create && paddockId >= 0 ? paddockList[paddockId].name : '');
         getLocation().then((value) => { setCurrentLocation(value.coords) })
         console.log('PADDOCK_ID', paddockList[paddockId]);
-    }, [paddockList])
+    }, [paddockList, paddockId])
 
-    const saveVertices = async (name: string, vertices: LatLng[], Id:number) => {
-        let newID;
+    const backButton = () => {
+        return (
+            <TouchableHighlight style={{ borderRadius: 120, marginRight: 5 }} underlayColor={'#99a3a455'}
+                onPress={() => {
+                    dispatch(emptyPaddocks());
+                    navigation.goBack();
+                }}>
+                <View borderRadius={120} height={50} width={50} alignItems={'center'} justifyContent={'center'}>
+                    <Icon as={FontAwesome5} color={'#000'} name="arrow-left" size="sm" />
+                </View>
+            </TouchableHighlight>
+        );
+    }
+
+    const saveVertices = async (name: string, vertices: LatLng[], Id: number) => {
+        let newID = Id;
         if (Id >= 0)
             modifyPaddock(name, vertices, Id);
-        else{
+        else {
             newID = await insertPaddock(name, vertices);
         }
-        let _data = { ID: newID, name: name, vertices:vertices };
+        let _data = { ID: newID, name: name, vertices: vertices };
         dispatch(updatePaddock({ data: _data, paddockId: paddockId }))
     }
 
@@ -60,124 +70,132 @@ export default function CreatePaddock(props: Props) {
         setVertices(c);
     }
 
-    //----------JSX-----------//
-    return (
-        <VStack bg='white' flex={1} alignItems='center' paddingTop={5}>
-
-            <View paddingBottom={5}>
-                <Heading size='xl' fontWeight='light' marginBottom={4} >Nombre de Potrero</Heading>
-                <Input
-                    fontSize={'lg'}
-                    defaultValue={paddockName}
-                    size='2xl'
-                    onChangeText={(text) => {
-                        setPaddockName(text);
-                    }}
-                    placeholder="Ingrese nombre de potrero" />
-            </View>
-            <Heading size='xl' fontWeight='light' marginBottom={4} >Vertices </Heading>
+    function VerticesList() {
+        return (
             <FlatList
                 width={'100%'}
                 keyExtractor={(item, index) => index.toString()}
                 data={vertices || []}
                 renderItem={({ item, index }) => (
-
                     <View flexDir={'row'} paddingTop={2} justifyContent={'space-around'} width={'100%'}>
-                        <Input
-                            flex={1}
-                            fontSize={'lg'}
-                            defaultValue={item.latitude + ' ; ' + item.longitude}
-                            marginLeft={3}
-                            placeholder="Coordenadas"
-                            keyboardType='numeric'
-                            multiline={true}
-                            numberOfLines={2}
-                            onChangeText={(v) => { changeTextHandler(v, index) }}
-                        />
-
+                        <Heading marginLeft={5}>
+                            {'Lat:\nLng:'}
+                        </Heading>
+                        <TouchableHighlight style={{ flex: 1, borderRadius: 16, marginLeft: 5 }} activeOpacity={0.8} onPress={() => { }}>
+                            <Input
+                                flex={1}
+                                fontSize={'lg'}
+                                defaultValue={item.latitude + '\n' + item.longitude}
+                                placeholder="Coordenadas"
+                                multiline={true}
+                                numberOfLines={2}
+                                editable={false}
+                            />
+                        </TouchableHighlight>
                         <IconButton
                             marginRight={3}
                             marginLeft={3}
                             onPress={() => {
-                                navigation.dispatch(
-                                    CommonActions.navigate({
-                                        name: 'FindInMapScreen',
-                                        params: {
-                                            coordinates: item,
-                                            paddockId: paddockId,
-                                            pointId: index
-                                        }
-                                    })
-                                )
+                                navigation.dispatch(CommonActions.navigate({ name: 'FindInMapScreen', params: { coordinates: item, paddockId: paddockId, pointId: index } }))
                             }}
                             colorScheme='green'
-                            _icon={{
-                                as: Entypo,
-                                name: "location",
-                                size: '2xl'
-                            }} />
-
+                            _icon={{ as: Entypo, name: "location", size: '2xl' }} />
                     </View>
-                )}
-            >
+                )} />);
+    }
 
-            </FlatList>
+    function AddVerticesButton() {
+        return (
+            <View justifyContent={'center'}>
+                <IconButton backgroundColor={'#2ecc71'} borderColor={'#2ecc7155'} borderWidth={3}
+                    _icon={{
+                        as: Entypo,
+                        name: "plus",
+                        size: '4xl'
+                    }}
+                    rounded='full' variant='solid' style={{ width: 65, height: 65 }} onPress={() => {
+                        if (paddockName == '') { Toast.show({ description: 'Error: Agregue un nombre antes de\nagregar vertices (PCP1)' }); return; }
+                        if (paddockId != undefined && paddockId >= 0) {
+                            navigation.dispatch(
+                                CommonActions.navigate({
+                                    name: 'FindInMapScreen',
+                                    params: {
+                                        coordinates: paddockList[paddockId].vertices.length > 0 ? paddockList[paddockId]?.vertices[0] : currentLocation,
+                                        paddockId: paddockId,
+                                        pointId: 0
+                                    }
+                                })
+                            )
+                        }
+                        else {
+                            let newIndex = dispatch(addPaddock({ data: { name: paddockName, vertices: [] } })).payload.index
+                            navigation.dispatch(
+                                CommonActions.navigate({
+                                    name: 'FindInMapScreen',
+                                    params: {
+                                        coordinates: currentLocation,
+                                        paddockId: newIndex,
+                                        pointId: 0
+                                    }
+                                })
+                            )
+                        }
+                    }}>
+                </IconButton>
+                <Heading size='md' fontWeight='light'>Agregar</Heading>
+            </View>
+        );
+    }
 
-            <HStack bottom={5} width={'100%'} justifyContent={'space-evenly'} paddingLeft={10} paddingRight={10} >
-                <View justifyContent={'center'}>
-                    <IconButton backgroundColor={'#2ecc71'} borderColor={'#2ecc7155'} borderWidth={3}
-                        _icon={{
-                            as: Entypo,
-                            name: "plus",
-                            size: '4xl'
-                        }}
-                        rounded='full' variant='solid' style={{ width: 65, height: 65 }} onPress={() => {
-                            if (paddockName == '') { Toast.show({ description: 'Error: Agregue un nombre antes de\nagregar vertices (PCP1)' }); return; }
-                            if (paddockId >= 0) {
-                                navigation.dispatch(
-                                    CommonActions.navigate({
-                                        name: 'FindInMapScreen',
-                                        params: {
-                                            coordinates: paddockList[paddockId]?.vertices[0],
-                                            paddockId: paddockId,
-                                            pointId: 0
-                                        }
-                                    })
-                                )
-                            }
-                            else {
-                                let newIndex = dispatch(addPaddock({ data: { name: paddockName, vertices: [] } })).payload.index
-                                navigation.dispatch(
-                                    CommonActions.navigate({
-                                        name: 'FindInMapScreen',
-                                        params: {
-                                            coordinates: currentLocation,
-                                            paddockId: newIndex,
-                                            pointId: 0
-                                        }
-                                    })
-                                )
-                            }
-                        }}>
-                    </IconButton>
-                    <Heading size='md' fontWeight='light'>Agregar</Heading>
-                </View>
+    function SavePaddockButton() {
+        return (
+            <View>
+                <IconButton backgroundColor={'#f39c12'}
+                    borderColor={'#f39c1255'}
+                    borderWidth={3}
+                    _icon={{
+                        as: Entypo,
+                        name: "save",
+                        size: '3xl'
+                    }}
+                    rounded='full' variant='solid' style={{ width: 65, height: 65 }} onPress={() => {
+                        if (vertices.length == 0) { Toast.show({ description: ' Ingrese vertices antes de guardar.' }); return; }
+                        if (paddockName == '') { Toast.show({ description: 'Ingrese un nombre antes de guardar.' }); return; }
+                        let _data = { ID: paddockList[paddockId].ID, name: paddockName, vertices: vertices };
+                        saveVertices(paddockName, vertices, _data.ID != undefined ? _data.ID : -1);
+                        dispatch(addNotification({ status: 'info', title: 'Potrero guardado correctamente.' }))
+                        navigation.dispatch(
+                            CommonActions.navigate({
+                                name: 'PaddockHome'
+                            })
+                        )
+                    }}>
+                </IconButton>
+                <Heading size='md' fontWeight='light'>Guardar</Heading>
+            </View>
+        );
+    }
 
+    function DeletePaddockButton() {
+        return (
+            create ? <></> :
                 <View>
-                    <IconButton backgroundColor={'#f39c12'}
-                        borderColor={'#f39c1255'}
+                    <IconButton backgroundColor={'#b03a2e'}
+                        borderColor={'#b03a2e55'}
                         borderWidth={3}
                         _icon={{
-                            as: Entypo,
-                            name: "save",
-                            size: '3xl'
+                            as: FontAwesome5,
+                            name: "trash",
+                            size: 'xl',
+                            marginLeft: 1
                         }}
                         rounded='full' variant='solid' style={{ width: 65, height: 65 }} onPress={() => {
-                            if (vertices.length == 0) { Toast.show({ description: ' Ingrese vertices antes de guardar.' }); return; }
-                            if (paddockName == '') { Toast.show({ description: 'Ingrese un nombre antes de guardar.' }); return; }
-                            let _data = { ID: paddockList[paddockId].ID, name: paddockName, vertices: vertices };
-                            saveVertices(paddockName, vertices, _data.ID!=undefined ? _data.ID : -1);
+                            let idToRemove = paddockList[paddockId].ID;;
+                            dispatch(deletePaddock({ paddockId: paddockId }))
                             dispatch(addNotification({ status: 'info', title: 'Potrero guardado correctamente.' }))
+                            if (!create && idToRemove) {
+                                removePaddock(idToRemove)
+                            }
                             navigation.dispatch(
                                 CommonActions.navigate({
                                     name: 'PaddockHome'
@@ -185,37 +203,30 @@ export default function CreatePaddock(props: Props) {
                             )
                         }}>
                     </IconButton>
-                    <Heading size='md' fontWeight='light'>Guardar</Heading>
+                    <Heading size='md' fontWeight='light'>Borrar</Heading>
                 </View>
-                {
-                    create ? <></> :
-                        <View>
-                            <IconButton backgroundColor={'#b03a2e'}
-                                borderColor={'#b03a2e55'}
-                                borderWidth={3}
-                                _icon={{
-                                    as: FontAwesome5,
-                                    name: "trash",
-                                    size: 'xl',
-                                    marginLeft: 1
-                                }}
-                                rounded='full' variant='solid' style={{ width: 65, height: 65 }} onPress={() => {
-                                    let idToRemove = paddockList[paddockId].ID;;
-                                    dispatch(deletePaddock({ paddockId: paddockId }))
-                                    dispatch(addNotification({ status: 'info', title: 'Potrero guardado correctamente.' }))
-                                    if (!create && idToRemove) {
-                                        removePaddock(idToRemove)
-                                    }
-                                    navigation.dispatch(
-                                        CommonActions.navigate({
-                                            name: 'PaddockHome'
-                                        })
-                                    )
-                                }}>
-                            </IconButton>
-                            <Heading size='md' fontWeight='light'>Borrar</Heading>
-                        </View>
-                }
+        );
+    }
+
+    //----------JSX-----------//
+    return (
+        <VStack bg='white' flex={1} alignItems='center' paddingTop={5}>
+            <View paddingBottom={5}>
+                <Heading size='xl' fontWeight='light' marginBottom={4} >Nombre de Potrero</Heading>
+                <Input
+                    fontSize={'lg'}
+                    defaultValue={paddockName}
+                    size='2xl'
+                    onChangeText={(text) => { setPaddockName(text) }}
+                    placeholder="Ingrese nombre de potrero" />
+            </View>
+            <Heading size='xl' fontWeight='light' marginBottom={4} >Vertices </Heading>
+            <VerticesList />
+
+            <HStack bottom={5} width={'100%'} justifyContent={'space-evenly'} paddingLeft={10} paddingRight={10} >
+                <AddVerticesButton />
+                <SavePaddockButton />
+                <DeletePaddockButton />
             </HStack>
         </VStack>
     );
