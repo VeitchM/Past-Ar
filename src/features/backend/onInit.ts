@@ -1,7 +1,7 @@
 import { getUserData } from "../localDB/user";
 import { setSignIn, setTokens, setUser } from "../store/backendSlice";
 import store from "../store/store";
-import { refreshToken } from "./signin";
+import { refreshToken } from "./session";
 
 
 /** It loads from the localDB to the redux on init the user data and tokens */

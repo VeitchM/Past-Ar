@@ -1,18 +1,29 @@
-import { persistUserData } from "../localDB/user";
+import { persistUserData,deleteUserData } from "../localDB/user";
 import { Tokens, TokensResponse, User, setSignIn, setTokens, setUser } from "../store/backendSlice";
 import { addNotification } from "../store/notificationSlice";
 import store from "../store/store";
 import { mobileAPI } from "./config";
 import { getErrorLabel } from "./constants";
-import { signout } from "./signout";
 import { createPayload } from "./utils";
 import jwtDecode from "jwt-decode";
 
 
 
 
+// It could be a class
+
+/** Id of refreshToken's set_interval()*/
+let unsubscribe: number
+
+export function signout(){
+    clearInterval(unsubscribe)
+    deleteUserData()
+    store.dispatch(setSignIn(false))
+    // A little violent, with setting signin to false it will be okay
+}
 
 
+/** Sends email and password to backend and signsin */
 export async function signin(email: string, password: string) {
     return fetch(`${mobileAPI}/auth/login`,
         createPayload('POST',
@@ -27,7 +38,7 @@ export async function signin(email: string, password: string) {
             }
             else {
                 signedIn(resObject)
-                // store.dispatch()
+                initializeTokenRefresh(resObject)
             }
 
 
@@ -46,7 +57,6 @@ export async function signin(email: string, password: string) {
 /** It sets the redux with the proper info once the user signin, it also persists the user info and tokens
  * 
  * @params res : it should be a successful server response, not an error response
- * 
 */
 function signedIn(res: TokensResponse) {
 
@@ -61,17 +71,19 @@ function signedIn(res: TokensResponse) {
 
     persistUserData({ ...tokens, ...userData, signedIn: true })
 
-    console.log('Signed in',new Date());
-    
-    // getUserDatafromDB().then(res => console.log('From database', res))
-
-    setTimeout(() => {
-
-        refreshToken()
-
-    }, res.expires_in * 800)
-
+    console.log('Signed in', new Date());
 }
+
+
+function initializeTokenRefresh(res: TokensResponse) {
+    clearInterval(unsubscribe)
+    unsubscribe = setInterval(() => {       
+        refreshToken()
+    }, res.expires_in * 800) as unknown as number
+
+    console.log({unsubscribe});
+    
+} 
 
 /** Get user info from the provided token
  * @returns  User info
@@ -87,8 +99,6 @@ function getUserData(token: string) {
 
 
 export function refreshToken() {
-    //TODO replace recursion to setInterval, and loged out should unsubscribe from that
-
     const backendState = store.getState().backend
     console.log('Refresh token sent for refresh token API:');
     console.log(backendState.tokens?.refreshToken);
@@ -101,32 +111,24 @@ export function refreshToken() {
                 const resObject = await res.json()
                 // console.log('Refresh token from server', resObject);
 
-                //TODO should do this recursive call, which is cut when signin is set to false
+                //Double check, i may disconnect while waiting for the answer
                 if (store.getState().backend.signIn) {
                     if (!resObject.code) {
                         signedIn(resObject)
                     }
                     else {
-                        if (store.getState().backend.tokens?.refreshExpirationTimestamp! < Date.now() ){
-                            setTimeout(() => {
-                                console.error('Failed refresh Token, retrying');
-                                console.log('Tokens' , store.getState().backend.tokens);
-                                
-    
-                                refreshToken()
-                            }, 2000);
+                        if (store.getState().backend.tokens?.refreshExpirationTimestamp! < Date.now()) {
+                            console.error("Error refreshing token",resObject );
+                            
                         }
-                        else{
+                        else {
                             console.error('Refresh token not active');
                             signout()
-                            
+
                         }
                     }
                 }
-                else{
-                    console.log('Loged out');
-                    
-                }
+              
 
             })
     }
