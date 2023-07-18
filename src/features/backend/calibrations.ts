@@ -1,6 +1,7 @@
 import { getCalibrationsForBack, getCalibrationsFromBackInLocalDB, insertCalibrationFromFunctionFromServer, updateCalibrationFunction, updateToCalibrationFunctionFromServer } from "../localDB/calibrations";
 import { SendStatus, setSendStatus, setSending } from "../localDB/localDB";
 import { TablesNames } from "../localDB/tablesDefinition";
+import { pushNotification } from "../utils";
 import { mobileAPI } from "./config";
 import { CalibrationForBack, CalibrationFromBack } from "./types";
 import { createPayload } from "./utils";
@@ -49,10 +50,11 @@ export async function updateLocalCalibrations(calibrationsFromBack: CalibrationF
 
         calibrationsFromBack.forEach((calibration) => {
             const calibrationFound = calibrationsFromBackInLocalDB.find((item) => {
-                
-                console.log('Looking for calibration',{calibration,item});
-                
-                return calibration.uid === item.uid})
+
+                console.log('Looking for calibration', { calibration, item });
+
+                return calibration.uid === item.uid
+            })
             console.log('Update local calibrations ', calibration);
 
             if (calibrationFound) {
@@ -70,7 +72,7 @@ export async function updateLocalCalibrations(calibrationsFromBack: CalibrationF
 }
 
 
-export async function synchronizeCalibrations() {
+export async function synchronizeCalibrations(foreground?: boolean){
     try {
 
         const calibrations = await getCalibrationsForBack()
@@ -93,9 +95,9 @@ export async function synchronizeCalibrations() {
                     // TODO Delete local measurement Calibration
                     // get new calibration from measurment from server
                     'data' in res && await updateToCalibrationFunctionFromServer(calibration.calibrationID, res.data)
-                    const response = await getCalibrationsFromBack(res.data)
+                    // const response = await getCalibrationsFromBack(res.data)
                     console.log('Response from server after sending calibration', JSON.stringify(res));
-                    console.log('Response from server get calibration UID', response);
+                    // console.log('Response from server get calibration UID', response);
                     //Not the most performant code but the most simple being robust
                     // await execQuery(`UPDATE ${TablesNames.CALIBRATIONS_FROM_MEASUREMENTS} SET sendStatus = ${SendStatus.SENT} WHERE ID = ${calibration.calibrationID}`)
                 }
@@ -107,8 +109,11 @@ export async function synchronizeCalibrations() {
             }
         })
         const responseAllCalibrations = await getCalibrationsFromBack()
-        if ('data' in responseAllCalibrations)
+        if ('data' in responseAllCalibrations){
             updateLocalCalibrations(responseAllCalibrations.data.content)
+            pushNotification('Calibraciones sincronizadas','success')
+
+        }
         console.log('Response from server get calibration all', JSON.stringify(responseAllCalibrations));
     }
     catch (e) {

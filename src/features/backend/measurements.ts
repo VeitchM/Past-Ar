@@ -1,5 +1,7 @@
 import { setSending } from "../localDB/localDB";
 import { getMeasurements, getMeasurementsForBack } from "../localDB/measurements";
+import store from "../store/store";
+import { pushNotification } from "../utils";
 import { mobileAPI } from "./config";
 import { MeasurementForBack } from "./types";
 import { createPayload } from "./utils";
@@ -20,6 +22,7 @@ export async function synchronizeMeasurements() {
 
             else
                 setSending(true, 'measurements')
+                pushNotification('Mediciones cargadas a la nube','success')
         }
 
     }
