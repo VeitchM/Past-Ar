@@ -1,4 +1,4 @@
-import { getUserData } from "../localDB/user";
+import { getUserData } from "../localDB/session";
 import { setSignIn, setTokens, setUser } from "../store/backendSlice";
 import store from "../store/store";
 import { refreshToken } from "./session";

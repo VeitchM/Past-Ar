@@ -78,9 +78,8 @@ export enum SendStatus { NOT_SENT, SENT, SENDING, FOR_SENDING }
 
 
 /** Set all rows which are marked as sending to SENT if success is true, and to NOT_SENT if it is false,   */
-export async function setSending(success: boolean, table: SendableTables) {
+export async function setSending(sendStatus: SendStatus, table: SendableTables) {
     // const measurements = new Array<MeasurementForFront>()
-    let sendStatus = success ? SendStatus.SENT : SendStatus.NOT_SENT
     const query = `UPDATE ${table} SET sendStatus = ${sendStatus} WHERE sendStatus = ${SendStatus.SENDING}`
     return execQuery(query)
 

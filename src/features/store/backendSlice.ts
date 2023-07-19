@@ -35,14 +35,15 @@ export type User = {
   groupUid: string
 }
 
+
+
 interface BackendState {
   tokens?: Tokens,
   user?: User
   signIn:boolean
+  lastSync?: number
 
 
-  //TODO Separate in measurment slice, and ble slice, manage database from redux
-  //Create redux folder and put all the slices there, add to measurement a receiving calibration variable that change on focus, and if true insert CalibrationMeasure
 
 }
 
@@ -77,6 +78,12 @@ export const backedSlice = createSlice({
     /** Sets the tokens */
     setTokens: (state, action: PayloadAction<Tokens>) => {
       state.tokens= action.payload
+     
+    },
+
+    /** Sets a timestamp with the last sync */
+    setLastSync: (state, action: PayloadAction<number>) => {
+      state.lastSync= action.payload
      
     },
 

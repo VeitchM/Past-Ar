@@ -1,4 +1,4 @@
-import { persistUserData,deleteUserData } from "../localDB/user";
+import { persistUserData,deleteUserData } from "../localDB/session";
 import { Tokens, TokensResponse, User, setSignIn, setTokens, setUser } from "../store/backendSlice";
 import { addNotification } from "../store/notificationSlice";
 import store from "../store/store";
@@ -38,7 +38,7 @@ export async function signin(email: string, password: string) {
             }
             else {
                 signedIn(resObject)
-                initializeTokenRefresh(resObject)
+                initializeSetInterval(resObject)
             }
 
 
@@ -75,7 +75,7 @@ function signedIn(res: TokensResponse) {
 }
 
 
-function initializeTokenRefresh(res: TokensResponse) {
+function initializeSetInterval(res: TokensResponse) {
     clearInterval(unsubscribe)
     unsubscribe = setInterval(() => {       
         refreshToken()
@@ -128,8 +128,6 @@ export function refreshToken() {
                         }
                     }
                 }
-              
-
             })
     }
 

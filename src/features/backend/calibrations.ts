@@ -72,31 +72,35 @@ export async function updateLocalCalibrations(calibrationsFromBack: CalibrationF
 }
 
 
-export async function synchronizeCalibrations(foreground?: boolean){
+/**
+ * @params foreground, if it is true it push a notification when succed
+ * @returns true if it success false if it fails
+ */
+export async function synchronizeCalibrations(foreground?: boolean) :Promise<boolean>{
     try {
 
         const calibrations = await getCalibrationsForBack()
-        console.log('Calibrations in localdb ', calibrations);
+        // console.log('Calibrations in localdb ', calibrations);
         calibrations.forEach(async (calibration) => {
             //Al this would be okay to be a callback from for each
 
-            console.log('Calibrations synchronize', calibrations);
+            // console.log('Calibrations synchronize', calibrations);
 
             try {
 
 
                 const res = await postCalibration(calibration.forBackendData)
-                console.log(res);
+                // console.log(res);
                 if ('code' in res)
                     throw new Error('Error on Server Response: ' + res)
                 else {
 
-                    console.log('Sent without problems ', res);
+                    // console.log('Sent without problems ', res);
                     // TODO Delete local measurement Calibration
                     // get new calibration from measurment from server
                     'data' in res && await updateToCalibrationFunctionFromServer(calibration.calibrationID, res.data)
                     // const response = await getCalibrationsFromBack(res.data)
-                    console.log('Response from server after sending calibration', JSON.stringify(res));
+                    // console.log('Response from server after sending calibration', JSON.stringify(res));
                     // console.log('Response from server get calibration UID', response);
                     //Not the most performant code but the most simple being robust
                     // await execQuery(`UPDATE ${TablesNames.CALIBRATIONS_FROM_MEASUREMENTS} SET sendStatus = ${SendStatus.SENT} WHERE ID = ${calibration.calibrationID}`)
@@ -104,20 +108,26 @@ export async function synchronizeCalibrations(foreground?: boolean){
 
             }
             catch (e) {
-                console.error(e)
                 await setSendStatus(SendStatus.FOR_SENDING, TablesNames.CALIBRATIONS_FROM_MEASUREMENTS, calibration.calibrationID)
+                throw new Error(`Error sending calibration`)
             }
         })
         const responseAllCalibrations = await getCalibrationsFromBack()
+        // console.log('Response from server get calibration all', JSON.stringify(responseAllCalibrations));
         if ('data' in responseAllCalibrations){
             updateLocalCalibrations(responseAllCalibrations.data.content)
-            pushNotification('Calibraciones sincronizadas','success')
-
+            foreground && pushNotification('Calibraciones sincronizadas','success')
+            return true
         }
-        console.log('Response from server get calibration all', JSON.stringify(responseAllCalibrations));
+        else{
+            throw new Error(`Error sending calibration`)
+        }
     }
     catch (e) {
-        setSending(false, TablesNames.CALIBRATIONS_FROM_MEASUREMENTS)
+        setSending(SendStatus.NOT_SENT, TablesNames.CALIBRATIONS_FROM_MEASUREMENTS)
+        foreground && pushNotification('No se han podido sincronizar las calibraciones','error')
+
         console.error(e)
+        return false
     }
 }

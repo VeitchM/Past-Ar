@@ -1,4 +1,4 @@
-import { deleteUserData } from "../localDB/user";
+import { deleteUserData } from "../localDB/session";
 import { setSignIn } from "../store/backendSlice";
 import store from "../store/store";
 
