@@ -12,8 +12,9 @@ const columns: Array<keyof Omit<UserTable, 'localId'>> =
         // 'localId',
         'refreshToken',
         'accessToken',
-        'expirationTimestamp',
-        'refreshExpirationTimestamp',
+        'expiresIn',
+        'timestamp',
+        'refreshExpiresIn',
         'id',
         'firstName',
         'lastName',
@@ -61,8 +62,9 @@ function separateInTokensAndUser(data: UserTable) {
     const tokens: Tokens = {
         refreshToken: data.refreshToken,
         accessToken: data.accessToken,
-        expirationTimestamp: data.expirationTimestamp,
-        refreshExpirationTimestamp: data.refreshExpirationTimestamp
+        timestamp: data.timestamp,
+        expiresIn: data.expiresIn,
+        refreshExpiresIn: data.refreshExpiresIn
     }
     const user = {
         id: data.id,

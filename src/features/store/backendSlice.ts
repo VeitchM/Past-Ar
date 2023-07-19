@@ -20,10 +20,12 @@ export type TokensResponse = {
 export type Tokens = {
   refreshToken?: string
   accessToken?: string,
+  timestamp?: number,
   /** JS date timestamp */
-  expirationTimestamp?: number,
+  expiresIn?: number,
+  
   /** JS date timestamp */
-  refreshExpirationTimestamp?: number
+  refreshExpiresIn?: number
 }
 
 export type User = {
@@ -91,6 +93,6 @@ export const backedSlice = createSlice({
   }
 })
 
-export const { setTokens, setUser,setSignIn } = backedSlice.actions
+export const { setTokens, setUser,setSignIn, setLastSync } = backedSlice.actions
 
 export default backedSlice.reducer

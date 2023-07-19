@@ -4,6 +4,7 @@ import { addNotification } from "../store/notificationSlice";
 import store from "../store/store";
 import { mobileAPI } from "./config";
 import { getErrorLabel } from "./constants";
+import { SYNCRHOIZE_INTERVAL, synchronize } from "./synchronize";
 import { createPayload } from "./utils";
 import jwtDecode from "jwt-decode";
 
@@ -13,10 +14,13 @@ import jwtDecode from "jwt-decode";
 // It could be a class
 
 /** Id of refreshToken's set_interval()*/
-let unsubscribe: number
+let unsubscribeRefreshToken: number
+/** Id of refreshToken's set_interval()*/
+let unsubscribeSynchronize: number
 
 export function signout(){
-    clearInterval(unsubscribe)
+    clearInterval(unsubscribeRefreshToken)
+    clearInterval(unsubscribeSynchronize)
     deleteUserData()
     store.dispatch(setSignIn(false))
     // A little violent, with setting signin to false it will be okay
@@ -38,7 +42,7 @@ export async function signin(email: string, password: string) {
             }
             else {
                 signedIn(resObject)
-                initializeSetInterval(resObject)
+                setRefreshTokenInterval()
             }
 
 
@@ -75,15 +79,37 @@ function signedIn(res: TokensResponse) {
 }
 
 
-function initializeSetInterval(res: TokensResponse) {
-    clearInterval(unsubscribe)
-    unsubscribe = setInterval(() => {       
+function setRefreshTokenInterval() {
+    clearInterval(unsubscribeRefreshToken)
+    const tokens = store.getState().backend.tokens
+    unsubscribeRefreshToken = setInterval(() => {       
         refreshToken()
-    }, res.expires_in * 800) as unknown as number
+    }, tokens!.expiresIn! * 0.9 ) as unknown as number
 
-    console.log({unsubscribe});
+    console.log({unsubscribeRefreshToken});
     
 } 
+
+function setSynchronizeDataInterval(){
+    clearInterval(unsubscribeSynchronize)
+    unsubscribeSynchronize = setInterval(() => {       
+        synchronize()
+    }, SYNCRHOIZE_INTERVAL) as unknown as number
+
+    
+ 
+} 
+
+
+/** It sets a refresh interval and will force a first refresh for the tokens 
+ * It sets the the synchronize interval and force a first one if it is no loged in 
+*/
+export function onInitSessionRoutine(){
+    refreshToken()
+    setRefreshTokenInterval()
+    synchronize()
+    setSynchronizeDataInterval()
+}
 
 /** Get user info from the provided token
  * @returns  User info
@@ -112,12 +138,12 @@ export function refreshToken() {
                 // console.log('Refresh token from server', resObject);
 
                 //Double check, i may disconnect while waiting for the answer
-                if (store.getState().backend.signIn) {
+                if (backendState.signIn) {
                     if (!resObject.code) {
                         signedIn(resObject)
                     }
                     else {
-                        if (store.getState().backend.tokens?.refreshExpirationTimestamp! < Date.now()) {
+                        if (backendState.tokens?.refreshExpiresIn! + backendState.tokens?.timestamp!  < Date.now()) {
                             console.error("Error refreshing token",resObject );
                             
                         }
@@ -127,7 +153,7 @@ export function refreshToken() {
 
                         }
                     }
-                }
+            }
             })
     }
 
@@ -141,8 +167,9 @@ function tokensFromBackendToStore(serverTokens: TokensResponse): Tokens {
     return {
         refreshToken: serverTokens.refresh_token,
         accessToken: serverTokens.access_token,
-        expirationTimestamp: Date.now() + serverTokens.expires_in * 1000,
-        refreshExpirationTimestamp: Date.now() + serverTokens.refresh_expires_in * 1000
+        timestamp: Date.now(),
+        expiresIn:   serverTokens.expires_in * 1000,
+        refreshExpiresIn:  serverTokens.refresh_expires_in * 1000
     }
 
 }

@@ -149,8 +149,9 @@ const createTableQueries = [
         roles TEXT,
         accessToken TEXT,
         refreshToken TEXT,
-        expirationTimestamp INTEGER,
-        refreshExpirationTimestamp INTEGER,
+        timestamp INTEGER,
+        refreshExpiresIn INTEGER,
+        expiresIn INTEGER,
         signedIn INTEGER
       );`,
       `CREATE TABLE IF NOT EXISTS calibrationsFromFunctionFromBackend (

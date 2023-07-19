@@ -1,12 +1,33 @@
 import { Box, Center, Heading, VStack, FormControl, Link, Input, Button, HStack, Text, Divider } from "native-base";
 import { signout } from "../../features/backend/signout";
 import { useTypedSelector } from "../../features/store/storeHooks";
-import { synchronize,   } from "../../features/backend/synchronize";
+import { synchronize, } from "../../features/backend/synchronize";
+import { timePassedString } from "../../utils/time";
+import { useEffect, useState } from "react";
 
 export default function signedinScreen() {
   const userData = useTypedSelector(state => state.backend.user)
+  const lastSync = useTypedSelector(state => state.backend.lastSync)
+
+  const [lastSyncLabel, setLastSyncLabel] = useState('Sin sincronizar')
 
   const textColor = 'coolGray.500'
+
+
+  useEffect(() => {
+    if (lastSync) {
+
+      setLastSyncLabel(timePassedString(lastSync))
+      const interval = setInterval(() => {
+        setLastSyncLabel(timePassedString(lastSync))
+      }, 20000);
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [lastSync])
+
+
 
   return (
 
@@ -46,7 +67,7 @@ export default function signedinScreen() {
 
         <VStack>
           <Text fontSize='lg' marginBottom='-6px'>Última Sincronización</Text>
-          <Text fontSize='2xl' fontWeight='normal'>Place holder</Text>
+          <Text fontSize='2xl' fontWeight='normal'>{lastSyncLabel}</Text>
 
 
         </VStack>
@@ -54,7 +75,7 @@ export default function signedinScreen() {
         <Button
           // TODO show a modal before signing out
           colorScheme='info'
-          onPress={synchronize}
+          onPress={() => synchronize(true)}
         >
           Sincronizar
         </Button>
