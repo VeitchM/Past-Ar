@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { DeviceSerializable } from "../features/store/types"
 import { useTypedDispatch, useTypedSelector } from "../features/store/storeHooks"
 import { connectToDevice, scanForPeripherals, stopScanningForPeripherals } from "../features/ble/ble"
@@ -11,6 +11,7 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
 
 
     const dispatch = useTypedDispatch()
+    const [settingDevice, setSettingDevice] = useState(true)
 
     const devices: DeviceSerializable[] = useTypedSelector(state => state.ble.allDevices)
 
@@ -35,7 +36,53 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
         props.setShowModal(false)
     }
 
-    const deviceRenderer = (props: { item: DeviceSerializable, onSelected: any }) => (
+
+
+    return (
+
+        <Modal isOpen={props.showModal} onClose={() => props.setShowModal(false)}>
+            <Modal.Content maxWidth="400px">
+
+
+                {/*  For some reason this makes all Explode <Modal.CloseButton /> */}
+
+
+                <Modal.Header flexDir='row' alignItems='center' justifyContent='space-between'>
+                    <Heading size='md'>
+                        {settingDevice ?
+                            "Buscando dispositivos"
+                            :
+                            "Configurando dispositivo"
+                        }
+                    </Heading>
+                    {settingDevice ? <Spinner ml="2" size='lg' /> : null}
+                </Modal.Header>
+                {/* <Modal.Body> */}
+                {/* It throws warning to Flatlist  */}
+                {/* <SafeAreaView> */}
+
+                <FlatList data={devices} renderItem={({ item }) => deviceRenderer({ item: item, onSelected: connectDevice })} keyExtractor={item => item.id} />
+                {/* </SafeAreaView> */}
+                {/* </Modal.Body> */}
+                <Modal.Footer>
+                    <Button.Group space={2}>
+                        <Button _text={{ color: 'white' }} size='lg' colorScheme="danger" onPress={() => { props.setShowModal(false); }}>
+                            Salir
+                        </Button>
+                    </Button.Group>
+                </Modal.Footer>
+            </Modal.Content>
+        </Modal>
+
+    )
+
+}
+
+//----------------------------------------------------------------------------------------------
+
+
+function deviceRenderer(props: { item: DeviceSerializable, onSelected: any }) {
+    return (
 
 
         <Button variant='unstyled' style={{ shadowColor: 'transparent' }} onPress={() => { props.onSelected(props.item) }}>
@@ -58,40 +105,4 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
 
         // </Box>
     )
-
-    return (
-
-        <Modal isOpen={props.showModal} onClose={() => props.setShowModal(false)}>
-            <Modal.Content maxWidth="400px">
-
-
-                {/*  For some reason this makes all Explode <Modal.CloseButton /> */}
-                <Modal.Header flexDir='row' alignItems='center' justifyContent='space-between'>
-                    <Heading size='md'>
-                        Buscando Dispositivos
-                    </Heading>
-                    <Spinner size='lg' />
-                </Modal.Header>
-                {/* <Modal.Body> */}
-                {/* It throws warning to Flatlist  */}
-                {/* <SafeAreaView> */}
-
-                <FlatList data={devices} renderItem={({ item }) => deviceRenderer({ item: item, onSelected: connectDevice })} keyExtractor={item => item.id} />
-                {/* </SafeAreaView> */}
-                {/* </Modal.Body> */}
-                <Modal.Footer>
-                    <Button.Group space={2}>
-                        <Button _text={{ color: 'white' }} size='lg' colorScheme="danger" onPress={() => { props.setShowModal(false); }}>
-                            Salir
-                        </Button>
-
-                    </Button.Group>
-                </Modal.Footer>
-            </Modal.Content>
-        </Modal>
-
-    )
-
 }
-
-//----------------------------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 import { Box, Center, Heading, VStack, FormControl, Link, Input, Button, HStack, Text, Divider } from "native-base";
-import { signout } from "../../features/backend/signout";
 import { useTypedSelector } from "../../features/store/storeHooks";
 import { synchronize, } from "../../features/backend/synchronize";
 import { timePassedString } from "../../utils/time";
 import { useEffect, useState } from "react";
+import { signout } from "../../features/backend/session";
 
 export default function signedinScreen() {
   const userData = useTypedSelector(state => state.backend.user)

@@ -14,7 +14,7 @@ const MTU = 255
 
 import requestPermissions from "./blePermissionRequest";
 
-import { BleManager, Device, Subscription } from "react-native-ble-plx";
+import { BleErrorCode, BleManager, Device, Subscription } from "react-native-ble-plx";
 
 import { setConnectedDevice, addDevice, resetDevices, setTryingToConnect, setDisconnected } from "../store/bleSlice";
 
@@ -63,7 +63,7 @@ const onAnomalousDisconnection = (deviceId: string) => {
     // docummentation lies, if i disconnect the device it also gives null error.
     if (store.getState().ble.connectionState != 'disconnected' && device) {
       store.dispatch(setTryingToConnect());
-      store.dispatch(addNotification({title:'El Pasturometro se ha desconectado',status:'error'}))
+      store.dispatch(addNotification({ title: 'El Pasturometro se ha desconectado', status: 'error' }))
       tryToReconnect({ id: device.id, name: device.name }, RECONNECTIONS_INTENTS);
     }
 
@@ -81,10 +81,10 @@ function tryToReconnect(device: DeviceSerializable, intentsLeft: number) {
 
         console.log('Try to reconnect:  interNum: ', intentsLeft, ' success: ', !!deviceConnected)
         if (!deviceConnected)
-        tryToReconnect(device, intentsLeft - 1)
+          tryToReconnect(device, intentsLeft - 1)
         else {
           console.log('Reconnected');
-          store.dispatch(addNotification({title:'El Pasturometro ha restablecido la conexion',status:'info'}))
+          store.dispatch(addNotification({ title: 'El Pasturometro ha restablecido la conexion', status: 'info' }))
         }
       })
 
@@ -109,14 +109,19 @@ const scanForPeripherals = () => {
       if (error) {
         //errorCallback.current(error);
         console.error('Error scaning peripherals', error)
+        if(error.errorCode==BleErrorCode.BluetoothPoweredOff){
+          pushNotification('Encienda el bluetooth','error')
+        }
 
       }
       else {
 
         //console.log('Found Device ',device?.name);
         if (device && device.name?.toUpperCase().includes(DEVICE_BRAND)) {
-        // if (device) {
-          console.log('Scanned device');
+          // if (device) {
+          // console.log('Scanned device');
+          // console.log(device);
+          
 
           store.dispatch(addDevice({ id: device.id, name: device.name }))
         }
@@ -128,7 +133,7 @@ const scanForPeripherals = () => {
   }
   catch (error) {
     //errorCallback.current(e)
-    console.error(error)
+    console.error('Error scanning',error)
 
   }
 }
@@ -210,6 +215,7 @@ const disconnectFromDevice = async () => {
 
 import { onCharacteristicUpdate } from "./characteristicHandlers";
 import { addNotification } from "../store/notificationSlice";
+import { pushNotification } from "../utils";
 
 /** Set callbacks in monitors for each characteristic, it is called by the connectToDevice function
 *

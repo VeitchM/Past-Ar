@@ -34,7 +34,7 @@ import ConnectDeviceButton from '../../components/ConnectDevice';
 
 
 
-
+//TODO add modal of device, where you can set the height
 
 export default function HomeScreen(props: Props) {
 
