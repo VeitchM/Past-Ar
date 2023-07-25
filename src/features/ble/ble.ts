@@ -1,6 +1,7 @@
 /* eslint-disable no-bitwise */
 /** It must be on Upper Case, its value its used for filtering devices will scanning */
 const DEVICE_BRAND = 'PASTUROMETRO'
+const DEFAULT_PLATE_WIDTH = 1.8
 
 const RECONNECTIONS_INTENTS = 4
 const TIME_BETWEEN_RECONNECTIONS = 1000
@@ -64,7 +65,7 @@ const onAnomalousDisconnection = (deviceId: string) => {
     if (store.getState().ble.connectionState != 'disconnected' && device) {
       store.dispatch(setTryingToConnect());
       store.dispatch(addNotification({ title: 'El Pasturometro se ha desconectado', status: 'error' }))
-      tryToReconnect({ id: device.id, name: device.name }, RECONNECTIONS_INTENTS);
+      tryToReconnect({ id: device.id, name: device.name,plateWidth:null,alias:device.name }, RECONNECTIONS_INTENTS);
     }
 
     //Else it was disconnected by the method disconnectToDevice()
@@ -123,7 +124,7 @@ const scanForPeripherals = () => {
           // console.log(device);
           
 
-          store.dispatch(addDevice({ id: device.id, name: device.name }))
+          store.dispatch(addDevice({ id: device.id, name: device.name,plateWidth:null,alias:device.name  }))
         }
       }
 
@@ -164,7 +165,7 @@ const connectToDevice = async (device: DeviceSerializable) => {
     try {
       deviceConnection = await bleManager.connectToDevice(device.id, { requestMTU: MTU });
       if (deviceConnection) {
-        store.dispatch(setConnectedDevice({ id: device.id, name: device.name }));
+        store.dispatch(setConnectedDevice({ id: device.id, name: device.name,plateWidth:null,alias:device.name  }));
         await deviceConnection.discoverAllServicesAndCharacteristics();
         // It already stop scanning following the control flow of the screens, but it is an idempotent function so...
         stopScanningForPeripherals()

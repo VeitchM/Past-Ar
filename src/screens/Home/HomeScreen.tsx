@@ -29,6 +29,7 @@ import DevicesModal from '../../components/DevicesModal';
 import BatteryLevel from '../../components/Battery';
 import { LastMeasurement } from '../../components/LastMeasurement';
 import ConnectDeviceButton from '../../components/ConnectDevice';
+import Pasturometer from '../../components/Pasturometer';
 
 
 
@@ -98,14 +99,7 @@ export default function HomeScreen(props: Props) {
             {/* TODO it should say conectado and when pressed show a moldal for disconnecting */}
             <VStack justifyContent='flex-end' marginBottom='15%' flex={1}>
                 {bleConnectionState == 'connected' ?
-                    <Button
-                        onPress={() => disconnectFromDevice()}
-                        size="lg"
-                    // colorScheme='amber'
-                    >
-                        {/* TODO ver cuando cambia */}
-                        Desvincular Pasturometro
-                    </Button>
+                    <Pasturometer/>
                     :
                     <ConnectDeviceButton />
 

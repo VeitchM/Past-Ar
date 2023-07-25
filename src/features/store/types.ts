@@ -18,6 +18,9 @@ type ErrorBleState = {}
 type DeviceSerializable = {
     id: string
     name: string | null
+    alias:string | null
+    plateWidth: number | null
+
 }
 
 import { InterfaceAlertProps } from "native-base/lib/typescript/components/composites/Alert/types";
