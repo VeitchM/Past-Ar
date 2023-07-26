@@ -1,0 +1,1 @@
+export type DeviceMin = {id:string, name:string | null}

@@ -1,7 +1,6 @@
 /* eslint-disable no-bitwise */
 /** It must be on Upper Case, its value its used for filtering devices will scanning */
 const DEVICE_BRAND = 'PASTUROMETRO'
-const DEFAULT_PLATE_WIDTH = 1.8
 
 const RECONNECTIONS_INTENTS = 4
 const TIME_BETWEEN_RECONNECTIONS = 1000
@@ -33,6 +32,9 @@ import { DeviceSerializable } from "../store/types";
 
 const bleManager = new BleManager()
 requestPermissions()
+
+
+
 //
 console.log('Ble imported');
 
@@ -65,7 +67,7 @@ const onAnomalousDisconnection = (deviceId: string) => {
     if (store.getState().ble.connectionState != 'disconnected' && device) {
       store.dispatch(setTryingToConnect());
       store.dispatch(addNotification({ title: 'El Pasturometro se ha desconectado', status: 'error' }))
-      tryToReconnect({ id: device.id, name: device.name,plateWidth:null,alias:device.name }, RECONNECTIONS_INTENTS);
+      tryToReconnect({ id: device.id, name: device.name}, RECONNECTIONS_INTENTS);
     }
 
     //Else it was disconnected by the method disconnectToDevice()
@@ -74,7 +76,7 @@ const onAnomalousDisconnection = (deviceId: string) => {
 
 
 /** try to reconnects to device, if it fails it will set connected device to null*/
-function tryToReconnect(device: DeviceSerializable, intentsLeft: number) {
+function tryToReconnect(device: DeviceMin, intentsLeft: number) {
 
   if (intentsLeft > 0)
     setTimeout(() => {
@@ -106,6 +108,7 @@ const scanForPeripherals = () => {
   try {
 
     console.log('Started Scanning');
+    updatePersistedDevices()
     bleManager.startDeviceScan(null, null, (error, device) => {
       if (error) {
         //errorCallback.current(error);
@@ -124,7 +127,7 @@ const scanForPeripherals = () => {
           // console.log(device);
           
 
-          store.dispatch(addDevice({ id: device.id, name: device.name,plateWidth:null,alias:device.name  }))
+          store.dispatch(addDevice(getDeviceIfExists(device.id, device.name)))
         }
       }
 
@@ -152,10 +155,10 @@ const stopScanningForPeripherals = () => {
  * 
  * @param device A device of type Device Serializable, 
  * the device should be provided by previously using scanForPeripherals, and just id will b used
- * 
+ * p
  * @preconditions Bluetooth must be on, and permissions granted
  */
-const connectToDevice = async (device: DeviceSerializable) => {
+const connectToDevice = async (device: DeviceMin) => {
   let deviceConnection = null
   let deviceIsConnected = await bleManager.isDeviceConnected(device.id)
   console.log('ConnectionToDevice called');
@@ -165,7 +168,7 @@ const connectToDevice = async (device: DeviceSerializable) => {
     try {
       deviceConnection = await bleManager.connectToDevice(device.id, { requestMTU: MTU });
       if (deviceConnection) {
-        store.dispatch(setConnectedDevice({ id: device.id, name: device.name,plateWidth:null,alias:device.name  }));
+        store.dispatch(setConnectedDevice(getDeviceIfExists(device.id,device.name)));
         await deviceConnection.discoverAllServicesAndCharacteristics();
         // It already stop scanning following the control flow of the screens, but it is an idempotent function so...
         stopScanningForPeripherals()
@@ -217,6 +220,9 @@ const disconnectFromDevice = async () => {
 import { onCharacteristicUpdate } from "./characteristicHandlers";
 import { addNotification } from "../store/notificationSlice";
 import { pushNotification } from "../utils";
+import { getPersistedDevices } from "../localDB/device"
+import { getDeviceIfExists, updatePersistedDevices } from "./persistedDevices"
+import { DeviceMin } from "./type";
 
 /** Set callbacks in monitors for each characteristic, it is called by the connectToDevice function
 *

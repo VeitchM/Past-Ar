@@ -91,7 +91,7 @@ function deviceRenderer(props: { item: DeviceSerializable, onSelected: any }) {
             <VStack width={200}>
                 {props.item.name ?
                     <>
-                        <Heading size='md'  >{props.item.name}</Heading>
+                        <Heading size='md'  >{props.item.alias}</Heading>
                         <HStack justifyContent="space-between">
                             <Text>ID</Text>
                             <Text>{props.item.id}</Text>

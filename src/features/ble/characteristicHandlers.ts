@@ -4,7 +4,7 @@ import base64 from "react-native-base64";
 import { getLocation } from "../location/location";
 
 //==== Types ====================
-import { Measurement } from "../store/types";
+import { DeviceSerializable, Measurement } from "../store/types";
 import { BleError, BleErrorCode, Characteristic } from "react-native-ble-plx";
 
 //==== Store =============================
@@ -101,10 +101,11 @@ async function rawDataToMeasurement(value: string): Promise<{ battery: number, m
 
 
         const battery = parseFloat(values[stringFields.BATERY])
-
+    const device = store.getState().ble.connectedDevice as DeviceSerializable
+    console.assert(device&&device.plateWidth,"Device wasnt on")
         const location = await getLocation()
         const measurement: Measurement = {
-            height: distanceCorrection(measurementValue, humidity, temperature),
+            height: distanceCorrection(measurementValue, humidity, temperature,device.plateWidth!),
             timestamp: Date.now(),
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -174,10 +175,10 @@ function speedOfSound(humidity: number, temperature: number) {
     return 331.4 + 0.6 * temperature + 0.0124 * humidity
 }
 
-function distanceCorrection(distance: number, humidity: number, temperature: number) {
+function distanceCorrection(distance: number, humidity: number, temperature: number,plateWidth: number) {
     // Add plate size in cm
-    const PLATE_SIZE = 1.34
+    // const PLATE_SIZE = 1.34
     // This numbers are defined on the device documentation
-    return distance * 58 * speedOfSound(humidity, temperature) / 20000 - PLATE_SIZE
+    return distance * 58 * speedOfSound(humidity, temperature) / 20000 - plateWidth
 
 }

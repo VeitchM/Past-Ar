@@ -1,5 +1,5 @@
 import { Button, HStack, Heading, Icon, Input, Modal, Text, VStack } from "native-base";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { disconnectFromDevice } from "../features/ble/ble";
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,9 +8,11 @@ import { StyleSheet } from "react-native";
 
 import { Feather } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import { persistDevice } from "../features/localDB/device";
 
 export default function Pasturometer() {
     const [showModal, setShowModal] = useState(false)
+
 
     return (
         <>
@@ -19,7 +21,7 @@ export default function Pasturometer() {
                 onPress={() => setShowModal(true)}
                 size="lg"
                 w='280'
-                rightIcon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='ruler' size={30}/>}
+                rightIcon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='ruler' size={30} />}
 
             // colorScheme='amber'
             >
@@ -30,9 +32,28 @@ export default function Pasturometer() {
     )
 }
 
+//TODO verify error
 
 function ModalPasturometer(props: { show: boolean, setShow: (show: boolean) => void }) {
     const store = useTypedSelector(state => state.ble)
+    const [alias, setAlias] = useState(store.connectedDevice?.alias || '')
+    const [plateWidth, setPlateWidth] = useState(store.connectedDevice?.plateWidth?.toString() || '')
+    const [errorPlateWidth, setErrorPlateWidth] = useState(false)
+    console.log({ devices: store.connectedDevice });
+
+
+    useEffect(() => {
+
+        setErrorPlateWidth(
+            isNaN(Number(plateWidth))
+        )
+
+    }, [plateWidth])
+
+
+    function save() {
+
+    }
 
     return (
 
@@ -59,24 +80,44 @@ function ModalPasturometer(props: { show: boolean, setShow: (show: boolean) => v
                         bg='transparent'
                         // onPress={() => console.log('Pressed')}
                         // textAlign='start'
+                        value={alias}
+                        onChangeText={setAlias}
                         textAlign='left'
                         fontWeight='normal'
                         marginTop={-4}
                         color='muted.400'
                         borderRadius={0}
-                        style={styles.input}>
-                            {store.connectedDevice?.alias} </Input>
+                        style={styles.input} />
+
+
                     <Heading size='md'>Nombre</Heading>
-                    <Text style={styles.text}>{store.connectedDevice?.name }</Text>
+                    <Text style={styles.text}>{store.connectedDevice?.name}</Text>
                     <Heading size='md'>MAC</Heading>
                     <Text style={styles.text}>{store.connectedDevice?.id}</Text>
-                    {/* <Modal.Body> */}
-                    {/* It throws warning to Flatlist  */}
-                    {/* <SafeAreaView> */}
 
-                    {/* <FlatList data={devices} renderItem={({ item }) => deviceRenderer({ item: item, onSelected: connectDevice })} keyExtractor={item => item.id} /> */}
-                    {/* </SafeAreaView> */}
-                    {/* </Modal.Body> */}
+
+                    <HStack style={{ justifyContent: 'space-between', }}>
+                        <Heading
+                            color={errorPlateWidth? 'error.400' : undefined } 
+                            size='md'>Grosor del Plato</Heading>
+                        <Icon as={Feather} name="edit-2" size={5} />
+                    </HStack>
+                    <Input
+                        variant="unstyled"
+                        bg='transparent'
+                        // onPress={() => console.log('Pressed')}
+                        value={plateWidth}
+                        onChangeText={setPlateWidth}
+                        // textAlign='start'
+                        textAlign='left'
+                        fontWeight='normal'
+                        marginTop={-4}
+                        color='muted.400'
+                        keyboardType='decimal-pad'
+                        borderRadius={0}
+                         isInvalid={errorPlateWidth}
+                        style={styles.input} />
+
                     <Button
                         onPress={() => disconnectFromDevice()}
                         size="lg"
@@ -98,7 +139,13 @@ function ModalPasturometer(props: { show: boolean, setShow: (show: boolean) => v
                         >
                             Salir
                         </Button>
-                        <Button _text={{ color: 'white' }} size='lg' colorScheme="info" onPress={() => { props.setShow(false); }}
+                        <Button _text={{ color: 'white' }} size='lg' colorScheme="info"
+                            isDisabled={!!store.connectedDevice && errorPlateWidth}
+                            onPress={() => {
+                                props.setShow(false);
+                                const device = store.connectedDevice
+                                device && !errorPlateWidth && persistDevice({ id: device.id, name: device.name, alias: alias, plateWidth: Number(plateWidth) })
+                            }}
                             rightIcon={<Icon as={Entypo} name='save' size='xl' />}>
                             Guardar
                         </Button>

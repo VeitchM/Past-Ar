@@ -160,6 +160,12 @@ const createTableQueries = [
         uid TEXT,
         FOREIGN KEY (ID) REFERENCES calibrationsFromFunction(ID) ON DELETE CASCADE
       );`,
+      `CREATE TABLE IF NOT EXISTS devices (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        alias TEXT,
+        plateWidth REAL
+      );`
 
 
 ]
