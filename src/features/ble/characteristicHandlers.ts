@@ -179,6 +179,6 @@ function distanceCorrection(distance: number, humidity: number, temperature: num
     // Add plate size in cm
     // const PLATE_SIZE = 1.34
     // This numbers are defined on the device documentation
-    return distance * 58 * speedOfSound(humidity, temperature) / 20000 - plateWidth
+    return distance * 58 * speedOfSound(humidity, temperature) / 20000 + plateWidth
 
 }

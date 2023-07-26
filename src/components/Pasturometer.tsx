@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import { disconnectFromDevice } from "../features/ble/ble";
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTypedSelector } from "../features/store/storeHooks";
+import { useTypedDispatch, useTypedSelector } from "../features/store/storeHooks";
 import { StyleSheet } from "react-native";
 
 import { Feather } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { persistDevice } from "../features/localDB/device";
+import { setConnectedDevice } from "../features/store/bleSlice";
 
 export default function Pasturometer() {
     const [showModal, setShowModal] = useState(false)
@@ -36,9 +37,14 @@ export default function Pasturometer() {
 
 function ModalPasturometer(props: { show: boolean, setShow: (show: boolean) => void }) {
     const store = useTypedSelector(state => state.ble)
+   
     const [alias, setAlias] = useState(store.connectedDevice?.alias || '')
     const [plateWidth, setPlateWidth] = useState(store.connectedDevice?.plateWidth?.toString() || '')
     const [errorPlateWidth, setErrorPlateWidth] = useState(false)
+
+    const dispatch = useTypedDispatch()
+
+
     console.log({ devices: store.connectedDevice });
 
 
@@ -98,7 +104,7 @@ function ModalPasturometer(props: { show: boolean, setShow: (show: boolean) => v
 
                     <HStack style={{ justifyContent: 'space-between', }}>
                         <Heading
-                            color={errorPlateWidth? 'error.400' : undefined } 
+                            color={errorPlateWidth ? 'error.400' : undefined}
                             size='md'>Grosor del Plato</Heading>
                         <Icon as={Feather} name="edit-2" size={5} />
                     </HStack>
@@ -115,7 +121,7 @@ function ModalPasturometer(props: { show: boolean, setShow: (show: boolean) => v
                         color='muted.400'
                         keyboardType='decimal-pad'
                         borderRadius={0}
-                         isInvalid={errorPlateWidth}
+                        isInvalid={errorPlateWidth}
                         style={styles.input} />
 
                     <Button
@@ -144,7 +150,13 @@ function ModalPasturometer(props: { show: boolean, setShow: (show: boolean) => v
                             onPress={() => {
                                 props.setShow(false);
                                 const device = store.connectedDevice
-                                device && !errorPlateWidth && persistDevice({ id: device.id, name: device.name, alias: alias, plateWidth: Number(plateWidth) })
+                                if (device && !errorPlateWidth){
+
+                                    const newDevice = { id: device.id, name: device.name, alias: alias, plateWidth: Number(plateWidth) }
+                                    persistDevice(newDevice)
+                                    dispatch(setConnectedDevice(newDevice))
+                                    
+                                }
                             }}
                             rightIcon={<Icon as={Entypo} name='save' size='xl' />}>
                             Guardar
