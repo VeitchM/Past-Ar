@@ -129,7 +129,7 @@ export default function HomeCalibration({ navigation }: Props) {
                 <BlockButton text='Calibraciónes' onPress={() => { navigation.navigate('CalibrationsList') }} />
                 {/* TODO IF finalizar calibracion, o cargar datos de calibracion */}
                 <BlockButton onPress={() => { navigation.navigate('ForSendingCalibrations') }} text='Enviar calibracion' />
-                <BlockButton text='Ayuda' />
+                {/* <BlockButton text='Ayuda' /> */}
             </VStack>
 
         </VStack >
