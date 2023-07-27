@@ -1,0 +1,88 @@
+import { MeasurementForBack } from "../backend/types";
+import { Measurement } from "../store/types";
+import { SendStatus, execQuery, execTransaction } from "./localDB";
+import { TablesNames } from "./tablesDefinition";
+import { MeasurementLocalDB } from "./types";
+
+/** Get the unsent measurements from localDB, and marks them as sending  */
+export async function getMeasurementsForBack(): Promise<MeasurementForBack[]> {
+
+    return execTransaction(
+        [
+            `SELECT * FROM ${TablesNames.MEASUREMENTS} WHERE sendStatus = ${SendStatus.NOT_SENT}`,
+            `UPDATE ${TablesNames.MEASUREMENTS} SET sendStatus = ${SendStatus.SENDING} WHERE sendStatus = ${SendStatus.NOT_SENT}`,
+        ]
+    ).then((results) => {
+        const measurements = results[0].rows._array;
+        const forBackMeasurements = measurements.map((row) => {
+            return measurementToBackendFormat(row)
+        });
+        console.log(forBackMeasurements);
+
+        return forBackMeasurements
+    })
+
+
+}
+
+export function measurementToBackendFormat(row: any): MeasurementForBack {
+    return {
+
+        timestamp: new Date(row.timestamp).toISOString(),
+        height: row.height as number,
+        location: [row.longitude,row.latitude] as [number, number],
+    }
+}
+
+/** Get last measurement from localdb */
+export async function getLastMeasurement(){
+    return execQuery(`SELECT * FROM ${TablesNames.MEASUREMENTS} WHERE timestamp = (SELECT MAX(timestamp) FROM ${TablesNames.MEASUREMENTS})`)
+    .then(result => result.rows._array[0] as undefined | MeasurementLocalDB )
+}
+
+
+
+//** ==========================  INSERTS ==========================================  */
+
+/** Insert a measurement in de localDB with the column sent set to false(0) 
+ *  @param measurement A measurement struct which will be inserted into measurements table
+ *  @returns Promise<number> A promise which solves to the measurementID within the measurments table
+*/
+export async function insertMeasurement(measurement: Measurement) {
+
+    // TODO improve
+    let keys = ''
+    let placeHolder = ''
+    Object.keys(measurement).forEach((key) => {
+        keys = keys + key + ','
+        placeHolder = placeHolder + '?,'
+    })
+    const values = [...Object.values(measurement), 0]
+
+    return execQuery(`INSERT INTO measurements (${keys}sendStatus) values (${placeHolder}?)`, values)
+        .then((result) => result.insertId as number)
+
+}
+
+
+/** Insert a measurement in de localDB with the column sent set to false(0) 
+ * 
+ *  @param calibrationID The calibration's row ID
+ *  @param measurementID The measurement's row ID
+ *  @precondition A measurement with the given ID and a calibration with the given ID must be created
+ *  @returns Promise<string> with the calibrationMeasurementID within the measurments table
+*/
+export async function insertCalibrationMeasurement(calibrationID: number, measurementID: number) {
+    return execQuery(`INSERT INTO calibrationsMeasurements (ID,calibrationID,weight) values (?,?,?)`, [measurementID, calibrationID, 0])
+        .then((result) => result.insertId as number)
+
+}
+
+
+
+//=== GETTERS =================================================
+
+export async function getMeasurements() {
+    return execQuery(`SELECT * FROM measurements `, [])
+
+}

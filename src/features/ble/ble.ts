@@ -14,7 +14,7 @@ const MTU = 255
 
 import requestPermissions from "./blePermissionRequest";
 
-import { BleManager, Device, Subscription } from "react-native-ble-plx";
+import { BleErrorCode, BleManager, Device, Subscription } from "react-native-ble-plx";
 
 import { setConnectedDevice, addDevice, resetDevices, setTryingToConnect, setDisconnected } from "../store/bleSlice";
 
@@ -32,6 +32,9 @@ import { DeviceSerializable } from "../store/types";
 
 const bleManager = new BleManager()
 requestPermissions()
+
+
+
 //
 console.log('Ble imported');
 
@@ -63,8 +66,8 @@ const onAnomalousDisconnection = (deviceId: string) => {
     // docummentation lies, if i disconnect the device it also gives null error.
     if (store.getState().ble.connectionState != 'disconnected' && device) {
       store.dispatch(setTryingToConnect());
-      store.dispatch(addNotification({title:'El Pasturometro se ha desconectado',status:'error'}))
-      tryToReconnect({ id: device.id, name: device.name }, RECONNECTIONS_INTENTS);
+      store.dispatch(addNotification({ title: 'El Pasturometro se ha desconectado', status: 'error' }))
+      tryToReconnect({ id: device.id, name: device.name}, RECONNECTIONS_INTENTS);
     }
 
     //Else it was disconnected by the method disconnectToDevice()
@@ -73,19 +76,18 @@ const onAnomalousDisconnection = (deviceId: string) => {
 
 
 /** try to reconnects to device, if it fails it will set connected device to null*/
-function tryToReconnect(device: DeviceSerializable, intentsLeft: number) {
+function tryToReconnect(device: DeviceMin, intentsLeft: number) {
 
   if (intentsLeft > 0)
     setTimeout(() => {
       connectToDevice(device).then((deviceConnected) => {
 
         console.log('Try to reconnect:  interNum: ', intentsLeft, ' success: ', !!deviceConnected)
-        store.dispatch(addNotification({title:'El Pasturometro ha restablecido la conexion',status:'info'}))
         if (!deviceConnected)
           tryToReconnect(device, intentsLeft - 1)
         else {
           console.log('Reconnected');
-          // TODO Require data measured while disconnected from device
+          store.dispatch(addNotification({ title: 'El Pasturometro ha restablecido la conexion', status: 'info' }))
         }
       })
 
@@ -106,20 +108,26 @@ const scanForPeripherals = () => {
   try {
 
     console.log('Started Scanning');
+    updatePersistedDevices()
     bleManager.startDeviceScan(null, null, (error, device) => {
       if (error) {
         //errorCallback.current(error);
         console.error('Error scaning peripherals', error)
+        if(error.errorCode==BleErrorCode.BluetoothPoweredOff){
+          pushNotification('Encienda el bluetooth','error')
+        }
 
       }
       else {
 
         //console.log('Found Device ',device?.name);
         if (device && device.name?.toUpperCase().includes(DEVICE_BRAND)) {
-        // if (device) {
-          console.log('Scanned device');
+          // if (device) {
+          // console.log('Scanned device');
+          // console.log(device);
+          
 
-          store.dispatch(addDevice({ id: device.id, name: device.name }))
+          store.dispatch(addDevice(getDeviceIfExists(device.id, device.name)))
         }
       }
 
@@ -129,7 +137,7 @@ const scanForPeripherals = () => {
   }
   catch (error) {
     //errorCallback.current(e)
-    console.error(error)
+    console.error('Error scanning',error)
 
   }
 }
@@ -147,10 +155,10 @@ const stopScanningForPeripherals = () => {
  * 
  * @param device A device of type Device Serializable, 
  * the device should be provided by previously using scanForPeripherals, and just id will b used
- * 
+ * p
  * @preconditions Bluetooth must be on, and permissions granted
  */
-const connectToDevice = async (device: DeviceSerializable) => {
+const connectToDevice = async (device: DeviceMin) => {
   let deviceConnection = null
   let deviceIsConnected = await bleManager.isDeviceConnected(device.id)
   console.log('ConnectionToDevice called');
@@ -160,7 +168,7 @@ const connectToDevice = async (device: DeviceSerializable) => {
     try {
       deviceConnection = await bleManager.connectToDevice(device.id, { requestMTU: MTU });
       if (deviceConnection) {
-        store.dispatch(setConnectedDevice({ id: device.id, name: device.name }));
+        store.dispatch(setConnectedDevice(getDeviceIfExists(device.id,device.name)));
         await deviceConnection.discoverAllServicesAndCharacteristics();
         // It already stop scanning following the control flow of the screens, but it is an idempotent function so...
         stopScanningForPeripherals()
@@ -211,6 +219,10 @@ const disconnectFromDevice = async () => {
 
 import { onCharacteristicUpdate } from "./characteristicHandlers";
 import { addNotification } from "../store/notificationSlice";
+import { pushNotification } from "../utils";
+import { getPersistedDevices } from "../localDB/device"
+import { getDeviceIfExists, updatePersistedDevices } from "./persistedDevices"
+import { DeviceMin } from "./type";
 
 /** Set callbacks in monitors for each characteristic, it is called by the connectToDevice function
 *

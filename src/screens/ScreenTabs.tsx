@@ -48,7 +48,7 @@ export default function ScreenTabs() {
                     name="Calibration"
                     component={CalibrationStackScreen}
                     options={{
-                        tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Calibracion</Text>,
+                        tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Calibración</Text>,
                         tabBarIcon: ({ focused, color, size }) => <MaterialCommunityIcons size={45} name='ruler-square-compass' color={color} focused={focused} style={{ marginBottom: -3 }} />,
                     }}
                 />

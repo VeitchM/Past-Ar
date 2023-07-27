@@ -2,9 +2,9 @@ import { Box, Center, Heading, VStack, FormControl, Link, Input, Button, HStack,
 import { useTypedDispatch } from "../../features/store/storeHooks";
 import { addNotification } from "../../features/store/notificationSlice";
 import { useEffect, useState } from "react";
-import { login } from "../../features/backend/backend";
+import { signin } from "../../features/backend/backend";
 
-export default function LoginScreen() {
+export default function SigninScreen() {
 
 
   const dispatch = useTypedDispatch()
@@ -13,7 +13,7 @@ export default function LoginScreen() {
 
   const [password, setPassword] = useState<string>()
   const [email, setEmail] = useState<string>()
-
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     console.log('Email changed', email)
@@ -25,7 +25,7 @@ export default function LoginScreen() {
       {/* <VStack justifyContent=> */}
 
       <Box flex={0.8} maxHeight='500px' justifyContent='space-between'
-        safeArea p="2" py="0" w="90%" maxW="290">
+        safeArea p="2" py="0" w="90%" maxW="330">
         <VStack>
 
           <Heading
@@ -43,7 +43,7 @@ export default function LoginScreen() {
 
             <FormControl>
               <FormControl.Label>Email ID</FormControl.Label>
-              <Input value={email} onChangeText={setEmail} />
+              <Input value={email} keyboardType='email-address' onChangeText={setEmail} />
             </FormControl>
 
 
@@ -68,13 +68,14 @@ export default function LoginScreen() {
 
           <Button mt="2"
             isDisabled={!email || !password}
+            isLoading={isLoading}
             onPress={() => {
-              console.log(email,password);
-              
-              // dispatch(addNotification({ title: 'No se ha podido conectar con el servidor', status: 'error'
-              login(email!, password!)
-            }
-            }
+              setIsLoading(true)
+              signin(email!, password!)
+                .then(() => {
+                  setIsLoading(false)
+                })
+            }}
 
           >
             Ingresar

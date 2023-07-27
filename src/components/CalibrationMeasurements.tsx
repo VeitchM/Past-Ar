@@ -1,7 +1,7 @@
 import { Divider, FlatList, HStack, Heading, Spinner, Text, VStack, View } from "native-base";
 import { useEffect, useState } from "react";
-import { getCalibrationsMeasurements } from "../features/localDB/localDB";
 import { CalibrationLocalDB, MeasurementLocalDB } from "../features/localDB/types";
+import { getCalibrationsMeasurements } from "../features/localDB/calibrations";
 
 export default function CalibrationsMeasurements(props: { calibrationID: number }) {
 
@@ -23,13 +23,16 @@ export default function CalibrationsMeasurements(props: { calibrationID: number 
     }, [])
 
     return (
+
         <VStack marginTop={3}>
-            <Heading size='md'>Mediciones Realizadas</Heading>
+            {measurements && measurements.length > 0 ?
+                <Heading size='md'>Mediciones Realizadas</Heading> : null
+            }
             {measurements?.map((measurement) => <Item
-                // key={measurement.ID} 
-                item={measurement} />) || 
+                key={measurement.ID}
+                item={measurement} />) ||
                 <Spinner margin={10} color='info.500' size={100} />
-                }
+            }
         </VStack>
     )
 }

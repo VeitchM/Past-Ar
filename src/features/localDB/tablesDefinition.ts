@@ -1,3 +1,10 @@
+export enum TablesNames { USER='user',
+MEASUREMENTS='measurements' ,
+CALIBRATIONS= 'calibrations' , 
+CALIBRATIONS_FROM_MEASUREMENTS= 'calibrationsFromMeasurements' , 
+CALIBRATIONS_MEASUREMENTS='calibrationsMeasurements',
+CALIBRATIONS_FROM_FUNCTIONS= 'calibrationsFromFunction',
+CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER='calibrationsFromFunctionFromBackend'}
 //Too much complexity it doesn't justify itself
 
 import { ColumnDefinition, TableDefinition } from "./types";
@@ -7,7 +14,7 @@ const ID: ColumnDefinition = { name: 'ID', type: 'INTEGER PRIMARY KEY' }
 
 
 export const measurementsTableDefinition: TableDefinition = {
-    tableName: 'measurements',
+    tableName: TablesNames.MEASUREMENTS,
     columns: [
         ID,
         { name: 'height', type: 'REAL' },
@@ -18,7 +25,7 @@ export const measurementsTableDefinition: TableDefinition = {
     ]
 }
 export const calibrationsTableDefinition: TableDefinition = {
-    tableName: 'calibrations',
+    tableName: TablesNames.MEASUREMENTS,
     columns: [
         ID,
         { name: 'name', type: 'TEXT' },
@@ -26,14 +33,14 @@ export const calibrationsTableDefinition: TableDefinition = {
     ]
 }
 export const calibrationsFromMeasurementsTableDefinition: TableDefinition = {
-    tableName: 'calibrationsFromMeasurements',
+    tableName: TablesNames.CALIBRATIONS_FROM_MEASUREMENTS,
     columns: [
         ID,
         { name: 'sendStatus', type: 'INTEGER' },
     ]
 }
 export const calibrationsMeasurementsTableDefinition: TableDefinition = {
-    tableName: 'calibrationsMeasurements',
+    tableName: TablesNames.CALIBRATIONS_MEASUREMENTS,
     columns: [
         ID,
         { name: 'calibrationID', type: 'INTEGER' },
@@ -75,7 +82,7 @@ function createInsertQuery(table: TableDefinition) {
     return `insert into ${table} (${columnsNames}) values (${placeHolders.toString()})`
 }
 
-
+/** TODO not used, it could be deleted */
 export const insertQueries
     = {
     measurement: createInsertQuery(measurementsTableDefinition),
@@ -84,3 +91,4 @@ export const insertQueries
     calibrationsMeasurements: createInsertQuery(calibrationsMeasurementsTableDefinition),
    
 }
+

@@ -1,12 +1,18 @@
-import LoginScreen from "./LoginScreen"
+import { useTypedSelector } from "../../features/store/storeHooks"
+import SignedinScreen from "./SignedinScreen"
+import SigninScreen from "./SigninScreen"
 
-//TODO ASK TOBIAS for getting UserInfo is only with verify token? Looks alike
-//NO ASK HERNAN guardar la contrasena en texto plano en el sql de la aplicacion?
-// Hay virus en android?
-// en texto plano porque se envia en texto plano en el back
-// NO ASK TOBIAS si guardo el refresh token no debo guardar la contrasena, no
-// ASk TOBIAS cuanto dura el refresh tokenld
 
-export default function UserScreen(){
-    return (<LoginScreen/>)
+export default function UserScreen() {
+    const signedIn = useTypedSelector(state => state.backend.signIn)
+    return (
+        <>
+            {
+                signedIn ?
+                    <SignedinScreen />
+                    :
+                    <SigninScreen />
+            }
+        </>
+    )
 }

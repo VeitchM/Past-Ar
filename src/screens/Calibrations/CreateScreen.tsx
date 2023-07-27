@@ -1,13 +1,14 @@
 
 import { useEffect, useState } from "react";
 
-import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
+//==== Redux ======================================================
+import { useTypedDispatch} from "../../features/store/storeHooks";
+import { addNotification } from "../../features/store/notificationSlice";
 
 
 //==== Components ===========================================
-import { View, Text, Heading, Flex, Button, Select, HStack, VStack, Input, Icon, Slide, Alert, IconButton, CloseIcon } from "native-base";
-import ConnectDeviceButton from "../../components/ConnectDevice";
-import RoundedContainer from "../../components/RoundedContainer";
+import {  Heading, VStack, Input, Icon} from "native-base";
+import { NewCalibrationModal } from "../../components/CalibrationsModals";
 
 
 //==== Navigation ==============================================
@@ -18,20 +19,14 @@ type Props = NativeStackScreenProps<StackParamList, 'CreateCalibration'>;
 
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { NewCalibrationModal } from "../../components/CalibrationsModals";
-import { InterfaceAlertProps } from "native-base/lib/typescript/components/composites/Alert/types";
-import { calibrationExists } from "../../features/localDB/localDB";
-import { addNotification } from "../../features/store/notificationSlice";
+import { calibrationExists } from "../../features/localDB/calibrations";
 
 
 
 // TODO set Type
 export default function CreateCalibration({ navigation }: Props) {
     //Value represents id in database
-    const [calibrations, setCalibrations] = useState(
-        [{ label: 'Otoño', value: '14' },
-        { label: 'Verano', value: '19' },])
-    //change by redux later
+
 
     const [calibrationName, setCalibrationName] = useState<string>()
 
@@ -53,7 +48,7 @@ export default function CreateCalibration({ navigation }: Props) {
                     if (!exists)
                         callback()
                     else
-                        dispatch(addNotification({ title: 'Ya existe Calibracion con el mismo nombre', status: 'error' }))
+                        dispatch(addNotification({ title: 'Ya existe Calibración con el mismo nombre', status: 'error' }))
                 })
                 .catch((e) => console.error(e)
                 )
@@ -86,7 +81,7 @@ export default function CreateCalibration({ navigation }: Props) {
             <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
                 style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
                 <VStack style={{ marginTop: 80, alignItems: 'center' }}>
-                    <Heading size='xl' fontWeight='light' marginBottom={4} >Nombre de Calibracion</Heading>
+                    <Heading size='xl' fontWeight='light' marginBottom={4} >Nombre de Calibración</Heading>
                     <Input
 
                         fontSize={calibrationName ? 'xl' : 'lg'}
@@ -101,7 +96,7 @@ export default function CreateCalibration({ navigation }: Props) {
                 <VStack style={{ width: '100%' }} bg='muted.50'>
                     <BlockButton height={100}
 
-                        text="A partir de Funcion"
+                        text="A partir de Función"
                         isDisabled={!calibrationName}
                         icon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='function-variant' size={60}
                             color='muted.400'

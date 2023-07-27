@@ -7,33 +7,56 @@ import { Device } from 'react-native-ble-plx'
 
 //===== Could be moved to types.ts ========================
 
-type Tokens = {
+
+export type TokensResponse = {
+  access_token: string,
+  expires_in: number,
+  /** Seconds */
+  refresh_expires_in: number,
+  /** Seconds */
+  refresh_token: string
+}
+
+export type Tokens = {
   refreshToken?: string
   accessToken?: string,
+  timestamp?: number,
+  /** JS date timestamp */
   expiresIn?: number,
+  
+  /** JS date timestamp */
   refreshExpiresIn?: number
 }
 
-type User = {
-  uid: string,
-  name: string,
+export type User = {
+  id: string,
+  firstName: string,
+  lastName: string,
   email: string,
   roles: string[]
   groupUid: string
 }
 
+
+
 interface BackendState {
   tokens?: Tokens,
   user?: User
+  signIn:boolean
+  lastSync?: number
 
 
-  //TODO Separate in measurment slice, and ble slice, manage database from redux
-  //Create redux folder and put all the slices there, add to measurement a receiving calibration variable that change on focus, and if true insert CalibrationMeasure
 
 }
+
+
 //=========================================================
 
-const initialState: BackendState = {}
+const initialState: BackendState = {
+  signIn:false
+
+
+}
 
 
 //================Slice================================
@@ -50,15 +73,26 @@ export const backedSlice = createSlice({
       state.user = action.payload
     },
 
+    setSignIn: (state, action: PayloadAction<boolean>) => {
+      state.signIn = action.payload
+    },
+
     /** Sets the tokens */
     setTokens: (state, action: PayloadAction<Tokens>) => {
-      state.tokens = action.payload
+      state.tokens= action.payload
+     
+    },
+
+    /** Sets a timestamp with the last sync */
+    setLastSync: (state, action: PayloadAction<number>) => {
+      state.lastSync= action.payload
+     
     },
 
 
   }
 })
 
-export const { setTokens, setUser } = backedSlice.actions
+export const { setTokens, setUser,setSignIn, setLastSync } = backedSlice.actions
 
 export default backedSlice.reducer

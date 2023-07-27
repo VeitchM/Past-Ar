@@ -1,5 +1,4 @@
 
-import { useFocusEffect } from "@react-navigation/native";
 
 //=========== Components ========================================
 import { Box, Button, Container, Flex, FormControl, HStack, Heading, Input, Text, View } from "native-base"
@@ -7,13 +6,11 @@ import { Box, Button, Container, Flex, FormControl, HStack, Heading, Input, Text
 //======= Navigation Prop
 import { StackParamList } from "./ScreenStack";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
-import { setCalibrationMeasurementID, setCalibrationModeOff, setCalibrationModeOn } from "../../features/store/measurementSlice";
-import { Alert } from "native-base";
-import { isValidElement, useCallback, useEffect, useMemo, useState } from "react";
-import CreateCalibration from "./CreateScreen";
-import { calibrationExists, insertCalibrationFromFunction } from "../../features/localDB/localDB";
+import { useTypedDispatch,  } from "../../features/store/storeHooks";
+import {  useEffect, useMemo, useState } from "react";
 import PolynomialFunction from "../../components/PolynomialFunction";
+import { calibrationExists, insertCalibrationFromFunction } from "../../features/localDB/calibrations";
+import { addNotification } from "../../features/store/notificationSlice";
 type Props = NativeStackScreenProps<StackParamList, 'CreateFunctionCalibration'>;
 
 
@@ -53,14 +50,14 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
                     await insertCalibrationFromFunction(route.params.name, coeficients.toString())
                 }
                 else {
-                    //TODO ya existe el nombre, notification
-                    console.log('Name already exists');
+                    
                 }
                 setIsCreating(false);
                 navigation.navigate('CalibrationsList')
             }
             catch (e) {
                 console.log('Error creating calibration', e);
+                dispatch(addNotification({title:'La calibracion ya existe',status:'warning'}))
                 //TODO mostrar error notificacion
                 console.error(e);
 
@@ -75,7 +72,7 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
 
             <View style={{minHeight:300, flex:.2}} >
 
-                <Text fontSize='lg' >Calibracion</Text>
+                <Text fontSize='lg' >Calibración</Text>
                 <Heading marginBottom={2}>{route.params.name}</Heading >
                 <Heading size='md' fontWeight='regular' >Introduzca coeficiente de Polinomios</Heading>
                 <FormControl
@@ -107,7 +104,7 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
                     marginTop={3}
                     isDisabled={!validForCreatingCalibration}
                     onPress={createCalibration}
-                >Crear Calibracion</Button>
+                >Crear Calibración</Button>
 
 
 

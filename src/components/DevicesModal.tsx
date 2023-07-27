@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { DeviceSerializable } from "../features/store/types"
 import { useTypedDispatch, useTypedSelector } from "../features/store/storeHooks"
 import { connectToDevice, scanForPeripherals, stopScanningForPeripherals } from "../features/ble/ble"
@@ -11,6 +11,7 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
 
 
     const dispatch = useTypedDispatch()
+    const [settingDevice, setSettingDevice] = useState(true)
 
     const devices: DeviceSerializable[] = useTypedSelector(state => state.ble.allDevices)
 
@@ -35,29 +36,7 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
         props.setShowModal(false)
     }
 
-    const deviceRenderer = (props: { item: DeviceSerializable, onSelected: any }) => (
 
-
-        <Button variant='unstyled' style={{ shadowColor: 'transparent' }} onPress={() => { props.onSelected(props.item) }}>
-
-
-            <VStack width={200}>
-                {props.item.name ?
-                    <>
-                        <Heading size='md'  >{props.item.name}</Heading>
-                        <HStack justifyContent="space-between">
-                            <Text>ID</Text>
-                            <Text>{props.item.id}</Text>
-                        </HStack>
-
-                    </>
-                    : <Heading size='md'  >{props.item.id}</Heading>
-                }
-            </VStack>
-        </Button>
-
-        // </Box>
-    )
 
     return (
 
@@ -66,11 +45,17 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
 
 
                 {/*  For some reason this makes all Explode <Modal.CloseButton /> */}
+
+
                 <Modal.Header flexDir='row' alignItems='center' justifyContent='space-between'>
                     <Heading size='md'>
-                        Buscando Dispositivos
+                        {settingDevice ?
+                            "Buscando dispositivos"
+                            :
+                            "Configurando dispositivo"
+                        }
                     </Heading>
-                    <Spinner size='lg' />
+                    {settingDevice ? <Spinner ml="2" size='lg' /> : null}
                 </Modal.Header>
                 {/* <Modal.Body> */}
                 {/* It throws warning to Flatlist  */}
@@ -84,7 +69,6 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
                         <Button _text={{ color: 'white' }} size='lg' colorScheme="danger" onPress={() => { props.setShowModal(false); }}>
                             Salir
                         </Button>
-
                     </Button.Group>
                 </Modal.Footer>
             </Modal.Content>
@@ -95,3 +79,30 @@ export default function DevicesModal(props: { showModal: boolean, setShowModal: 
 }
 
 //----------------------------------------------------------------------------------------------
+
+
+function deviceRenderer(props: { item: DeviceSerializable, onSelected: any }) {
+    return (
+
+
+        <Button variant='unstyled' style={{ shadowColor: 'transparent' }} onPress={() => { props.onSelected(props.item) }}>
+
+
+            <VStack width={200}>
+                {props.item.name ?
+                    <>
+                        <Heading size='md'  >{props.item.alias}</Heading>
+                        <HStack justifyContent="space-between">
+                            <Text>ID</Text>
+                            <Text>{props.item.id}</Text>
+                        </HStack>
+
+                    </>
+                    : <Heading size='md'  >{props.item.id}</Heading>
+                }
+            </VStack>
+        </Button>
+
+        // </Box>
+    )
+}

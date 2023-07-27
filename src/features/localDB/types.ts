@@ -1,3 +1,5 @@
+import { TablesNames } from "./tablesDefinition"
+
 type BaseLocalDB = {
     ID: number,
 
@@ -5,12 +7,13 @@ type BaseLocalDB = {
 }
 
 type SendStatusLocalDB = BaseLocalDB & {
-    sendStatus: 1 | 2 | 0,
+    sendStatus: 1 | 2 | 0 | 3,
 }
 
 export type MeasurementLocalDB = SendStatusLocalDB & {
     height: number,
     latitude: number,
+    longitude: number,
     timestamp: number,
 }
 
@@ -25,7 +28,7 @@ export type CalibrationLocalDBExtended = CalibrationLocalDB & {
     fromMeasurement:number,
 }
 
-export type calibrationsFromMeasurementsLocalDB = SendStatusLocalDB & {
+export type CalibrationsFromMeasurementsLocalDB = SendStatusLocalDB & {
     name:string,
     function:string,
 }
@@ -34,6 +37,8 @@ export type calibrationsMeasurementsLocalDB = SendStatusLocalDB & {
     calibrationID: number,
     weight: number,
 }
+
+export type calibrationsFromFunctionFromBackend = BaseLocalDB & {uid: string}
 
 
 
@@ -48,6 +53,10 @@ export type TableDefinition = {
 
 
 
-export type TablesNames = 'measurements' | 'calibrations' | 'calibrationsFromMeasurements' | 'calibrationsMeasurements'
+
+// export type TablesNames = 'user'|'measurements' | 'calibrations' | 'calibrationsFromMeasurements' | 'calibrationsMeasurements' | TablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER
 
 type SQLTypes = 'REAL' | 'TEXT' | 'INTEGER' | 'INTEGER PRIMARY KEY'
+
+export type SendableTables = 'measurements' | 'calibrationsFromMeasurements'
+
