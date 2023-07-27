@@ -56,7 +56,7 @@ export async function getCalibrationsForBack(): Promise<{ calibrationID: number,
 
 }
 
-/** It convert a calibration from measurement to a a from function from server */
+/** It converts a calibration in the DB from one based on measurement to a one based on function that comes from the backend*/
 export async function updateToCalibrationFunctionFromServer(calibrationID: number, backendCalibrationID: string) {
     const timestamp = new Date().valueOf()
     console.log({calibrationID,backendCalibrationID});

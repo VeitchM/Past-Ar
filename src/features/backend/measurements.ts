@@ -3,22 +3,31 @@ import { getMeasurements, getMeasurementsForBack } from "../localDB/measurements
 import store from "../store/store";
 import { pushNotification } from "../utils";
 import { mobileAPI } from "./config";
+import Permission from "./permission";
 import { MeasurementForBack } from "./types";
 import { createPayload } from "./utils";
 
 
 
+export async function synchronizeMeasurements(foreground?: boolean): Promise<boolean> {
+
+    if (Permission.postMeasurements()) {
+        return updateMeasurements(foreground)
+    }
+    return true
+}
+
 /** 
  * 
  * @param foreground If it is true it will push a notification if it succed or fails
  */
-export async function synchronizeMeasurements(foreground?: boolean): Promise<boolean> {
+export async function updateMeasurements(foreground?: boolean): Promise<boolean> {
     try {
 
         const measurements = await getMeasurementsForBack()
         console.log('Unsent measurements', JSON.stringify(measurements));
 
-        if (measurements.length > 0) {
+        if (measurements.length > 0 && store.getState().backend.user?.roles.find(rol => rol == 'OWNER' || 'ADMIN' || 'WORKER')) {
             const res = await postMeasurements(measurements)
             console.log(res);
             if (res.code)
