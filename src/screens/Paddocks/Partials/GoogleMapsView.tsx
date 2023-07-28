@@ -1,27 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
+import { LegacyRef, RefObject, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import MapView, { Callout, Marker, Polygon, Region, UrlTile, WMSTile } from "react-native-maps";
 import React from "react";
-import MapViewProps from "./MapViewInterface";
+import IMapView, { MapViewProps } from "./MapViewInterface";
 import * as FileSystem from 'expo-file-system'
-import DownloadTilesButton from "./DownloadTilesButton";
 import { useFocusEffect } from "@react-navigation/native";
 import { Measurement } from "../../../features/store/types";
 import { getMeasurementsBetween } from "../../../features/localDB/localDB";
 import { useTypedSelector } from "../../../features/store/storeHooks";
-import { Heading } from "native-base";
 
 
 const AppConstants = {
     TILE_FOLDER: `${FileSystem.documentDirectory}/tiles`,
     MAP_URL: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile',
 }
-export default function GoogleMapsView(props: MapViewProps) {
+function GoogleMapsView(props: MapViewProps, ref: React.Ref<IMapView>) {
 
     const [activeMeasurements, setActiveMeasurements] = useState<Measurement[]>([]);
     const filterState = useTypedSelector(state => state.filter);
-    const [isOffline, setIsOffline] = useState(false);
-
+    const [isOffline, setIsOffline] = useState(true);
+    const mapRef = useRef<MapView>(null)
     const urlTemplate = useMemo(
         () =>
             isOffline
@@ -31,9 +29,6 @@ export default function GoogleMapsView(props: MapViewProps) {
         []
     )
 
-    useEffect(() => {
-        updateRegion();
-    }, [])
 
     useFocusEffect(
         React.useCallback(() => {
@@ -56,32 +51,37 @@ export default function GoogleMapsView(props: MapViewProps) {
         console.log(filterState.enabled);
     }
 
-    function updateRegion() {
-        props.mapRef.current?.getCamera().then((cam) => {
-            setRegion({ latitude: cam.center.latitude, longitude: cam.center.longitude, zoom: cam.zoom, latitudeDelta: 0.02, longitudeDelta: 0.02 })
-        })
-    }
-
-    const [region, setRegion] = useState<Region & { zoom?: number }>({ latitude: 0, longitude: 0, latitudeDelta: 0.02, longitudeDelta: 0.02 });
+    useImperativeHandle(ref, () =>
+    ({
+        changeRegion(region: Region) {
+            mapRef.current?.animateToRegion(region, 1000);
+        },
+        getScreenRegion : async()=> {
+            let cam = await mapRef.current?.getCamera();
+            let lat = cam?.center.latitude || 1;
+            let lng = cam?.center.longitude || 1;
+            let zoom = cam?.zoom || 12;
+            return { latitude: lat, longitude: lng, zoom: zoom};
+        },
+    }));
 
     return (
         <>
             <MapView
                 mapPadding={{ top: 100, right: 10, bottom: 0, left: 0 }}
                 mapType={'satellite'}
-                ref={props.mapRef}
+                ref={mapRef}
                 style={{ width: '100%', height: '100%' }}
                 provider={'google'}
                 showsUserLocation
                 initialRegion={{
                     latitude: 0,
                     longitude: 0,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421
+                    latitudeDelta: 1,
+                    longitudeDelta: 1
                 }}
                 showsMyLocationButton={false}
-                onRegionChangeComplete={() => { props.onDrag() }}
-                onPress={() => { props.mapRef.current?.getCamera().then((cam) => { console.log(cam.zoom) }) }}
+                onRegionChangeComplete={() => { props.onDragEnd() }}
             >
                 <UrlTile
                     urlTemplate={urlTemplate}
@@ -121,6 +121,9 @@ export default function GoogleMapsView(props: MapViewProps) {
         </>
     )
 }
+
+export default forwardRef<IMapView, MapViewProps>(GoogleMapsView);
+
 
 const colors = [
     "#ffbe0b",

@@ -8,7 +8,7 @@ import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
 import { addPaddock, updatePaddock } from '../../features/store/paddockSlice';
-import { getPaddocks } from '../../features/localDB/localDB';
+import { getPaddocks, insertMeasurement } from '../../features/localDB/localDB';
 import { Paddock } from '../../features/store/types';
 import { CommonActions, useFocusEffect } from '@react-navigation/native';
 import { showAlert, showXmas } from '../../features/utils/Logger';
@@ -16,9 +16,11 @@ import { StackParamList } from './ScreenStack';
 import BottomSheetItem from './Partials/BottomSheetItem';
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import MapView, { LatLng, Region } from 'react-native-maps';
-import GoogleMapsView from "./Partials/GoogleMapsView";
 import fontColorContrast from 'font-color-contrast'
 import DownloadTilesButton from "./Partials/DownloadTilesButton";
+import IMapView from "./Partials/MapViewInterface";
+import MapboxView from "./Partials/MapboxView";
+import GoogleMapsView from "./Partials/GoogleMapsView";
 
 type Props = NativeStackScreenProps<StackParamList, 'PaddockHome'>;
 
@@ -28,14 +30,13 @@ export default function PaddockScreen(props: Props) {
     const [currentCoords, setCurrentCoords] = useState<LatLng>({ latitude: 0, longitude: 0 });
     const [paddockList, setPaddockList] = useState<Paddock[]>([]);
     const [infoOpen, setInfoOpen] = useState(false);
-    const [region, setRegion] = useState<Region & { zoom?: number }>({ latitude: 0, longitude: 0, latitudeDelta: 0.02, longitudeDelta: 0.02 });
-    const [update, setUpdate] = useState(true);
-    const [zoom, setZoom] = useState(1);
+    const [region, setRegion] = useState<LatLng & { zoom: number }>({ latitude: 0, longitude: 0, zoom:12});
     const filterState = useTypedSelector(state => state.filter);
     const sheetRef = useRef<BottomSheet>(null);
-    const mapRef = useRef<MapView>(null);
+    const mapRef = useRef<IMapView>(null);
     const snapPoints = ['12%', '60%'];
     const dispatch = useTypedDispatch();
+
 
     //---------FUNCTIONS----------//
     useEffect(() => {
@@ -58,12 +59,9 @@ export default function PaddockScreen(props: Props) {
         }, [])
     );
 
-    const updateRegion = () => {
-        mapRef.current?.getCamera().then((cam) => {
-            setRegion({ latitude: cam.center.latitude, longitude: cam.center.longitude, zoom: cam.zoom, latitudeDelta: 0.02, longitudeDelta: 0.02 })
-            if (cam.zoom) setZoom(cam.zoom);
-        })
-        setUpdate(true);
+    const updateRegion = async () => {
+        let r = await mapRef.current?.getScreenRegion();
+        if (r) setRegion(r);
     }
 
     /**
@@ -93,13 +91,14 @@ export default function PaddockScreen(props: Props) {
     }
 
     const fetchLocation = () => {
-        getLocation().then((value) => { changeRegion(value.coords.latitude, value.coords.longitude) }).catch((error) => { fetchLocation() });
+        getLocation().then((value) => { changeRegion(value.coords.latitude, value.coords.longitude) })
+        .catch((error) => { console.log(error); fetchLocation() });
     }
 
     function changeRegion(lat: Float, lng: Float) {
         const latitude = lat;
         const longitude = lng;
-        mapRef.current?.animateToRegion({
+        mapRef.current?.changeRegion({
             latitude: latitude,
             longitude: longitude,
             latitudeDelta: 0.0922,
@@ -137,6 +136,23 @@ export default function PaddockScreen(props: Props) {
                             {`lat: ${currentCoords.latitude + '\n'}lng: ${currentCoords.longitude}`}
                         </Heading>
                     }
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    function InsertMeasureTestButton() {
+        return (
+            <View flexDir={'row'} rounded={'full'} style={{ bottom: 310, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, padding: 15 }}>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {
+                    insertMeasurement({
+                        height: Math.random()*100,
+                        timestamp: Date.now(),
+                        latitude: currentCoords.latitude,
+                        longitude: currentCoords.longitude
+                    })
+                }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+                    <Icon as={FontAwesome5} size={8} name={'weight-hanging'} color='coolGray.600' />
                 </TouchableOpacity>
             </View>
         );
@@ -180,7 +196,7 @@ export default function PaddockScreen(props: Props) {
         return (
             <BottomSheet
                 ref={sheetRef} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#27ae60EE' }}
-                handleIndicatorStyle={{ backgroundColor: '#fff' }}>
+                handleIndicatorStyle={{ backgroundColor: '#fff' }} animateOnMount={false}>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', height: 50, marginBottom: 25 }}>
                     <Heading size="xl" color="coolGray.100"
                         style={{ marginLeft: 20, marginRight: 5, bottom: 2, textShadowOffset: { width: -0.5, height: 0.5 }, textShadowRadius: 5 }}
@@ -212,14 +228,16 @@ export default function PaddockScreen(props: Props) {
         );
     }
 
+
     //----------JSX-----------//
     return (
         <VStack bg='white' flex={1} alignItems='center'>
-            <GoogleMapsView key={'A' + filterState.enabled + filterState.from + filterState.until + update} mapRef={mapRef} paddockList={paddockList} onDrag={updateRegion} />
+            {/* <GoogleMapsView key={'A' + filterState.enabled + filterState.from + filterState.until} ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} /> */}
+            <MapboxView ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} />
             <ButtonDock />
             <LocationButton />
             <InfoButton />
-            <DownloadTilesButton mapRegion={region} onLongPress={updateRegion} />
+            <DownloadTilesButton mapRegion={region} zoomLevel={region.zoom} onLongPress={updateRegion} />
             <BottomSheetList />
         </VStack>
     );

@@ -1,4 +1,4 @@
-import { Region } from 'react-native-maps'
+import { LatLng, Region } from 'react-native-maps'
 
 export type Tile = {
     x: number
@@ -12,7 +12,7 @@ export default class MapUtils {
     }
 
     static tileGridForRegion(
-        region: Region,
+        region: LatLng,
         minZoom: number,
         maxZoom: number
     ): Tile[] {
@@ -42,7 +42,7 @@ export default class MapUtils {
         )
     }
 
-    private static tilesForZoom(region: Region, zoom: number): Tile[] {
+    private static tilesForZoom(region: LatLng, zoom: number): Tile[] {
         const distanceDelta = Math.exp(Math.log(360) - (zoom * Math.LN2));
         const minLon = region.longitude - distanceDelta
         const minLat = region.latitude - distanceDelta

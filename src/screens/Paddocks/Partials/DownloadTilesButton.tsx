@@ -2,7 +2,7 @@ import React, { FC, useState, useMemo } from 'react'
 import { StyleSheet, Slider, ActivityIndicator } from 'react-native'
 import * as FileSystem from 'expo-file-system'
 import { Button } from 'react-native-elements'
-import { Region } from 'react-native-maps'
+import { LatLng, Region } from 'react-native-maps'
 import { Card, IconButton, View, Text, Toast, Icon } from 'native-base';
 import { showAlert, showXmas } from '../../../features/utils/Logger';
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
@@ -10,7 +10,8 @@ import MapUtils from '../../../features/utils/MapUtils'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 type Props = {
-    mapRegion: Region & { zoom?: number }
+    mapRegion: LatLng
+    zoomLevel: number
     onLongPress: VoidFunction
 }
 
@@ -19,15 +20,12 @@ export const AppConstants = {
     MAP_URL: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile',
 }
 
-const DownloadTilesButton: FC<Props> = ({ mapRegion, onLongPress }) => {
+const DownloadTilesButton: FC<Props> = ({ mapRegion, zoomLevel, onLongPress }) => {
 
     const [numZoomLevels, setZoomLevels] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
     const currentZoom = useMemo(() => {
-        return (
-            mapRegion.zoom ? Math.round(mapRegion.zoom)
-                : calcZoom(mapRegion.longitudeDelta)
-        )
+        return ( Math.round(zoomLevel) );
     }, [mapRegion])
 
     async function fetchTiles() {
@@ -81,8 +79,8 @@ const DownloadTilesButton: FC<Props> = ({ mapRegion, onLongPress }) => {
                     Toast.show({ description: 'Deleted succesfully.' });
                     onLongPress();
                 }}>
+                    <ActivityIndicator animating={isLoading} size='large' style={{ bottom: -2, left: -2, position: 'absolute' }} color="coolGray.600" />
                     <Icon as={FontAwesome5} size={8} name={isLoading ? undefined : 'download'} color='coolGray.600' />
-                    <ActivityIndicator animating={isLoading} size='large' style={{ bottom: 17, left: 17, position: 'absolute' }} color="#ffffff" />
                 </TouchableOpacity>
             </View>
         )

@@ -1,13 +1,14 @@
-import MapView, { LatLng } from "react-native-maps";
+import MapView, { LatLng, Region } from "react-native-maps";
 import { Paddock } from "../../../features/store/types";
 
-export default interface MapViewProps {
+export interface MapViewProps{
     markerList?: LatLng[], 
     paddockList: Paddock[],
-    mapRef: React.RefObject<MapView>,
-    onDrag: VoidFunction
+    currentCoords?: LatLng,
+    onDragEnd(): void
 }
 
-export interface MapViewMethods {
-    onDragEnd: void;
+export default interface MapViewMethods {
+    changeRegion(region: Region): void,
+    getScreenRegion(): Promise<LatLng & {zoom: number}>
 }

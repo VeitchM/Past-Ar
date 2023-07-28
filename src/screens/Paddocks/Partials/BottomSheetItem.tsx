@@ -29,7 +29,7 @@ export default function BottomSheetItem({ title, points, index, backgroundColor,
         if (enabled == undefined) enabled = true;
         let contrast = fontColorContrast(color!.toString());
         //setIForeColor(contrast);
-    }, [foreColor,color])
+    }, [])
     
     //----------JSX-----------//
     return (

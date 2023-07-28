@@ -34,7 +34,7 @@ export default function FindInMapScreen(props: Props) {
     const [currentCoords, setCurrentCoords] = useState<{ latitude: number, longitude: number }>({ latitude: 0, longitude: 0 });
     const [actionStack, setActionStack] = useState<LatLng[]>([]);
     const [addingMode, isAddingMode] = useState(false);
-    const [isOffline, setIsOffline] = useState(true);
+    const [isOffline, setIsOffline] = useState(false);
     const [openInfo, setOpenInfo] = useState(false);
     const paddockList = useTypedSelector(state => state.paddock.paddocks);
     const [paddocks,setPaddocks] = useState<Paddock[]>([]);
