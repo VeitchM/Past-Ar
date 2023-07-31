@@ -1,10 +1,10 @@
 /* eslint-disable no-bitwise */
-/** It must be on Upper Case, its value its used for filtering devices will scanning */
-const DEVICE_BRAND = 'PASTUROMETRO'
+
+/** Its value its used for filtering devices will scanning */
+import { hardware as PASTUROMETER_PROPERTIES } from '../../../config.json'
 
 const RECONNECTIONS_INTENTS = 4
 const TIME_BETWEEN_RECONNECTIONS = 1000
-
 const MTU = 255
 
 // Important: When using expo, when you refresh all the variable are setted to their original states, 
@@ -28,7 +28,6 @@ import { DeviceSerializable } from "../store/types";
 
 
 
-//TODO MODAL SHOWING BLUETOOTH IS OFF
 
 const bleManager = new BleManager()
 requestPermissions()
@@ -67,7 +66,7 @@ const onAnomalousDisconnection = (deviceId: string) => {
     if (store.getState().ble.connectionState != 'disconnected' && device) {
       store.dispatch(setTryingToConnect());
       store.dispatch(addNotification({ title: 'El Pasturometro se ha desconectado', status: 'error' }))
-      tryToReconnect({ id: device.id, name: device.name}, RECONNECTIONS_INTENTS);
+      tryToReconnect({ id: device.id, name: device.name }, RECONNECTIONS_INTENTS);
     }
 
     //Else it was disconnected by the method disconnectToDevice()
@@ -113,19 +112,19 @@ const scanForPeripherals = () => {
       if (error) {
         //errorCallback.current(error);
         console.error('Error scaning peripherals', error)
-        if(error.errorCode==BleErrorCode.BluetoothPoweredOff){
-          pushNotification('Encienda el bluetooth','error')
+        if (error.errorCode == BleErrorCode.BluetoothPoweredOff) {
+          pushNotification('Encienda el bluetooth', 'error')
         }
 
       }
       else {
 
         //console.log('Found Device ',device?.name);
-        if (device && device.name?.toUpperCase().includes(DEVICE_BRAND)) {
+        if (device && device.name?.toUpperCase().includes(PASTUROMETER_PROPERTIES.DEVICE_BRAND.toUpperCase())) {
           // if (device) {
           // console.log('Scanned device');
           // console.log(device);
-          
+
 
           store.dispatch(addDevice(getDeviceIfExists(device.id, device.name)))
         }
@@ -137,7 +136,7 @@ const scanForPeripherals = () => {
   }
   catch (error) {
     //errorCallback.current(e)
-    console.error('Error scanning',error)
+    console.error('Error scanning', error)
 
   }
 }
@@ -168,7 +167,7 @@ const connectToDevice = async (device: DeviceMin) => {
     try {
       deviceConnection = await bleManager.connectToDevice(device.id, { requestMTU: MTU });
       if (deviceConnection) {
-        store.dispatch(setConnectedDevice(getDeviceIfExists(device.id,device.name)));
+        store.dispatch(setConnectedDevice(getDeviceIfExists(device.id, device.name)));
         await deviceConnection.discoverAllServicesAndCharacteristics();
         // It already stop scanning following the control flow of the screens, but it is an idempotent function so...
         stopScanningForPeripherals()

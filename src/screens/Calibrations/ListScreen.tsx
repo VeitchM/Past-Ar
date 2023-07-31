@@ -5,7 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 
 import { useTypedSelector } from "../../features/store/storeHooks";
 
-
+//==== Icons ==================================================
 import { Entypo } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -17,15 +17,13 @@ import { DeleteCalibrationModal, InfoCalibrationModal } from "../../components/C
 
 //==== LocalDB ==========================================
 import { CalibrationLocalDBExtended } from "../../features/localDB/types";
+import { deleteCalibration, getCalibrations } from "../../features/localDB/calibrations";
 
 //==== Navigation ==============================================
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { StackParamList } from "./ScreenStack";
-import { deleteCalibration, getCalibrations } from "../../features/localDB/calibrations";
-type Props = NativeStackScreenProps<StackParamList, 'CalibrationsList'>;
+import { PropsCalibrationList } from "./Stack.types";
 
 
-export default function CalibrationsList({ navigation }: Props) {
+export default function CalibrationsList({ navigation }: PropsCalibrationList) {
     //Value represents id in database
     const [calibrations, setCalibrations] = useState<CalibrationLocalDBExtended[]>()
 
@@ -35,14 +33,11 @@ export default function CalibrationsList({ navigation }: Props) {
 
 
     const refreshList = useCallback(() => {
-
         getCalibrations().then((calibrations) => {
             setCalibrations(calibrations)
-
         })
-
-
     }, [])
+
 
     useFocusEffect(refreshList)
 
@@ -50,9 +45,7 @@ export default function CalibrationsList({ navigation }: Props) {
         deleteCalibration(ID).then(() => {
             refreshList()
         })
-
     }
-
 
     const Item = useCallback((props: { item: CalibrationLocalDBExtended }) => {
         const { item } = props
@@ -94,8 +87,6 @@ export default function CalibrationsList({ navigation }: Props) {
     },[setSelectedCalibration,setShowDeleteModal])
 
 
-
-
     return (
         <>
             <DeleteCalibrationModal
@@ -108,7 +99,7 @@ export default function CalibrationsList({ navigation }: Props) {
                 info={selectedCalibration}
                 showModal={showInfoModal}
             />
-
+            
             <VStack alignItems='center' backgroundColor='white' flex={1} >
                 {calibrations ?
 

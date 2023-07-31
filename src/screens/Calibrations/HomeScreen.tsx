@@ -13,19 +13,17 @@ import RoundedContainer from "../../components/RoundedContainer";
 
 
 //==== Navigation ==============================================
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { StackParamList } from "./ScreenStack";
-import BlockButton from "../../components/BlockButton";
-type Props = NativeStackScreenProps<StackParamList, 'CalibrationHome'>;
+import { PropsCalibrationHome } from "./Stack.types";
 
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { CalibrationLocalDB } from "../../features/localDB/types";
 import { useFocusEffect } from "@react-navigation/native";
 import { getCalibrations, getCalibrationsFromMeasurementExtended } from "../../features/localDB/calibrations";
+import BlockButton from "../../components/BlockButton";
 
 
-export default function HomeCalibration({ navigation }: Props) {
+export default function HomeCalibration({ navigation }: PropsCalibrationHome) {
 
 
 

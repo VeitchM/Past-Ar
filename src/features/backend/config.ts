@@ -1,3 +1,4 @@
-export const backendURL = 'http://192.168.0.184:4001'
-export const backendAPIVersion = 'v1'
+import { backend } from '../../../config.json'
+const backendURL = backend.URL
+const backendAPIVersion = backend.API_VERSION
 export const mobileAPI = `${backendURL}/mobile-api/${backendAPIVersion}`

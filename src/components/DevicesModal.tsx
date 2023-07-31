@@ -96,7 +96,6 @@ function deviceRenderer(props: { item: DeviceSerializable, onSelected: any }) {
                             <Text>ID</Text>
                             <Text>{props.item.id}</Text>
                         </HStack>
-
                     </>
                     : <Heading size='md'  >{props.item.id}</Heading>
                 }
