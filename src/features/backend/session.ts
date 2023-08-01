@@ -75,6 +75,10 @@ function signedIn(res: TokensResponse) {
 
     persistUserData({ ...tokens, ...userData, signedIn: true })
 
+    synchronize()
+    setSynchronizeDataInterval()
+    setRefreshTokenInterval()
+
     console.log('Signed in', new Date());
 }
 
@@ -148,7 +152,8 @@ export function refreshToken() {
                             
                         }
                         else {
-                            console.error('Refresh token not active');
+
+                            console.error('Refresh token not active',resObject);
                             signout()
 
                         }
