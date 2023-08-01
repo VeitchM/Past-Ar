@@ -9,17 +9,9 @@ import CreateCalibration from "./CreateScreen";
 import CalibrationsList from "./ListScreen";
 import CreateFunctionCalibration from "./CreateFunctionScreen";
 import ForSendingCalibrationsScreen from "./ForSendingCalibrationsScreen";
+import { StackParamList } from "./Stack.types";
 
 
-export type StackParamList = {
-    CalibrationHome: undefined;
-    CalibrationMeasurement: { calibrationID: number, calibrationName: string };
-    SetCalibrations: { sort: 'latest' | 'top' } | undefined;
-    CreateCalibration: undefined;
-    CalibrationsList: undefined;
-    CreateFunctionCalibration: { name: string };
-    ForSendingCalibrations: undefined
-};
 
 const Stack = createNativeStackNavigator<StackParamList>();
 

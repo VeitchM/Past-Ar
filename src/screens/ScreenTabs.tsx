@@ -10,9 +10,10 @@ import { FontAwesome, FontAwesome5,MaterialCommunityIcons, Ionicons } from '@exp
 import { StatusBar, Text } from 'native-base';
 import HomeCalibration from './Calibrations/HomeScreen';
 import UserScreen from './User/User';
+import { RootTabsParamList } from './Tabs.types';
 
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootTabsParamList>();
 
 
 export default function ScreenTabs() {
@@ -26,7 +27,7 @@ export default function ScreenTabs() {
 
 
             <Tab.Navigator
-                initialRouteName='home'
+                initialRouteName='Home'
                 backBehavior='history'
                 screenOptions={{
                     tabBarStyle: { height: 60 },

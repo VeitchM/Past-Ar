@@ -4,64 +4,47 @@
 
 
 import { useCallback, useEffect, useState } from "react";
-import { ListRenderItem } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
 
-
-import { Entypo } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+//==== Icons ===================================================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 //==== Components ===========================================
-import { Heading, HStack, VStack, FlatList, IconButton, Divider, Icon, Pressable, Spinner, Checkbox, Button } from "native-base";
-import { DeleteCalibrationModal, InfoCalibrationModal } from "../../components/CalibrationsModals";
+import { Heading, HStack, VStack, FlatList, Divider, Icon, Pressable, Spinner, Checkbox, Button } from "native-base";
+import { InfoCalibrationModal } from "../../components/CalibrationsModals";
 
 
 //==== LocalDB ==========================================
-import { CalibrationLocalDBExtended, CalibrationsFromMeasurementsLocalDB, calibrationsMeasurementsLocalDB } from "../../features/localDB/types";
-
-//==== Navigation ==============================================
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { StackParamList } from "./ScreenStack";
+import { CalibrationsFromMeasurementsLocalDB } from "../../features/localDB/types";
 import { TablesNames } from "../../features/localDB/tablesDefinition";
-import { addNotification } from "../../features/store/notificationSlice";
-import { Notification } from "../../features/store/types";
 import { getCalibrationsFromMeasurementExtended } from "../../features/localDB/calibrations";
 import { SendStatus, setSendStatus } from "../../features/localDB/localDB";
-type Props = NativeStackScreenProps<StackParamList, 'ForSendingCalibrations'>;
+
+//==== Navigation ==============================================
+import { PropsCalibrationForSending } from "./Stack.types";
+
+import { addNotification } from "../../features/store/notificationSlice";
 
 
 
 
-export default function ForSendingCalibrationsScreen({ navigation }: Props) {
+export default function ForSendingCalibrationsScreen({ navigation }: PropsCalibrationForSending) {
     //Value represents id in database
     const [calibrations, setCalibrations] = useState<CalibrationsFromMeasurementsLocalDB[]>()
 
     const [selectedCalibration, setSelectedCalibration] = useState<CalibrationsFromMeasurementsLocalDB>()
     const [showInfoModal, setShowInfoModal] = useState(false)
-    const [showDeleteModal, setShowDeleteModal] = useState(false)
-
-    const [groupValues, setGroupValues] = useState([]);
 
     const dispatch = useTypedDispatch()
 
-
     const refreshList = useCallback(() => {
-
         getCalibrationsFromMeasurementExtended().then((calibrations) => {
             setCalibrations(calibrations)
-
-
         })
-
-
     }, [])
-
     useFocusEffect(refreshList)
-
-
 
     const changeItemSendStatus = useCallback(
         (item: CalibrationsFromMeasurementsLocalDB, sendStatus: SendStatus) => {
@@ -86,8 +69,6 @@ export default function ForSendingCalibrationsScreen({ navigation }: Props) {
                 dispatch(addNotification({ status: 'Error', title: 'No se ha podido agregar a la cola de envio la calibracion: ' + item.name }))
                 changeItemSendStatus(item, item.sendStatus)
                 console.error(err);
-
-
             })
 
     }, [])
@@ -96,22 +77,14 @@ export default function ForSendingCalibrationsScreen({ navigation }: Props) {
     const Item = useCallback((props: { item: CalibrationsFromMeasurementsLocalDB }) => {
         const { item } = props
         return (
-
             < Pressable key={item.ID} onPress={() => {
                 console.log('aaaya')
                 setSelectedCalibration(item)
                 setShowInfoModal(true)
-            }
-            }
+            }}
             >
                 <HStack style={{ height: 60, flex: 1, paddingHorizontal: 30 }} backgroundColor='white' justifyContent='space-between' alignItems='center' >
-
-
-
-
                     <Heading >{item.name}</Heading>
-
-
                     <Checkbox value={item.ID.toString()} accessibilityLabel="forUploading" colorScheme="blue" size='lg'
                         icon={<Icon size='xl' as={<MaterialCommunityIcons name="upload" />} />}
                         isChecked={item.sendStatus === SendStatus.FOR_SENDING}
@@ -122,10 +95,7 @@ export default function ForSendingCalibrationsScreen({ navigation }: Props) {
                 <Divider />
             </Pressable >
         )
-    }, [setSelectedCalibration, setShowDeleteModal])
-
-
-
+    }, [setSelectedCalibration])
 
     return (
         <>
@@ -135,19 +105,15 @@ export default function ForSendingCalibrationsScreen({ navigation }: Props) {
                 info={selectedCalibration}
                 showModal={showInfoModal}
             />
-
             <VStack alignItems='center' backgroundColor='white' flex={1} >
                 {calibrations ?
-
                     <FlatList maxHeight='85%' minHeight='10%' width='100%' data={calibrations} renderItem={Item} />
                     :
                     <VStack height={500} justifyContent='center' >
                         <Spinner size={90} />
                     </VStack>
-
                 }
                 <Button onPress={() => navigation.goBack()}>Volver</Button>
-
             </VStack>
         </>
     )

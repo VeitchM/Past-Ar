@@ -7,10 +7,10 @@ import { Box, Container, Flex, Heading, Text, View } from "native-base"
 
 import { setCalibrationModeOff, setCalibrationModeOn } from "../../features/store/measurementSlice";
 
-
-//======= Navigation Prop
-import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
+//======= Navigation Props =========================
 import { PropsCalibrationMeasurement } from "./Stack.types";
+
+import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
 
 
 function CalibrationMeasurement({ navigation, route }: PropsCalibrationMeasurement) {
