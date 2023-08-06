@@ -1,7 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE, Polygon, Polyline, UrlTile } from 'react-native-maps';
 import { VStack, Heading, View, IconButton, Icon, Toast } from 'native-base';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { useTypedDispatch, useTypedSelector } from '../../features/store/storeHooks';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -16,15 +16,22 @@ import * as turf from '@turf/turf'
 import * as FileSystem from 'expo-file-system'
 import { TouchableHighlight } from 'react-native';
 import { getPaddocks } from '../../features/localDB/localDB';
+import ColorUtils from '../../features/utils/ColorUtils';
 
-type Props = NativeStackScreenProps<StackParamList, 'FindInMapScreen'>;
+type Props = NativeStackScreenProps<StackParamList, 'EditScreen'>;
 
 const AppConstants = {
     TILE_FOLDER: `${FileSystem.documentDirectory}/tiles`,
     MAP_URL: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile',
 }
 
-export default function FindInMapScreen(props: Props) {
+export default function EditScreenGoogle(props: Props) {
+
+    type Action = {
+        actionType: 'ADD' | 'MOVE',
+        oldCoord?: LatLng,
+        coord: LatLng
+    }
 
     //-------CONST & HOOKS---------//
     const { route, navigation } = props;
@@ -32,12 +39,12 @@ export default function FindInMapScreen(props: Props) {
     const [polygonVertices, setPolygonVertices] = useState<LatLng[]>([]);
     const [currentPointId, setCurretPointId] = useState(pointId);
     const [currentCoords, setCurrentCoords] = useState<{ latitude: number, longitude: number }>({ latitude: 0, longitude: 0 });
-    const [actionStack, setActionStack] = useState<LatLng[]>([]);
+    const [actionStack, setActionStack] = useState<Action[]>([]);
     const [addingMode, isAddingMode] = useState(false);
-    const [isOffline, setIsOffline] = useState(false);
+    const [isOffline, setIsOffline] = useState(true);
     const [openInfo, setOpenInfo] = useState(false);
     const paddockList = useTypedSelector(state => state.paddock.paddocks);
-    const [paddocks,setPaddocks] = useState<Paddock[]>([]);
+    const [paddocks, setPaddocks] = useState<Paddock[]>([]);
     const mapRef = useRef<MapView>(null);
     const dispatch = useTypedDispatch();
 
@@ -70,7 +77,7 @@ export default function FindInMapScreen(props: Props) {
             result.forEach((value) => {
                 let vertices: LatLng[] = JSON.parse(value.vertices_list!)
                 let paddockData: Paddock = { ID: value.ID, name: value.name, vertices: vertices }
-                if (vertices.length > 0 && !paddocks.some(p => { return p.ID == value.ID }) && paddockList[paddockId].ID!=value.ID) _paddocks = ([..._paddocks, paddockData]);;
+                if (vertices.length > 0 && !paddocks.some(p => { return p.ID == value.ID }) && paddockList[paddockId].ID != value.ID) _paddocks = ([..._paddocks, paddockData]);;
             });
             setPaddocks(_paddocks);
         })
@@ -92,8 +99,8 @@ export default function FindInMapScreen(props: Props) {
                 <TouchableOpacity activeOpacity={0.5} onPress={() => { setOpenInfo(!openInfo) }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
                     <Icon as={FontAwesome5} size={10} name={'info-circle'} color='coolGray.600' />
                     {!openInfo ? <></> :
-                        <Heading size={'sm'} color={'#34495e'} marginLeft={1} marginRight={1}>
-                            {addingMode ? 'Press map to add vertices' : `lat: ${currentCoords.latitude + '\n'}lng: ${currentCoords.longitude}`}
+                        <Heading maxWidth={230} size={'sm'} color={'#34495e'} marginLeft={1} marginRight={1}>
+                            {addingMode ? 'Presiona el mapa para agregar vertices' : `lat: ${currentCoords.latitude + '\n'}lng: ${currentCoords.longitude}`}
                         </Heading>
                     }
                 </TouchableOpacity>
@@ -102,7 +109,7 @@ export default function FindInMapScreen(props: Props) {
     }
 
     const fetchLocation = () => {
-        getLocation().then((value) => { changeRegion(value.coords.latitude, value.coords.longitude) }).catch((error) => { fetchLocation() });
+        getLocation().then((value) => { if (value) changeRegion(value.coords.latitude, value.coords.longitude) }).catch((error) => { fetchLocation() });
     }
 
     function changeRegion(lat: number, lng: number) {
@@ -125,7 +132,7 @@ export default function FindInMapScreen(props: Props) {
     const polygonOverlaps = (polygon: LatLng[], selectedPaddockUid?: number) => {
         let _polygon = latLngToPoly(polygon)
         return paddocks
-            .filter((paddock, index) => index !== selectedPaddockUid && paddock.vertices.length > 0)
+            .filter((paddock, index) => paddock.ID !== selectedPaddockUid && paddock.vertices.length > 0)
             .some(({ vertices }) => {
                 const aux = turf.intersect(_polygon, latLngToPoly(vertices));
                 return !!aux;
@@ -135,7 +142,7 @@ export default function FindInMapScreen(props: Props) {
     const pointsIntersect = (points: LatLng[], selectedPaddockUid?: number) => {
         let _points = turf.lineString(points.map(e => { return [e.latitude, e.longitude] }));
         return paddocks
-            .filter((paddock, index) => index !== selectedPaddockUid && paddock.vertices.length > 0)
+            .filter((paddock, index) => paddock.ID !== selectedPaddockUid && paddock.vertices.length > 0)
             .some(({ vertices }) => {
                 const aux = turf.lineIntersect(_points, latLngToPoly(vertices));
                 return aux.features.length > 0;
@@ -177,7 +184,7 @@ export default function FindInMapScreen(props: Props) {
     const pointsInsidePolygon = (points: LatLng[], polygons: Paddock[], excludeId: number) => {
         let _points = turf.points(points.map((v) => { return [v.latitude, v.longitude] }))
         return polygons
-            .filter((paddock, index) => index !== excludeId)
+            .filter((paddock, index) => paddock.ID !== excludeId)
             .some(({ vertices }) => {
                 const aux = turf.pointsWithinPolygon(_points, latLngToPoly(vertices));
                 return aux.features.length;
@@ -198,7 +205,7 @@ export default function FindInMapScreen(props: Props) {
 
     const backButton = () => {
         return (
-            <TouchableHighlight style={{ borderRadius: 120, marginRight:5 }} underlayColor={'#99a3a455'}
+            <TouchableHighlight style={{ borderRadius: 120, marginRight: 5 }} underlayColor={'#99a3a455'}
                 onPress={() => {
                     navigation.dispatch(
                         CommonActions.navigate({
@@ -222,14 +229,14 @@ export default function FindInMapScreen(props: Props) {
      */
     function OtherPolygons() {
         return (<>{
-            paddocks.filter((p, i) => { return i != paddockId && p.vertices.length > 0 }).map((paddock, index) => {
+            paddocks.filter((p, i) => { return p.ID != paddockId && p.vertices.length > 0 }).map((paddock, index) => {
                 return (
                     !!paddock ?
                         <View key={'P' + index}>
                             <Polygon key={'Pol' + index}
                                 coordinates={paddock.vertices}
-                                strokeColor={colors[index]}
-                                fillColor={colors[index] + "75"}
+                                strokeColor={ColorUtils.getColor(index)}
+                                fillColor={ColorUtils.getColor(index) + "75"}
                                 strokeWidth={1}
                             ></Polygon>
                         </View>
@@ -242,33 +249,31 @@ export default function FindInMapScreen(props: Props) {
     /**
      * Renders Markers for each vertex of the current polygon.
      */
-    function PinList() {
-        return (<>{
+    const PinList = useCallback(() => {
+        return <>{
             polygonVertices.map((point, index) => {
                 return (
                     <Marker
                         coordinate={point}
-                        title={'' + index}
                         tracksViewChanges={false}
-                        description={`[${polygonVertices[index]?.latitude} ; ${polygonVertices[index]?.longitude}]`}
-                        draggable={(addingMode) || (!addingMode && index == currentPointId)}
+                        // title={'[PIN N° ' + index + ']'}
+                        // description={`[${polygonVertices[index]?.latitude} ; ${polygonVertices[index]?.longitude}]`}
+                        draggable={(addingMode)}
                         onDragEnd={(event) => {
                             let newCoords = event.nativeEvent.coordinate;
                             newCoords = {
                                 latitude: parseFloat(newCoords.latitude.toFixed(10)),
                                 longitude: parseFloat(newCoords.longitude.toFixed(10))
                             }
-                            let tmpVertices = [...polygonVertices];
-                            tmpVertices[index] = newCoords;
-                            setPolygonVertices(tmpVertices);
-                            setCurretPointId(index);
-                            setCurrentCoords(newCoords);
+                            let vertices = [...polygonVertices];
+                            if (!checkPinDrag(newCoords, index))
+                                setPolygonVertices(vertices);
                         }}
                         pinColor={
                             (addingMode ?
                                 ('#2ecc71')
                                 :
-                                (index == currentPointId ? '#C0392B' : '#3498db')
+                                (index == currentPointId ? '#f1c40f' : '#3498db')
                             )
                         }
                         key={'M' + index + '-' + (index == currentPointId) + '-' + addingMode}
@@ -279,8 +284,9 @@ export default function FindInMapScreen(props: Props) {
                             }
                         }}
                     />)
-            })}</>)
-    }
+            })
+        }</>
+    }, [polygonVertices, addingMode, currentPointId])
 
     /**
      * Renders the current polygon, has a fixed bg color and stroke color.
@@ -323,11 +329,8 @@ export default function FindInMapScreen(props: Props) {
      * @param newCoords New vertex coordinates.
      * @param pinId Paddock id in case is called for an update of coordinates value (Marker Drag)
      */
-    function updatePin(newCoords: LatLng, pinId?: number) {
-        let _vertices = [...polygonVertices];
-        if (pinId !== undefined)
-            _vertices[pinId] = newCoords;
-
+    function checkAndInsertPin(newCoords: LatLng, vertices?: LatLng[]) {
+        let _vertices = vertices ? [...vertices] : [...polygonVertices];
         let error = undefined; let poly = undefined; let index = -1;
         // Before all things checks if the new vertex is being added inside an existing polygon.
         if (pointsInsidePolygon([..._vertices, newCoords], paddocks, paddockId)) {
@@ -350,7 +353,7 @@ export default function FindInMapScreen(props: Props) {
             // Verifications for polygonVertices.length > 1
             else {
                 //Check if the new polygon will have crossed sides
-                let res = getPolygonWithPoint(polygonVertices, newCoords);
+                let res = getPolygonWithPoint(_vertices, newCoords);
                 poly = res?.poly; index = res?.index || -1;
                 if (!poly) {
                     error = 'Error, no se puede ubicar este punto.'
@@ -365,11 +368,73 @@ export default function FindInMapScreen(props: Props) {
         if (!error && !!poly) {
             setCurretPointId(_vertices.length);
             setCurrentCoords(newCoords);
-            setActionStack([...actionStack, newCoords]);
+            if (!vertices) setActionStack([...actionStack, { actionType: 'ADD', coord: newCoords }]);
             setPolygonVertices(poly);
         }
         else
             Toast.show({ 'description': error, bottom: 10 })
+    }
+
+    function checkPinDrag(newCoords: LatLng, pinId: number) {
+        let _vertices = [...polygonVertices];
+        let oldCoord = _vertices[pinId];
+        _vertices[pinId] = newCoords;
+
+        let error = undefined; let poly = undefined; let index = -1;
+        // Before all things checks if the vertex is inside an existing polygon.
+        if (pointsInsidePolygon(_vertices, paddocks, paddockId)) {
+            error = 'Error, ya existe potrero en ese punto';
+        }
+        else {
+            //Check if the new polygon will have crossed sides
+            let res = getPolygonWithPoint(polygonVertices.filter((p, i) => { return i != pinId }), newCoords);
+            poly = res?.poly; index = res?.index || -1;
+            if (!poly) {
+                error = 'Error, no se puede ubicar este punto.'
+            }
+            else {
+                //Check if the new polygon will overlap existing polygons
+                if (polygonOverlaps(_vertices, paddockId))
+                    error = 'Error, colisión de potreros';
+            }
+        }
+        if (!error && !!poly) {
+            setCurretPointId(pinId);
+            setCurrentCoords(newCoords);
+            setActionStack([...actionStack, { actionType: 'MOVE', oldCoord: oldCoord, coord: newCoords }]);
+            setPolygonVertices(poly);
+            return true;
+        }
+        else
+            Toast.show({ 'description': error, bottom: 10 })
+        return null;
+    }
+
+    function undoHandler() {
+        
+        if (addingMode && actionStack.length > 0) {
+            let tmpStack = [...actionStack];
+            let lastAction = tmpStack.pop();
+            let vertices = polygonVertices.filter((v, i) => { return v.latitude != lastAction?.coord.latitude && v.longitude != lastAction?.coord.longitude })
+            
+            if (actionStack.length == 1) {
+                setCurretPointId(0)
+                tmpStack = [];
+            }
+            else {
+                setCurretPointId(polygonVertices.length - 2);
+                setCurrentCoords(vertices[vertices.length - 1]);
+            }
+            setActionStack(tmpStack);
+
+            if (lastAction?.actionType == 'MOVE' && lastAction.oldCoord) {
+                checkAndInsertPin(lastAction.oldCoord, vertices);
+            }
+            else {
+                setPolygonVertices(vertices);
+            }
+        }
+        else isAddingMode(false);
     }
 
     /**
@@ -385,24 +450,7 @@ export default function FindInMapScreen(props: Props) {
                             borderWidth={3} rounded='full' variant='solid'
                             _icon={{ as: FontAwesome5, size: '3xl', name: addingMode && (actionStack.length > 0) ? 'undo' : 'ban' }}
                             style={{ marginBottom: 10, width: 70, height: 70 }}
-                            onPress={() => {
-                                if (addingMode && actionStack.length > 0) {
-                                    let tmpStack = [...actionStack];
-                                    let lastAction = tmpStack.pop();
-                                    let vertices = polygonVertices.filter((v, i) => { return v.latitude != lastAction?.latitude && v.longitude != lastAction?.longitude })
-                                    if (actionStack.length == 1) {
-                                        setCurretPointId(0)
-                                        tmpStack = [];
-                                    }
-                                    else {
-                                        setCurretPointId(polygonVertices.length - 2);
-                                        setCurrentCoords(vertices[vertices.length - 1]);
-                                    }
-                                    setActionStack(tmpStack);
-                                    setPolygonVertices(vertices);
-                                }
-                                else isAddingMode(false);
-                            }}>
+                            onPress={undoHandler}>
                         </IconButton>
                     }
                     <IconButton key={'dock2'} backgroundColor={'#d86e5f'}
@@ -410,8 +458,8 @@ export default function FindInMapScreen(props: Props) {
                         borderWidth={3}
                         icon={!addingMode ?
                             <>
-                                <Icon key={'I1'} as={FontAwesome5} name="map-marker-alt" color={'#fff'} size={'2xl'} position={'absolute'} left={2}></Icon>
-                                <Icon key={'I2'} as={FontAwesome5} name={"plus"} color={'#fff'} size={'lg'} position={'absolute'} right={1.5}></Icon>
+                                <Icon key={'I1'} as={FontAwesome5} name="map-marker-alt" color={'#fff'} size={'2xl'} position={'absolute'} left={4} bottom={6}></Icon>
+                                <Icon key={'I2'} as={FontAwesome5} name={"pen"} color={'#fff'} size={'lg'} position={'absolute'} right={3} bottom={3}></Icon>
                             </>
                             :
                             <Icon as={FontAwesome5} name={"check"} color={'#fff'} size={'2xl'}></Icon>
@@ -461,7 +509,7 @@ export default function FindInMapScreen(props: Props) {
             latitude: parseFloat(newCoords.latitude.toFixed(10)),
             longitude: parseFloat(newCoords.longitude.toFixed(10))
         }
-        if (addingMode) updatePin(newCoords)
+        if (addingMode) checkAndInsertPin(newCoords)
     }
 
     //----------JSX-----------//
@@ -489,7 +537,6 @@ export default function FindInMapScreen(props: Props) {
                     urlTemplate={urlTemplate}
                     zIndex={-1}
                 />
-                <PolyLine />
                 <OtherPolygons />
                 <PinList />
                 <CurrentPolygon />
@@ -500,37 +547,6 @@ export default function FindInMapScreen(props: Props) {
         </VStack >
     );
 };
-
-
-const colors = [
-    "#ffbe0b",
-    "#fb5607",
-    "#ff006e",
-    "#3a86ff",
-    "#7FFF00",
-    "#FFFF00",
-    "#FF6347",
-    "#00FFFF",
-    "#FF00FF",
-    "#FF1493",
-    "#FF69B4",
-    "#FF8C00",
-    "#FFD700",
-    "#00FF00",
-    "#00CED1",
-    "#FF4500",
-    "#FF00FF",
-    "#FF7F50",
-    "#00BFFF",
-    "#1E90FF",
-    "#ADFF2F",
-    "#FF6347",
-    "#FF69B4",
-    "#FF8C00",
-    "#FFD700",
-    "#00FF7F",
-    "#00CED1"
-]
 
 
 

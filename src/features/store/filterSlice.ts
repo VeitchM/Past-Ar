@@ -18,7 +18,8 @@ const initialState: FilterState = {
 interface PayloadType {
     enabled: boolean,
     from: number,
-    until: number
+    until: number,
+    paddockId?:number
 }
 
 export const filterSlice = createSlice({
@@ -29,6 +30,7 @@ export const filterSlice = createSlice({
             state.enabled = action.payload.enabled;
             state.from = action.payload.from;
             state.until = action.payload.until;
+            if (action.payload.paddockId) state.paddockId = action.payload.paddockId;
         }
     }
 })

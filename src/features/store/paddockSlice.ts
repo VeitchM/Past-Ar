@@ -58,13 +58,8 @@ export const paddockSlice = createSlice({
             }
         },
         deletePaddock: (state, action: PayloadAction<PayloadDeleteType>) => {
-
-            console.log('---------------')
-            console.log(action.payload)
             let temp = [...state.paddocks];
             state.paddocks = temp.filter((value, index) => { return index != action.payload.paddockId })
-            console.log('---------------')
-
         },
         emptyPaddocks: (state) => {
             state.paddocks = []

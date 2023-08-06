@@ -35,7 +35,8 @@ type Paddock = {
 type Filter = {
     enabled: boolean,
     from: number,
-    until: number
+    until: number,
+    paddockId?:number
 }
 
 export { MainCharacteristic, ErrorBleState, DeviceSerializable, Measurement, Notification, Paddock, Filter }

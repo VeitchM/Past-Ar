@@ -5,7 +5,8 @@ export interface MapViewProps{
     markerList?: LatLng[], 
     paddockList: Paddock[],
     currentCoords?: LatLng,
-    onDragEnd(): void
+    onDragEnd(): void,
+    onFinishLoad(): void
 }
 
 export default interface MapViewMethods {
