@@ -9,16 +9,10 @@ export default class WeightCalculus {
 
 export async function calculateByHeight(height:number,calibrationID:number) {
     let cal = await getCalibrations();
-    console.log(cal.filter(e=>{return e.ID == calibrationID})[0]);
-    if (cal.filter(e=>{return e.ID == calibrationID})[0].function){
-        return (processFunction(height, cal.filter(e=>{return e.ID == calibrationID})[0].function!.split(',').map(_ => { return parseInt(_) })))
+    let filtered = cal.filter(e=>{return e.ID == calibrationID});
+    if (filtered.length > 0 && filtered[0].function){
+        return (processFunction(height, filtered[0].function!.split(',').map(_ => { return parseInt(_) })))
     }
-    // for (const v of cal) {
-    //     if (v.function){
-    //         console.log(v.function.split(',').map(_ => { return parseInt(_) }));
-    //         return processFunction(height, v.function.split(',').map(_ => { return parseInt(_) }));
-    //     }
-    // }
     return 0;
 }
 
