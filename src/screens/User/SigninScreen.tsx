@@ -52,13 +52,13 @@ export default function SigninScreen() {
             <FormControl>
               <FormControl.Label>Contraseña</FormControl.Label>
               <Input type="password" value={password} onChangeText={setPassword} />
-              <Link _text={{
+              {/* <Link _text={{
                 fontSize: "xs",
                 fontWeight: "500",
                 color: "indigo.500"
               }} alignSelf="flex-end" mt="1">
                 Olvido su contraseña?
-              </Link>
+              </Link> */}
             </FormControl>
           </VStack>
           {/* </VStack> */}
@@ -81,7 +81,7 @@ export default function SigninScreen() {
             Ingresar
           </Button>
           <HStack mt="6" justifyContent="center">
-            <Text fontSize="sm" color="coolGray.600" _dark={{
+            {/* <Text fontSize="sm" color="coolGray.600" _dark={{
               color: "warmGray.200"
             }}>
               Soy un nuevo usuario.{"    "}
@@ -92,7 +92,7 @@ export default function SigninScreen() {
               fontSize: "sm"
             }} href="#">
               Crear cuenta
-            </Link>
+            </Link> */}
           </HStack>
         </VStack>
       </Box>
