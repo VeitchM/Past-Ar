@@ -1,8 +1,16 @@
 
 import * as SQLite from 'expo-sqlite';
+
 import { SendableTables } from './types';
 import { TablesNames } from './tablesDefinition';
 import { onInit } from '../backend/onInit';
+
+//---------TODO TRANSFORM PADDOCKS REQUESTS TO THE NEW DB SYSTEM------//
+import { Measurement } from '../store/types'
+//import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, calibrationsFromMeasurementsLocalDB, MeasurementLocalDB, PaddockLocalDB } from './types';
+import { LatLng } from 'react-native-maps';
+
+//--------------------------//
 
 const db = SQLite.openDatabase('pastar.db');
 
@@ -91,21 +99,56 @@ export async function setSendStatus(sendStatus: SendStatus, table: SendableTable
 
 }
 
+export async function insertPaddock( paddockName: string,vertices_list: LatLng[]) {
+    let json = JSON.stringify(vertices_list)
+    return execQuery(`INSERT INTO paddocks (name,vertices_list) values (?,?)`, [paddockName, json])
+        .then((result) => result.insertId as number)
+
+}
+
+export async function modifyPaddock( paddockName: string,vertices_list: LatLng[], paddockId: number) {
+    let json = JSON.stringify(vertices_list)
+    return execQuery(`UPDATE paddocks SET vertices_list = (?), name = (?) WHERE ID = (?)`, [json, paddockName, paddockId])
+        .then((result) => result.insertId as number)
+
+}
+
+//============ Getters ==========================================================
 
 
+export async function getMeasurements() {   //>>TO DELETE AFTER DB CHANGE
+    return execQuery(`SELECT * FROM measurements `, [])
+}
 
 
+export async function getMeasurementsBetween(from: number,until:number=(new Date()).getTime()) { //>>TO DELETE AFTER DB CHANGE
+    return execQuery(`SELECT * FROM measurements WHERE timestamp BETWEEN (?) AND (?)`, [
+        from, until
+    ])
+}
 
+export async function getPaddocks() { //>>TO DELETE AFTER DB CHANGE
+    return execQuery(
+    `SELECT ID, name, vertices_list FROM paddocks`
+    , [])
+        .then((result) => result.rows._array as PaddockLocalDB[])
+}
 
+//============ Deletes ==========================================================
 
+export async function deleteCalibration(ID: number) { //>>TO DELETE AFTER DB CHANGE
+    return execQuery(`DELETE FROM calibrations WHERE ID = ?`, [ID])
 
+}
 
+export async function removePaddock(ID: number) { //>>TO DELETE AFTER DB CHANGE
+    return execQuery(`DELETE FROM paddocks WHERE ID = (?)`, [ID])
+}
 
+export async function removeAllPaddocks() { //>>TO DELETE AFTER DB CHANGE
+    return execQuery(`DELETE FROM paddocks`)
 
-
-
-
-
+}
 
 const createTableQueries = [
     `CREATE TABLE IF NOT EXISTS measurements (
@@ -165,7 +208,10 @@ const createTableQueries = [
         name TEXT,
         alias TEXT,
         plateWidth REAL
-      );`
-
-
+      );`,
+      `CREATE TABLE IF NOT EXISTS paddocks (
+          ID INTEGER PRIMARY KEY,
+          name TEXT,
+          vertices_list TEXT
+      );`,
 ]

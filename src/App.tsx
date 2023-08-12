@@ -1,45 +1,36 @@
-import { LogBox } from 'react-native';
+import { customFonts, themeNative, themeNavigation } from './theme';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { NativeBaseProvider } from 'native-base';
-
 import { Provider } from 'react-redux';
-import store from './features/store/store';
-
-
-//ble is imported just to be executed
-import ble from './features/ble/ble'
-ble // Dont delete, it force the import
-
-import { onInit } from './features/localDB/onInit';
-onInit()
-
-import { customFonts, themeNative, themeNavigation } from './theme';
-import ScreenTabs from './screens/ScreenTabs';
 import { useFonts } from 'expo-font';
-
+import { LogBox } from 'react-native';
 import AlertsManager from './components/NotificationManager';
-
+import ScreenTabs from './screens/ScreenTabs';
+import store from './features/store/store';
+import ble from './features/ble/ble'; //ble is imported just to be executed
+import { onInit } from './features/localDB/onInit';
+  
+ble; // Do not delete this, it forces the import
+onInit()
+  
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
-
-
-
 
 export default function App() {
   const [fontLoaded] = useFonts(customFonts)
+
   if (!fontLoaded)
     return <></>
-
-
-
   return (
-    <Provider store={store}>
-      <NativeBaseProvider theme={themeNative}>
-
-        <NavigationContainer theme={themeNavigation} >
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider store={store}>
+        <NativeBaseProvider theme={themeNative}>
+          <NavigationContainer theme={themeNavigation} >
             <ScreenTabs />
-        </NavigationContainer>
-        <AlertsManager />
-      </NativeBaseProvider>
-    </Provider>
+          </NavigationContainer>
+          <AlertsManager />
+        </NativeBaseProvider>
+      </Provider>
+    </GestureHandlerRootView>
   )
 }

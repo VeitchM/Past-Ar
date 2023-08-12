@@ -21,9 +21,13 @@ const LOCATION_TASK_NAME = 'background-location-task';
 
 //TODO maybe it should set on Redux the permission granted
 
-export async function getLocation()  {
-    const location = await Location.getCurrentPositionAsync()
-    console.log('Get location:',location);
-    
-    return location
+export async function getLocation() {
+    try {
+        const location = await Location.getCurrentPositionAsync()
+        console.log('Get location:', location);
+        return location
+    }
+    catch(e){
+        return undefined;
+    }
 }
