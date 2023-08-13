@@ -3,9 +3,11 @@ import * as SQLite from 'expo-sqlite';
 import { SendableTables } from './types';
 import { TablesNames } from './tablesDefinition';
 import { onInit } from '../backend/onInit';
+import { Measurement } from '../store/types'
+//import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, calibrationsFromMeasurementsLocalDB, MeasurementLocalDB, PaddockLocalDB } from './types';
+import { LatLng } from 'react-native-maps';
 
 const db = SQLite.openDatabase('pastar.db');
-
 
 
 //We declare foreigns key, for that, we should import a pragma module 
@@ -34,9 +36,6 @@ function dropTables(tableName: TablesNames): void {
 function createTables() {
     execTransaction(createTableQueries)
 }
-
-
-
 
 //======== Query Wrapper ==========================================================
 
@@ -72,9 +71,7 @@ export async function execTransaction(queries: string[], values: Array<any>[] = 
     })
 }
 
-
 export enum SendStatus { NOT_SENT, SENT, SENDING, FOR_SENDING }
-
 
 
 /** Set all rows which are marked as sending to SENT if success is true, and to NOT_SENT if it is false,   */
@@ -92,20 +89,28 @@ export async function setSendStatus(sendStatus: SendStatus, table: SendableTable
 }
 
 
+export async function getPaddocks() {
+    return execQuery(
+    `SELECT ID, name, vertices_list FROM paddocks`
+    , [])
+        .then((result) => result.rows._array as PaddockLocalDB[])
+}
 
+//============ Deletes ==========================================================
 
+export async function deleteCalibration(ID: number) {
+    return execQuery(`DELETE FROM calibrations WHERE ID = ?`, [ID])
 
+}
 
+export async function removePaddock(ID: number) {
+    return execQuery(`DELETE FROM paddocks WHERE ID = (?)`, [ID])
+}
 
+export async function removeAllPaddocks() {
+    return execQuery(`DELETE FROM paddocks`)
 
-
-
-
-
-
-
-
-
+}
 
 const createTableQueries = [
     `CREATE TABLE IF NOT EXISTS measurements (
@@ -165,7 +170,11 @@ const createTableQueries = [
         name TEXT,
         alias TEXT,
         plateWidth REAL
-      );`
-
+      );`,
+      `CREATE TABLE IF NOT EXISTS paddocks (
+        ID INTEGER PRIMARY KEY,
+        name TEXT,
+        vertices_list TEXT
+      );`,
 
 ]
