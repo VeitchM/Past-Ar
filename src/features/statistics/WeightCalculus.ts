@@ -1,4 +1,4 @@
-import { getCalibrations } from "../localDB/localDB";
+import { getCalibrations } from "../localDB/calibrations";
 import { Measurement } from "../store/types";
 import React from "react";
 

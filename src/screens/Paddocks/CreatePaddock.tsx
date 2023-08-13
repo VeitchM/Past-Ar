@@ -10,7 +10,8 @@ import { LatLng } from 'react-native-maps';
 import { addPaddock, deletePaddock, emptyPaddocks, updatePaddock } from '../../features/store/paddockSlice';
 import { addNotification } from '../../features/store/notificationSlice';
 import { getLocation } from '../../features/location/location';
-import { insertPaddock, modifyPaddock, removePaddock } from '../../features/localDB/localDB';
+import { insertPaddock, modifyPaddock, removePaddock } from '../../features/localDB/paddocks';
+
 
 type Props = NativeStackScreenProps<StackParamList, 'CreatePaddock'>;
 

@@ -15,10 +15,10 @@ import { Paddock } from '../../features/store/types';
 import * as turf from '@turf/turf'
 import * as FileSystem from 'expo-file-system'
 import { TouchableHighlight } from 'react-native';
-import { getPaddocks } from '../../features/localDB/localDB';
+import { getPaddocks } from '../../features/localDB/paddocks';
 import MapBoxGL, { getAnnotationsLayerID } from "@rnmapbox/maps";
 
-type Props = NativeStackScreenProps<StackParamList, 'FindInMapScreen'>;
+type Props = NativeStackScreenProps<StackParamList, 'EditScreen'>;
 
 const AppConstants = {
     TILE_FOLDER: `${FileSystem.documentDirectory}/tiles`,
@@ -104,7 +104,7 @@ export default function EditScreen(props: Props) {
     }
 
     const fetchLocation = () => {
-        getLocation().then((value) => { changeRegion(value.coords.latitude, value.coords.longitude) }).catch((error) => { fetchLocation() });
+        getLocation().then((value) => { if (value) changeRegion(value.coords.latitude, value.coords.longitude) }).catch((error) => { fetchLocation() });
     }
 
     function changeRegion(lat: number, lng: number) {

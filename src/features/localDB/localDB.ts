@@ -1,14 +1,8 @@
-
 import * as SQLite from 'expo-sqlite';
 import { SendableTables } from './types';
 import { TablesNames } from './tablesDefinition';
-import { onInit } from '../backend/onInit';
-import { Measurement } from '../store/types'
-//import { TablesNames, CalibrationLocalDB, CalibrationLocalDBExtended, calibrationsFromMeasurementsLocalDB, MeasurementLocalDB, PaddockLocalDB } from './types';
-import { LatLng } from 'react-native-maps';
 
 const db = SQLite.openDatabase('pastar.db');
-
 
 //We declare foreigns key, for that, we should import a pragma module 
 //with a query
@@ -16,16 +10,11 @@ db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {
     createTables()
 })
 
-
 //Does it work?
 db.exec([{ sql: 'SELECT load_extension("libspatialite.so")', args: [] }], false, (error) => {
     console.log(error);
 
 });
-
-
-// dropTables('calibrations')
-// dropTables(TablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER)
 
 //========= Create and Delete tables =============================================
 
@@ -73,7 +62,6 @@ export async function execTransaction(queries: string[], values: Array<any>[] = 
 
 export enum SendStatus { NOT_SENT, SENT, SENDING, FOR_SENDING }
 
-
 /** Set all rows which are marked as sending to SENT if success is true, and to NOT_SENT if it is false,   */
 export async function setSending(sendStatus: SendStatus, table: SendableTables) {
     // const measurements = new Array<MeasurementForFront>()
@@ -85,30 +73,6 @@ export async function setSending(sendStatus: SendStatus, table: SendableTables) 
 export async function setSendStatus(sendStatus: SendStatus, table: SendableTables, rowID: number) {
     const query = `UPDATE ${table} SET sendStatus = ${sendStatus} WHERE ID = ${rowID}`
     return execQuery(query)
-
-}
-
-
-export async function getPaddocks() {
-    return execQuery(
-    `SELECT ID, name, vertices_list FROM paddocks`
-    , [])
-        .then((result) => result.rows._array as PaddockLocalDB[])
-}
-
-//============ Deletes ==========================================================
-
-export async function deleteCalibration(ID: number) {
-    return execQuery(`DELETE FROM calibrations WHERE ID = ?`, [ID])
-
-}
-
-export async function removePaddock(ID: number) {
-    return execQuery(`DELETE FROM paddocks WHERE ID = (?)`, [ID])
-}
-
-export async function removeAllPaddocks() {
-    return execQuery(`DELETE FROM paddocks`)
 
 }
 

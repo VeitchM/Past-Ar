@@ -3,7 +3,6 @@ import { StackParamList } from "./ScreenStack";
 import { Box, Button, Divider, Heading, Icon, Modal, ScrollView, Select, View } from "native-base";
 import { ActivityIndicator, Dimensions, Text, TouchableHighlight, TouchableOpacity } from "react-native";
 import { LineChart } from "react-native-chart-kit";
-import { getCalibrations, getCalibrationsFromMeasurementExtended, getMeasurements, getMeasurementsBetween, insertMeasurement } from "../../features/localDB/localDB";
 import { useEffect, useState } from "react";
 import { getLocation } from "../../features/location/location";
 import { LocationObject } from "expo-location";
@@ -14,9 +13,12 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import DatePicker from "react-native-date-picker";
 import { CalibrationLocalDB } from "../../features/localDB/types";
 import FormatUtils from "../../features/utils/FormatUtils";
+
+import { getCalibrations, getCalibrationsFromMeasurementExtended } from "../../features/localDB/calibrations";
+import { getMeasurements, getMeasurementsBetween, insertMeasurement } from "../../features/localDB/measurements";
+
 const screenWidth = Dimensions.get("window").width;
 const Tab = createMaterialTopTabNavigator();
-
 
 type Props = NativeStackScreenProps<StackParamList, 'StatisticsHome'>;
 
@@ -134,7 +136,7 @@ export default function PaddockScreen(props: Props) {
     function MainScreen() {
         return (
             <ScrollView flex={1} contentContainerStyle={{ alignItems: 'center' }}>
-                <Select backgroundColor={'#fff'} width={Dimensions.get("window").width * 0.90} borderColor={'#27ae60'} borderWidth={1} marginTop={5} selectedValue={selectedCalibration + ''} onValueChange={itemValue => { setSelectedCalibration(Number.parseInt(itemValue)); readMeasurements(from.getTime(), until.getTime(), Number.parseInt(itemValue)) }}  placeholder="Elegir Calibración" >
+                <Select backgroundColor={'#fff'} width={screenWidth * 0.90} borderColor={'#27ae60'} borderWidth={1} marginTop={5} selectedValue={selectedCalibration + ''} onValueChange={itemValue => { setSelectedCalibration(Number.parseInt(itemValue)); readMeasurements(from.getTime(), until.getTime(), Number.parseInt(itemValue)) }}  placeholder="Elegir Calibración" >
                     {calibrations.map((calibration) => {
                         return <Select.Item
                             key={calibration.ID}
@@ -159,7 +161,7 @@ export default function PaddockScreen(props: Props) {
                                     }
                                 ]
                             }}
-                            width={Dimensions.get("window").width * 0.90} // from react-native
+                            width={screenWidth * 0.90} // from react-native
                             height={180}
                             yAxisSuffix=" cm"
                             yAxisInterval={1} // optional, defaults to 1

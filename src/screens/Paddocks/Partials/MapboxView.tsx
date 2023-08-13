@@ -5,7 +5,7 @@ import IMapView, { MapViewProps } from "./MapViewInterface";
 import * as FileSystem from 'expo-file-system'
 import { useFocusEffect } from "@react-navigation/native";
 import { Measurement } from "../../../features/store/types";
-import { getMeasurementsBetween } from "../../../features/localDB/localDB";
+import { getMeasurementsBetween } from "../../../features/localDB/measurements";
 import { useTypedSelector } from "../../../features/store/storeHooks";
 import MapBoxGL, { getAnnotationsLayerID } from "@rnmapbox/maps";
 
@@ -17,7 +17,7 @@ const AppConstants = {
     DEFAULT_MAP_ZOOM: 12
 }
 
-MapBoxGL.setAccessToken(null);
+MapBoxGL.setAccessToken('pk.eyJ1IjoibmVzY3VkZSIsImEiOiJjbGthYmNzYjUwNGliM3Jqc3Z6bmQ5YnAzIn0.StiNLsdSj9s60fO97zjcRw');
 
 
 function MBoxView(props: MapViewProps, ref: React.Ref<IMapView>) {
@@ -58,9 +58,9 @@ function MBoxView(props: MapViewProps, ref: React.Ref<IMapView>) {
         let json;
 
         if (filterState.enabled) {
-            json = await getMeasurementsBetween(filterState.from, filterState.until);
-            let mets: Measurement[] = JSON.parse(JSON.stringify(json))['rows']['_array'];
-            setActiveMeasurements(mets);
+            // json = await getMeasurementsBetween(filterState.from, filterState.until);
+            // let mets: Measurement[] = JSON.parse(JSON.stringify(json))['rows']['_array'];
+            // setActiveMeasurements(mets);
         }
         else {
             setActiveMeasurements([]);

@@ -15,7 +15,7 @@ import { Paddock } from '../../features/store/types';
 import * as turf from '@turf/turf'
 import * as FileSystem from 'expo-file-system'
 import { TouchableHighlight } from 'react-native';
-import { getPaddocks } from '../../features/localDB/localDB';
+import { getPaddocks } from '../../features/localDB/paddocks';
 import ColorUtils from '../../features/utils/ColorUtils';
 
 type Props = NativeStackScreenProps<StackParamList, 'EditScreen'>;

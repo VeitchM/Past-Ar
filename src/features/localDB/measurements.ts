@@ -84,5 +84,10 @@ export async function insertCalibrationMeasurement(calibrationID: number, measur
 
 export async function getMeasurements() {
     return execQuery(`SELECT * FROM measurements `, [])
+}
 
+export async function getMeasurementsBetween(from: number,until:number=(new Date()).getTime()) {
+    return execQuery(`SELECT * FROM measurements WHERE timestamp BETWEEN (?) AND (?)`, [
+        from, until
+    ])
 }
