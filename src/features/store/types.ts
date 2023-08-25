@@ -32,7 +32,8 @@ type Notification = {
 
 type Paddock = {
     ID?: number, name: string, vertices: { latitude: number, longitude: number }[], 
-    holes?:{ latitude: number, longitude: number }[][]
+    holes?:{ latitude: number, longitude: number }[][],
+    color?:string
 }
 
 type Filter = {

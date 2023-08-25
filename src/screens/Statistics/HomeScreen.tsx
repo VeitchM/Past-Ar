@@ -16,6 +16,7 @@ import FormatUtils from "../../features/utils/FormatUtils";
 
 import { getCalibrations, getCalibrationsFromMeasurementExtended } from "../../features/localDB/calibrations";
 import { getMeasurements, getMeasurementsBetween, insertMeasurement } from "../../features/localDB/measurements";
+import { themeNavigation } from "../../theme";
 
 const screenWidth = Dimensions.get("window").width;
 const Tab = createMaterialTopTabNavigator();
@@ -75,7 +76,7 @@ export default function PaddockScreen(props: Props) {
         return (
             <View rounded={'full'} style={{ flex: 1, position: 'absolute', bottom: 15, right: 15, padding: 0 }}>
                 <TouchableOpacity activeOpacity={0.8} onPress={() => { setFilterModalVisible(!filterModalVisible) }}>
-                    <View flexDirection={'row'} rounded={'full'} background={'#6c3483'} height={70} borderWidth={4} borderColor={'#6c348388'} padding={4}>
+                    <View flexDirection={'row'} rounded={'full'} background={themeNavigation.colors.primary} height={70} width={70} borderWidth={4} borderColor={themeNavigation.colors.primary + '88'} padding={4}>
                         <Icon color={'#fff'} as={FontAwesome5} name={'filter'} size={'2xl'} marginTop={1}></Icon>
                     </View>
                 </TouchableOpacity>

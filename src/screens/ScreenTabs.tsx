@@ -37,6 +37,7 @@ export default function ScreenTabs() {
                     name="Home"
                     component={HomeScreen}
                     options={{
+                        title: '',
                         tabBarLabel: ({ focused, color }) => <Text fontSize='sm' color={color}>Inicio</Text>,
                         tabBarIcon: ({ focused, color, size }) => <FontAwesome size={45} m name='home' color={color} focused={focused} style={{ marginBottom: -10 }} />,
                     }}

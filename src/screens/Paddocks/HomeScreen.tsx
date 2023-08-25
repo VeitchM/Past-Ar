@@ -8,7 +8,7 @@ import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
 import { addPaddock, updatePaddock } from '../../features/store/paddockSlice';
-import { getPaddocks } from "../../features/localDB/paddocks";
+import { getCrossedPaddocks, getPaddocks } from "../../features/localDB/paddocks";
 import { insertMeasurement } from "../../features/localDB/measurements";
 import { Paddock } from '../../features/store/types';
 import { CommonActions, useFocusEffect } from '@react-navigation/native';
@@ -21,9 +21,11 @@ import DownloadTilesButton from "./Partials/DownloadTilesButton";
 import IMapView from "./Partials/MapViewInterface";
 import MapboxView from "./Partials/MapboxView";
 import GoogleMapsView from "./Partials/GoogleMapsView";
-import Async,{AsyncReturn} from "../../features/utils/Async";
+import Async, { AsyncReturn } from "../../features/utils/Async";
 import { LocationObject } from "expo-location";
 import ColorUtils from "../../features/utils/ColorUtils";
+import { themeNavigation } from "../../theme";
+import { getPaddocksFromBack } from "../../features/backend/paddocks";
 
 type Props = NativeStackScreenProps<StackParamList, 'PaddockHome'>;
 
@@ -32,6 +34,7 @@ export default function PaddockScreen(props: Props) {
     //-------CONST & HOOKS---------//
     const [currentCoords, setCurrentCoords] = useState<LatLng>({ latitude: 0, longitude: 0 });
     const [paddockList, setPaddockList] = useState<Paddock[]>([]);
+    const [paddocksFromBack, setPaddocksFromBack] = useState<number[]>([]);
     const [infoOpen, setInfoOpen] = useState(false);
     const [region, setRegion] = useState<LatLng & { zoom: number }>({ latitude: 0, longitude: 0, zoom: 12 });
     const [isLocationUpdating, setIsLocationUpdating] = useState(false);
@@ -46,7 +49,7 @@ export default function PaddockScreen(props: Props) {
     useEffect(() => {
         props.navigation.setOptions({
             headerShown: true, headerTransparent: true, headerTintColor: 'white', headerStyle: {
-                backgroundColor: '#3498db77'
+                backgroundColor: themeNavigation.colors.primary + 'AA'
             }
         })
         initializePaddockList();
@@ -68,23 +71,25 @@ export default function PaddockScreen(props: Props) {
     /**
      * Loads every paddock from the Database into the state array
      */
-    function initializePaddockList() {
-        getPaddocks().then((result) => {
-            let paddocks = [...paddockList];
-            result.forEach((value) => {
-                let vertices: LatLng[] = JSON.parse(value.vertices_list!)
-                let paddockData: Paddock = { ID: value.ID, name: value.name, vertices: vertices }
-                if (vertices.length > 0 && !paddockList.some(p => { return p.ID == value.ID })) paddocks = ([...paddocks, paddockData]);;
-            });
-            setPaddockList(paddocks);
-        })
+    async function initializePaddockList() {
+        let resultPaddocks = await getPaddocks();
+        let paddocks = [...paddockList];
+        resultPaddocks.forEach((value) => {
+            let vertices: LatLng[] = JSON.parse(value.vertices_list!)
+            let paddockData: Paddock = { ID: value.ID, name: value.name, vertices: vertices, color: value.color }
+            if (vertices.length > 0 && !paddockList.some(p => { return p.ID == value.ID })) paddocks = ([...paddocks, paddockData]);;
+        });
+        const crossedPaddocks = await getCrossedPaddocks();
+        setPaddocksFromBack(crossedPaddocks.map(r=>{return r.ID}));
+        setPaddockList(paddocks);
+
     }
 
     function showPaddockList() {
         getPaddocks().then((result) => {
             let concat = "";
             result.forEach((value) => {
-                concat += (`ID: ${value.ID} - name: ${value.name} - data: ${value.vertices_list}`)
+                concat += (`ID: ${value.ID} - name: ${value.name} - data: ${value.vertices_list} - color: ${value.color} ${paddocksFromBack}`)
             });
             showAlert('Paddock List', concat);
         })
@@ -93,12 +98,12 @@ export default function PaddockScreen(props: Props) {
 
     const fetchLocation = async () => {
         setIsLocationUpdating(true);
-        let loc = await Promise.race<LocationObject|AsyncReturn>([getLocation(), Async.resolveAfter(Async.MID)]);
-        if (loc instanceof AsyncReturn || !loc){
+        let loc = await Promise.race<LocationObject | AsyncReturn>([getLocation(), Async.resolveAfter(Async.MID)]);
+        if (loc instanceof AsyncReturn || !loc) {
             console.log('Error, cannot fetch location!')
             fetchLocation();
         }
-        else{
+        else {
             console.log('Location received, changing region!')
             changeRegion(loc.coords.latitude, loc.coords.longitude)
         }
@@ -122,7 +127,7 @@ export default function PaddockScreen(props: Props) {
      * updateRegion is called initially as a fallback for a possible error in fetchLocation()
      * , then is called again inside fetchLocation.
      */
-    const onMapReady = ()=>{
+    const onMapReady = () => {
         updateRegion();
         fetchLocation();
     }
@@ -188,7 +193,7 @@ export default function PaddockScreen(props: Props) {
         return (
             <View style={{ position: 'absolute', right: 10, bottom: 110, backgroundColor: '#ffffff' }} rounded={'full'} padding={2}>
                 <View style={{ alignItems: 'center', marginBottom: 5 }}>
-                    <View rounded="full" backgroundColor={'#27ae60'} style={{ width: 70, height: 70 }} borderColor={'#27ae6088'} borderWidth={3}>
+                    <View rounded="full" backgroundColor={themeNavigation.colors.primary} style={{ width: 70, height: 70 }} borderColor={themeNavigation.colors.primary + '88'} borderWidth={3}>
                         <TouchableOpacity onPress={() => {
                             sheetRef.current?.snapToIndex(0);
                             props.navigation.dispatch(CommonActions.navigate({ name: 'CreatePaddock', params: { paddockId: -1, create: true } }))
@@ -201,7 +206,7 @@ export default function PaddockScreen(props: Props) {
                     {filterState.enabled ? <View style={{ height: 5, backgroundColor: '#f1c40f', width: 25, borderRadius: 6, zIndex: 999, top: 58 }} /> : <></>}
                     <View rounded="full" backgroundColor={'#6c3483'} style={{ width: 70, height: 70 }} borderColor={'#6c348388'} borderWidth={3}>
                         <TouchableOpacity onPress={() => {
-                            props.navigation.dispatch(CommonActions.navigate({ name: 'FiltersScreen', params: { paddockId: 1, paddockList: paddockList.map(p=>{return {name: p.name, id:p.ID}}) } }))
+                            props.navigation.dispatch(CommonActions.navigate({ name: 'FiltersScreen', params: { paddockId: 1, paddockList: paddockList.map(p => { return { name: p.name, id: p.ID } }) } }))
                         }}>
                             <Icon as={FontAwesome5} name="filter" size="xl" color="#fff" />
                         </TouchableOpacity>
@@ -217,7 +222,7 @@ export default function PaddockScreen(props: Props) {
     const BottomSheetList = useCallback(() => {
         return (
             <BottomSheet
-                ref={sheetRef} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#27ae60EE' }}
+                ref={sheetRef} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: themeNavigation.colors.primary + 'EE' }}
                 handleIndicatorStyle={{ backgroundColor: '#fff' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', height: 50, marginBottom: 25 }}>
                     <Heading size="xl" color="coolGray.100"
@@ -229,14 +234,14 @@ export default function PaddockScreen(props: Props) {
                     data={paddockList} refreshing={true}
                     renderItem={({ item, index }) => (
                         <BottomSheetItem title={item?.name} index={index} foreColor={'coolGray.800'}
-                            color={ColorUtils.getColor(index)}
+                            color={item.color ? item.color : ColorUtils.getColor(3)}
+                            canBeEdited={item.ID ? !paddocksFromBack.includes(item.ID) : false}
                             onLocatePress={() => {
-                                changeRegion(paddockList[index].vertices[0].latitude, paddockList[index].vertices[0].longitude)
-                                sheetRef.current?.snapToIndex(0);
+                                console.log(item)
                             }}
                             onEditPress={() => {
                                 let paddockData: Paddock = { ID: item.ID, name: item.name, vertices: item.vertices }
-                                let newIndex = dispatch(addPaddock({ data: paddockData })).payload.index ;
+                                let newIndex = dispatch(addPaddock({ data: paddockData })).payload.index;
                                 sheetRef.current?.snapToIndex(0);
                                 props.navigation.dispatch(
                                     CommonActions.navigate({
