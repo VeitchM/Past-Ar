@@ -4,6 +4,6 @@ export type RootTabsParamList = {
     Data:  undefined,
     Paddocks: undefined;
     User:undefined;
-
+    Statistics: undefined;
 };
 
