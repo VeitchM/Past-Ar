@@ -1,0 +1,38 @@
+{
+    "en": {
+        "home_title": "Home",
+        "user_home_title": "User",
+        "calibration_home_title": "Calibrations",
+        "paddock_home_title": "Paddock Map",
+        "filter_screen_title": "Filters",
+        
+        "home_tab_title": "Home",
+        "paddock_tab_title": "Paddocks",
+        "calibration_tab_title": "Calibration",
+        "statistics_tab_title": "Statistics",
+        "user_tab_title":"User",
+
+        "paddock": "Paddock",
+        "paddocks": "Paddocks",
+        "measurements": "Measurements",
+        "calibration": "Calibration",
+        "calibrations": "Calibrations",
+        "show_measurements": "Show measurements",
+        "from": "From",
+        "to": "To",
+        "apply": "Apply",
+        "choose": "Choose",
+        "select_from_date": "Select from date",
+        "select_until_date": "Select until date",
+
+        "calibration_list_title": "Calibration List",
+        "calibration_create_title": "Create Calibration",
+        "calibration_function_create_title": "Calibration Function",
+        "calibration_send_title": "Calibrations to Send",
+        "calibration_measure_received": "Measurement to Calibrate",
+        "calibration_home_header": "Load calibration measurements",
+        "calibration_list_button": "Calibration List",
+        "calibration_send_button": "Send calibration",
+        "ble_link_device": "Bind Pasturometro"
+    }
+}
