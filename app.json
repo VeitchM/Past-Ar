@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Past-Ar",
-    "slug": "past-ar",
+    "name": "Pastech",
+    "slug": "pastech",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,17 +25,13 @@
         }
       ],
       [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsImpl": "mapbox",
-          "RNMapboxMapsDownloadToken": "-"
-        }
+        "@maplibre/maplibre-react-native"
       ]
     ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#222222"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -66,10 +62,10 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.FOREGROUND_SERVICE"
       ],
-      "package": "com.pastar.app",
+      "package": "com.pastech.app",
       "config":{
         "googleMaps": {
-          "apiKey": ""
+          "apiKey": "AIzaSyBcB6F5VNz-0ZXEVJMom7ClPocoa49GoG4"
         }
       }
     },
@@ -78,7 +74,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "30c6cbee-3d7d-44d3-8b63-e8e5380397f5"
+        "projectId": "50aa1e3a-2db7-4d03-a1f7-bf28bfde2ba7"
       }
     }
   }
