@@ -41,7 +41,7 @@ export default function HomeScreen(props: any) {
                 )
             },
             headerShown: true, headerTintColor: 'white', headerStyle: {
-                backgroundColor: '#18181b'
+                backgroundColor: '#18181b',
             }
         })
 
@@ -57,17 +57,19 @@ export default function HomeScreen(props: any) {
     }
 
     return (
-        <VStack bg='white' flex={1} alignItems='center'>
+        <VStack bg='white' flex={1} alignItems='center' backgroundColor={'red'}>
             <StatusBar translucent
-                backgroundColor="transparent"
+                backgroundColor='transparent'
                 barStyle='light-content'
             />
-            <View height='40px' />
+            <View position={'absolute'} backgroundColor={themeNavigation.colors.primary}
+                height={5} width={'100%'}
+            ></View>
+            <View flex={1} />
             <LastMeasurement />
             <View height='20px' />
             <BatteryLevel />
-            <Flex>
-            </Flex>
+            <View flex={1}></View>
             <VStack justifyContent='flex-end' marginBottom='15%' flex={1}>
                 {/* <Button size='lg' isLoading={false} isLoadingText="Conectando"
                     _spinner={{ size: 30 }}
