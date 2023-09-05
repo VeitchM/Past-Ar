@@ -31,7 +31,7 @@ export default function PaddockScreen(props: Props) {
     const [filterModalVisible, setFilterModalVisible] = useState(false);
     const [modalFrom, setModalFrom] = useState(false);
     const [modalUntil, setModalUntil] = useState(false);
-    const [from, setFrom] = useState((d=>new Date(d.setDate(d.getDate()-1)))(new Date()));
+    const [from, setFrom] = useState((d => new Date(d.setDate(d.getDate() - 1)))(new Date()));
     const [until, setUntil] = useState(new Date());
     const [selectedCalibration, setSelectedCalibration] = useState(-1);
     const [calibrations, setCalibrations] = useState<CalibrationLocalDB[]>([])
@@ -67,7 +67,7 @@ export default function PaddockScreen(props: Props) {
     const meanHeight = (_measurements: Measurement[]) => {
         let sum = 0;
         _measurements.forEach(e => { sum += e.height });
-        return (sum / (_measurements.length * 1.0)).toFixed(3);
+        return (sum != 0) ? (sum / (_measurements.length * 1.0)).toFixed(3) : '0.0';
     }
 
 
@@ -137,17 +137,10 @@ export default function PaddockScreen(props: Props) {
     function MainScreen() {
         return (
             <ScrollView flex={1} contentContainerStyle={{ alignItems: 'center' }}>
-                <Select backgroundColor={'#fff'} width={screenWidth * 0.90} borderColor={'#27ae60'} borderWidth={1} marginTop={5} selectedValue={selectedCalibration + ''} onValueChange={itemValue => { setSelectedCalibration(Number.parseInt(itemValue)); readMeasurements(from.getTime(), until.getTime(), Number.parseInt(itemValue)) }}  placeholder="Elegir Calibración" >
-                    {calibrations.map((calibration) => {
-                        return <Select.Item
-                            key={calibration.ID}
-                            label={calibration.name}
-                            value={calibration.ID.toString()} />
-                    })}
-                </Select>
+
                 <Box justifyContent='space-evenly' marginTop={15} alignItems={'center'} backgroundColor={'#7a7b87'}
                     rounded={'lg'} height={250} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
-                    <Heading size='lg' marginTop={4} marginBottom={4} color={'#fff'}>Ultimas Mediciones</Heading>
+                    <Heading size='lg' marginTop={4} marginBottom={4} color={'#fff'}>Mediciones</Heading>
                     {measurements.length == 0 || selectedCalibration == -1 ?
                         <>
                             <Heading size='lg' marginBottom={2}>No registra en periodo</Heading>
@@ -190,7 +183,15 @@ export default function PaddockScreen(props: Props) {
                         />
                     }
                 </Box>
-
+                <Divider marginBottom={3} marginTop={3}/>
+                <Select width={screenWidth} borderColor={themeNavigation.colors.primary} color={'#fff'} backgroundColor={themeNavigation.colors.primary} borderWidth={0} selectedValue={selectedCalibration + ''} onValueChange={itemValue => { setSelectedCalibration(Number.parseInt(itemValue)); readMeasurements(from.getTime(), until.getTime(), Number.parseInt(itemValue)) }} placeholder="Elegir Calibración" >
+                    {calibrations.map((calibration) => {
+                        return <Select.Item
+                            key={calibration.ID}
+                            label={calibration.name}
+                            value={calibration.ID.toString()} />
+                    })}
+                </Select>
                 <Box justifyContent='space-evenly' marginTop={2} alignItems={'center'} backgroundColor={'#fff'}
                     rounded={'lg'} height={90} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
 
@@ -244,11 +245,11 @@ export default function PaddockScreen(props: Props) {
                 </Box>
                 <Box marginBottom={15} justifyContent='space-evenly' marginTop={2} alignItems={'center'} backgroundColor={'#fff'}
                     rounded={'lg'} height={90} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
-                        <>
-                            <Heading size='lg' >{'Desde: '+FormatUtils.formatBasicDate(from)}</Heading>
-                            <Divider />
-                            <Heading size='lg' >{'Hasta: ' + FormatUtils.formatBasicDate(until)}</Heading>
-                        </>
+                    <>
+                        <Heading size='lg' >{'Desde: ' + FormatUtils.formatBasicDate(from)}</Heading>
+                        <Divider />
+                        <Heading size='lg' >{'Hasta: ' + FormatUtils.formatBasicDate(until)}</Heading>
+                    </>
                 </Box>
             </ScrollView>
         );
