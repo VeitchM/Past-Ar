@@ -20,12 +20,14 @@ import MapView, { LatLng, Region } from 'react-native-maps';
 import DownloadTilesButton from "./Partials/DownloadTilesButton";
 import IMapView from "./Partials/MapViewInterface";
 import MapboxView from "./Partials/MapboxView";
+import MapLibreView from "./Partials/MapLibreView";
 import GoogleMapsView from "./Partials/GoogleMapsView";
 import Async, { AsyncReturn } from "../../features/utils/Async";
 import { LocationObject } from "expo-location";
 import ColorUtils from "../../features/utils/ColorUtils";
 import { themeNavigation } from "../../theme";
 import { getPaddocksFromBack } from "../../features/backend/paddocks";
+import TS from "../../../TS";
 
 type Props = NativeStackScreenProps<StackParamList, 'PaddockHome'>;
 
@@ -80,7 +82,7 @@ export default function PaddockScreen(props: Props) {
             if (vertices.length > 0 && !paddockList.some(p => { return p.ID == value.ID })) paddocks = ([...paddocks, paddockData]);;
         });
         const crossedPaddocks = await getCrossedPaddocks();
-        setPaddocksFromBack(crossedPaddocks.map(r=>{return r.ID}));
+        setPaddocksFromBack(crossedPaddocks.map(r => { return r.ID }));
         setPaddockList(paddocks);
 
     }
@@ -169,7 +171,7 @@ export default function PaddockScreen(props: Props) {
 
     function InsertMeasureTestButton() {
         return (
-            <View flexDir={'row'} rounded={'full'} style={{ bottom: 310, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, padding: 15 }}>
+            <View flexDir={'row'} rounded={'full'} style={{ bottom: 380, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, padding: 15 }}>
                 <TouchableOpacity activeOpacity={0.5} onPress={() => {
                     insertMeasurement({
                         height: Math.random() * 100,
@@ -220,6 +222,7 @@ export default function PaddockScreen(props: Props) {
      * Each item represents a paddock and has an edit and locate button related to that paddock.
      */
     const BottomSheetList = useCallback(() => {
+        
         return (
             <BottomSheet
                 ref={sheetRef} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: themeNavigation.colors.primary + 'EE' }}
@@ -227,7 +230,7 @@ export default function PaddockScreen(props: Props) {
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', height: 50, marginBottom: 25 }}>
                     <Heading size="xl" color="coolGray.100"
                         style={{ marginLeft: 20, marginRight: 5, bottom: 2, textShadowOffset: { width: -0.5, height: 0.5 }, textShadowRadius: 5 }}
-                    >Potreros</Heading>
+                    >{TS.t('paddocks')}</Heading>
                 </View>
                 <BottomSheetFlatList contentContainerStyle={{ alignItems: 'center', paddingBottom: 25 }}
                     keyExtractor={(item, index) => 'FLIST' + index.toString()}
@@ -237,7 +240,8 @@ export default function PaddockScreen(props: Props) {
                             color={item.color ? item.color : ColorUtils.getColor(3)}
                             canBeEdited={item.ID ? !paddocksFromBack.includes(item.ID) : false}
                             onLocatePress={() => {
-                                console.log(item)
+                                changeRegion(paddockList[index].vertices[0].latitude, paddockList[index].vertices[0].longitude)
+                                sheetRef.current?.snapToIndex(0);
                             }}
                             onEditPress={() => {
                                 let paddockData: Paddock = { ID: item.ID, name: item.name, vertices: item.vertices }
@@ -260,9 +264,10 @@ export default function PaddockScreen(props: Props) {
     //----------JSX-----------//
     return (
         <VStack bg='white' flex={1} alignItems='center'>
-            <GoogleMapsView key={'A' + filterState.enabled + filterState.from + filterState.until} ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} />
+            {/* <GoogleMapsView key={'A' + filterState.enabled + filterState.from + filterState.until} ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} /> */}
             {/* <MapboxView ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady}/> */}
-            {/* <InsertMeasureTestButton /> */}
+            <MapLibreView ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} />
+            <InsertMeasureTestButton />
             <ButtonDock />
             <LocationButton />
             <InfoButton />

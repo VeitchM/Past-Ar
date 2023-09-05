@@ -4,7 +4,7 @@ import { useTypedSelector } from "../../features/store/storeHooks";
 
 
 //==== Components ===========================================
-import { View, Text, Heading, Flex, Button, Select, HStack, VStack, Divider } from "native-base";
+import { View, Text, Heading, Flex, Button, Select, HStack, VStack, Divider, Icon } from "native-base";
 import ConnectDeviceButton from "../../components/ConnectDevice";
 import RoundedContainer from "../../components/RoundedContainer";
 
@@ -18,6 +18,8 @@ import { CalibrationLocalDB } from "../../features/localDB/types";
 import { useFocusEffect } from "@react-navigation/native";
 import { getCalibrations, getCalibrationsFromMeasurementExtended } from "../../features/localDB/calibrations";
 import BlockButton from "../../components/BlockButton";
+import { Entypo, FontAwesome5 } from '@expo/vector-icons';
+import TS from "../../../TS";
 
 
 export default function HomeCalibration({ navigation }: PropsCalibrationHome) {
@@ -89,12 +91,12 @@ export default function HomeCalibration({ navigation }: PropsCalibrationHome) {
 
                 <RoundedContainer size={329} height={264} borderRadius={33}>
                     <VStack flex={1} justifyContent='space-around' >
-                        <Heading paddingTop={5}  size='md'>Cargar Medicion de Calibración</Heading>
-                        <View><Divider/></View>
-                        <HStack style={{ justifyContent: "space-between", marginTop:3 }}>
-                            <Text fontSize='lg' fontWeight='bold' style={{ alignSelf: 'center' }} >Calibración</Text>
+                        <Heading paddingTop={5} size='md'>{TS.t('calibration_home_header')}</Heading>
+                        <View><Divider /></View>
+                        <HStack style={{ justifyContent: "space-between", marginTop: 3, padding: 5 }}>
+                            <Text fontSize='lg' fontWeight='bold' style={{ alignSelf: 'center' }} >{TS.t('calibration')}</Text>
 
-                            <Select selectedValue={selectedCalibration} onValueChange={itemValue => setSelectedCalibration(itemValue)} minWidth="150" placeholder="Elige" >
+                            <Select selectedValue={selectedCalibration} onValueChange={itemValue => setSelectedCalibration(itemValue)} minWidth="150" placeholder={TS.t('choose')} >
                                 {calibrations.map((calibration) => {
                                     return <Select.Item key={calibration.ID}
                                         label={calibration.name}
@@ -120,9 +122,13 @@ export default function HomeCalibration({ navigation }: PropsCalibrationHome) {
 
             <VStack bg='muted.50' alignSelf='flex-end' width='100%'>
 
-                <BlockButton text='Calibraciones' onPress={() => { navigation.navigate('CalibrationsList') }} />
+                <BlockButton  leftIcon={
+                    <Icon as={FontAwesome5} color={'trueGray.400'} name="tools" size="lg" />
+                } text={TS.t('calibration_list_button')} onPress={() => { navigation.navigate('CalibrationsList') }} />
                 {/* TODO IF finalizar calibracion, o cargar datos de calibracion */}
-                <BlockButton onPress={() => { navigation.navigate('ForSendingCalibrations') }} text='Enviar calibración' />
+                <BlockButton leftIcon={
+                    <Icon as={FontAwesome5} color={'trueGray.400'} name="arrow-circle-up" size="lg" />
+                } onPress={() => { navigation.navigate('ForSendingCalibrations') }} text={TS.t('calibration_send_button')} />
                 {/* <BlockButton text='Ayuda' /> */}
             </VStack>
 

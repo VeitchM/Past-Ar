@@ -18,6 +18,7 @@ type Props = {
 export const AppConstants = {
     TILE_FOLDER: `${FileSystem.documentDirectory}tiles`,
     MAP_URL: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile',
+    MAP_URL2: 'https://c.tile.openstreetmap.org'
 }
 
 const DownloadTilesButton: FC<Props> = ({ mapRegion, zoomLevel, onLongPress }) => {
@@ -31,9 +32,10 @@ const DownloadTilesButton: FC<Props> = ({ mapRegion, zoomLevel, onLongPress }) =
     async function fetchTiles() {
         setIsLoading(true)
 
-        let zoom = (currentZoom > 17) ? 17 : currentZoom;
+        console.log('Current Zoom: ',currentZoom);
+        let zoom = (currentZoom > 18) ? 18 : currentZoom;
         const minZoom = zoom - 2
-        const maxZoom = zoom + 1
+        const maxZoom = zoom + 3
 
         const tiles = MapUtils.tileGridForRegion(mapRegion, minZoom, maxZoom)
 

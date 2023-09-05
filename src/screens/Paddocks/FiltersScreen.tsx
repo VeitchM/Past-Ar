@@ -14,6 +14,7 @@ import moment from "moment";
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Formatter from '../../features/utils/FormatUtils';
+import TS from "../../../TS";
 
 type Props = NativeStackScreenProps<StackParamList, 'FiltersScreen'>;
 
@@ -86,12 +87,29 @@ export default function FiltersScreen(props: Props) {
         );
     }, [])
 
+    const FilterButton = (props:any) => {
+        let {label, onPress} = props;
+        return (
+            <Button isDisabled={!showMeasurements} margin={1} width={85} flexDirection={'row'} colorScheme={'coolGray'}
+                onPress={onPress}
+            >{label}</Button>
+        );
+    }
+
+    function setFilterPeriod(timeAmmount: ('hours'|'weeks'|'months'|'years'), value: number){
+        let date = Date.now();
+        let _from = new Date;
+        let _until = new Date;
+        //_from.setDate((date.getTime() + hour * 60 * 60 * 1000));
+
+    }
+
     return (
         <View backgroundColor={'white'} flex={1} padding={5}>
             <Box width={'100%'} height={'100%'} rounded="lg" overflow="hidden" borderColor="coolGray.200" borderWidth="1" padding={5}>
                 <DatePicker
                     mode="date"
-                    title="Selecciona fecha desde"
+                    title={TS.t('select_from_date')}
                     modal open={isFromVisible} date={from}
                     onConfirm={handleFromConfirm}
                     onCancel={() => { setIsFromVisible(false) }}
@@ -100,20 +118,20 @@ export default function FiltersScreen(props: Props) {
 
                 <DatePicker
                     mode="date"
-                    title="Selecciona fecha hasta"
+                    title={TS.t('select_until_date')}
                     modal open={isUntilVisible} date={until}
                     onConfirm={handleUntilConfirm}
                     onCancel={() => { setIsUntilVisible(false) }}
                     androidVariant="iosClone"
                 />
-                <Heading size='lg'>Mediciones</Heading>
+                <Heading size='lg'>{TS.t('measurements')}</Heading>
                 <Divider style={{ marginTop: 20, marginBottom: 20 }} />
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 25 }}>
-                    <Heading size='md' marginBottom={1} fontWeight='light'>Mostrar mediciones</Heading>
+                    <Heading size='md' marginBottom={1} fontWeight='light'>{TS.t('show_measurements')}</Heading>
                     <View flex={1} />
                     <Switch size="lg" value={showMeasurements} onToggle={(state) => { setShowMeasurements(state) }} />
                 </View>
-                <Heading size='md' fontWeight='light' marginBottom={3}>Desde</Heading>
+                <Heading size='md' fontWeight='light' marginBottom={3}>{TS.t('from')}</Heading>
                 <Button
                     isDisabled={!showMeasurements}
                     flexDirection={'row'}
@@ -126,7 +144,7 @@ export default function FiltersScreen(props: Props) {
                     onPress={() => { setIsFromVisible(true) }}>
                     {from ? Formatter.formatBasicDate(from) : 'Fecha desde'}
                 </Button>
-                <Heading size='md' fontWeight='light' marginBottom={3}>Hasta</Heading>
+                <Heading size='md' fontWeight='light' marginBottom={3}>{TS.t('to')}</Heading>
                 <Button
                     isDisabled={!showMeasurements}
                     flexDirection={'row'}
@@ -140,13 +158,22 @@ export default function FiltersScreen(props: Props) {
                     {until ? Formatter.formatBasicDate(until) : 'Fecha hasta'}
                 </Button>
                 <View flex={1} />
-                <Divider style={{ marginTop: 20, marginBottom: 20 }} />
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                <Box flexWrap={'wrap'} flexDir={'row'} justifyContent={'space-evenly'}>
+                    <FilterButton label="1 h" onPress={()=>{ setFilterPeriod('hours',1) }}/>
+                    <FilterButton label="24 h" />
+                    <FilterButton label="48 h" />
+                    <FilterButton label="1 Sem" />
+                    <FilterButton label="1 Mes" />
+                    <FilterButton label="1 Año" />
+                </Box>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
                 <Button
                     flexDirection={'row'}
                     colorScheme={'primary'}
                     endIcon={<Icon as={FontAwesome5} name="check" size="md" />}
                     onPress={() => {
-                        dispatch(updateFilter({ enabled: showMeasurements, from: from.getTime(), until: until.getTime(), paddockId:filteredPaddock>=0 ? filteredPaddock:undefined }))
+                        dispatch(updateFilter({ enabled: showMeasurements, from: from.getTime(), until: until.getTime(), paddockId: filteredPaddock >= 0 ? filteredPaddock : undefined }))
                         props.navigation.dispatch(
                             CommonActions.navigate({
                                 name: 'PaddockHome'
@@ -154,17 +181,17 @@ export default function FiltersScreen(props: Props) {
                         )
                     }}
                 >
-                    {'Aplicar'}
+                    {TS.t('apply')}
                 </Button>
             </Box>
             <BottomSheet index={-1} ref={sheetRef} snapPoints={['60%']} enablePanDownToClose backgroundStyle={{ backgroundColor: '#DDDDDD' }}>
                 <Heading marginLeft={5} marginBottom={5} fontSize={'2xl'} color={'trueGray.500'}>FILTRAR POR POTRERO</Heading>
-                <Divider/>
+                <Divider />
                 <BottomSheetFlatList
-                    style={{paddingTop:15,position:'relative'}}
+                    style={{ paddingTop: 15, position: 'relative' }}
                     data={paddockList}
                     renderItem={({ item, index }) => (
-                        <Box marginBottom={index >= paddockList.length-1 ? 8 : 3} marginLeft={3} marginRight={3}>
+                        <Box marginBottom={index >= paddockList.length - 1 ? 8 : 3} marginLeft={3} marginRight={3}>
                             <TouchableHighlight style={{ borderRadius: 8 }} underlayColor={'#'} onPress={() => { setFilteredPaddock(item.id); sheetRef.current?.close() }}>
                                 <Box flexDir={'row'} borderWidth={1} borderColor={'#27ae60'} rounded={'lg'} backgroundColor={filteredPaddock == item.id ? '#27ae60' : 'trueGray.100'} padding={3}>
                                     <Heading color={filteredPaddock == item.id ? '#fff' : '#27ae60'}> {item.name} </Heading>
@@ -178,7 +205,7 @@ export default function FiltersScreen(props: Props) {
                     )}
                 />
                 <Box padding={4} backgroundColor={'trueGray.600'}>
-                    <TouchableHighlight style={{ borderRadius: 8 }} underlayColor={'#'} onPress={() => { setFilteredPaddock(-1); sheetRef.current?.close();}}>
+                    <TouchableHighlight style={{ borderRadius: 8 }} underlayColor={'#'} onPress={() => { setFilteredPaddock(-1); sheetRef.current?.close(); }}>
                         <Box flexDir={'row'} borderWidth={1} borderColor={'#428c97'} rounded={'lg'} backgroundColor={'#57a9b5'} padding={3}>
                             <Heading color={'#fff'}> Todos los potreros </Heading>
                             <View flex={1}></View>
