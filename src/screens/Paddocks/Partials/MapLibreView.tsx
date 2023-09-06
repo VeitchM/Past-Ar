@@ -199,7 +199,8 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
                 <MapLibreGL.Camera ref={camRef} key={'-' + camRef.current} />
 
                 <OfflineLayer />
-                <OnlineLayer />
+                {terrainMode?<></>:<OnlineLayer />}
+                
 
                 <PaddocksLayer />
                 <MeasurementsLayer />
