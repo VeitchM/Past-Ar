@@ -98,17 +98,15 @@ async function rawDataToMeasurement(value: string): Promise<{ battery: number, m
     const measurementValue = verifyMeasurements(measurements)
     if (measurementValue !== undefined) {
 
-
-
         const battery = parseFloat(values[stringFields.BATERY])
-    const device = store.getState().ble.connectedDevice as DeviceSerializable
-    console.assert(device&&device.plateWidth,"Device wasnt on")
+        const device = store.getState().ble.connectedDevice as DeviceSerializable
+        console.assert(device && device.plateWidth, "Device wasnt on")
         const location = await getLocation()
         const measurement: Measurement = {
-            height: distanceCorrection(measurementValue, humidity, temperature,device.plateWidth!),
+            height: distanceCorrection(measurementValue, humidity, temperature, device.plateWidth!),
             timestamp: Date.now(),
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
+            latitude: location!.coords.latitude,
+            longitude: location!.coords.longitude,
         }
 
         return { battery: battery, measurement: measurement }
@@ -125,12 +123,12 @@ const verifyMeasurements = (measurements: number[]) => {
     let sum = 0
     let validNumbers = 0
     console.log('Measurements: ', measurements);
- 
+
 
     if (measurements.length > 0) {
 
         const median = measurements.sort()[Math.floor(measurements.length / 2)]
-        console.log({median,measurements});       
+        console.log({ median, measurements });
 
         measurements.forEach((number) => {
             //TODO validation of each sensor if()
@@ -175,7 +173,7 @@ function speedOfSound(humidity: number, temperature: number) {
     return 331.4 + 0.6 * temperature + 0.0124 * humidity
 }
 
-function distanceCorrection(distance: number, humidity: number, temperature: number,plateWidth: number) {
+function distanceCorrection(distance: number, humidity: number, temperature: number, plateWidth: number) {
     // Add plate size in cm
     // const PLATE_SIZE = 1.34
     // This numbers are defined on the device documentation

@@ -4,7 +4,7 @@ import { addNotification } from "../store/notificationSlice";
 import store from "../store/store";
 import { mobileAPI } from "./config";
 import { getErrorLabel } from "./constants";
-import { SYNCRHOIZE_INTERVAL, synchronize } from "./synchronize";
+import { SYNCHRONIZE_INTERVAL, synchronize } from "./synchronize";
 import { createPayload } from "./utils";
 import jwtDecode from "jwt-decode";
 
@@ -98,7 +98,7 @@ function setSynchronizeDataInterval(){
     clearInterval(unsubscribeSynchronize)
     unsubscribeSynchronize = setInterval(() => {       
         synchronize()
-    }, SYNCRHOIZE_INTERVAL) as unknown as number
+    }, SYNCHRONIZE_INTERVAL) as unknown as number
 
     
  
@@ -123,7 +123,6 @@ function getUserData(token: string) {
     //Get locally without authentication, with https it shouldn't be possible to have a MitM attack
     const { id, firstName, lastName, email, roles, groupUid }: User = jwtDecode(token)
     return { id, firstName, lastName, email, roles, groupUid }
-
 
 }
 

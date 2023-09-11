@@ -3,7 +3,7 @@ import { Button, Box, Select, View, Input, Icon, ChevronDownIcon, Divider, Headi
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import DatePicker from 'react-native-date-picker'
 import { StackParamList } from "./ScreenStack";
-import { CommonActions } from "@react-navigation/native";
+import { CommonActions, useFocusEffect } from "@react-navigation/native";
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { event } from "react-native-reanimated";
 import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
@@ -19,18 +19,16 @@ import TS from "../../../TS";
 type Props = NativeStackScreenProps<StackParamList, 'FiltersScreen'>;
 
 export default function FiltersScreen(props: Props) {
-    const { paddockList } = props.route.params;
     const [isFromVisible, setIsFromVisible] = useState(false);
     const [isUntilVisible, setIsUntilVisible] = useState(false);
     const [from, setFrom] = useState<Date>(new Date());
     const [until, setUntil] = useState<Date>(new Date());
     const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-    const [showMeasurements, setShowMeasurements] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(true);
-    const filterState = useTypedSelector(state => state.filter);
     const dispatch = useTypedDispatch();
     const sheetRef = useRef<BottomSheet>(null);
     const [filteredPaddock, setFilteredPaddock] = useState<number>(-1);
+    const filterState = useTypedSelector(state => state.filter);
 
     const handleFromConfirm = (datetime: any) => {
         setIsFromVisible(false);
@@ -55,12 +53,15 @@ export default function FiltersScreen(props: Props) {
     useEffect(() => {
         setIsFromVisible(false);
         setIsUntilVisible(false);
-        setShowMeasurements(filterState.enabled);
-        setFrom(new Date(filterState.from));
-        setUntil(new Date(filterState.until));
-        if (filterState.paddockId) setFilteredPaddock(filterState.paddockId);
+        setFrom(new Date(filterState.from_stats));
+        setUntil(new Date(filterState.until_stats));
         sheetRef.current?.close();
     }, [])
+
+    useFocusEffect(useCallback(() => {
+        setFrom(new Date(filterState.from_stats));
+        setUntil(new Date(filterState.until_stats));
+    }, []))
 
     const CalendarModal = useCallback((props: { source: ('until' | 'from'), isOpen: boolean, onConfirm: VoidFunction }) => {
         let months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -90,7 +91,7 @@ export default function FiltersScreen(props: Props) {
     const FilterButton = (props: any) => {
         let { label, onPress } = props;
         return (
-            <Button isDisabled={!showMeasurements} margin={1} width={85} flexDirection={'row'} colorScheme={'coolGray'}
+            <Button margin={1} width={85} flexDirection={'row'} colorScheme={'coolGray'}
                 onPress={onPress}
             >{label}</Button>
         );
@@ -138,13 +139,10 @@ export default function FiltersScreen(props: Props) {
                 <Heading size='lg'>{TS.t('measurements')}</Heading>
                 <Divider style={{ marginTop: 20, marginBottom: 20 }} />
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 25 }}>
-                    <Heading size='md' marginBottom={1} fontWeight='light'>{TS.t('show_measurements')}</Heading>
                     <View flex={1} />
-                    <Switch size="lg" value={showMeasurements} onToggle={(state) => { setShowMeasurements(state) }} />
                 </View>
                 <Heading size='md' fontWeight='light' marginBottom={3}>{TS.t('from')}</Heading>
                 <Button
-                    isDisabled={!showMeasurements}
                     flexDirection={'row'}
                     variant={'outline'}
                     colorScheme={'trueGray'}
@@ -157,7 +155,6 @@ export default function FiltersScreen(props: Props) {
                 </Button>
                 <Heading size='md' fontWeight='light' marginBottom={3}>{TS.t('to')}</Heading>
                 <Button
-                    isDisabled={!showMeasurements}
                     flexDirection={'row'}
                     variant={'outline'}
                     colorScheme={'trueGray'}
@@ -171,12 +168,12 @@ export default function FiltersScreen(props: Props) {
                 <View flex={1} />
                 <Divider style={{ marginTop: 10, marginBottom: 10 }} />
                 <Box flexWrap={'wrap'} flexDir={'row'} justifyContent={'space-evenly'}>
-                    <FilterButton label="24 h" onPress={()=>{setFilterPeriod('days',1)}} />
-                    <FilterButton label="48 h" onPress={()=>{setFilterPeriod('days',2)}} />
-                    <FilterButton label="1 Sem" onPress={()=>{setFilterPeriod('days',7)}} />
-                    <FilterButton label="1 Mes" onPress={()=>{setFilterPeriod('months',1)}}/>
-                    <FilterButton label="5 Mes" onPress={()=>{setFilterPeriod('months',5)}}/>
-                    <FilterButton label="1 Año" onPress={()=>{setFilterPeriod('years',1)}}/>
+                    <FilterButton label="24 h" onPress={() => { setFilterPeriod('days', 1) }} />
+                    <FilterButton label="48 h" onPress={() => { setFilterPeriod('days', 2) }} />
+                    <FilterButton label="1 Sem" onPress={() => { setFilterPeriod('days', 7) }} />
+                    <FilterButton label="1 Mes" onPress={() => { setFilterPeriod('months', 1) }} />
+                    <FilterButton label="5 Mes" onPress={() => { setFilterPeriod('months', 5) }} />
+                    <FilterButton label="1 Año" onPress={() => { setFilterPeriod('years', 1) }} />
                 </Box>
                 <Divider style={{ marginTop: 10, marginBottom: 10 }} />
                 <Button
@@ -184,10 +181,10 @@ export default function FiltersScreen(props: Props) {
                     colorScheme={'primary'}
                     endIcon={<Icon as={FontAwesome5} name="check" size="md" />}
                     onPress={() => {
-                        dispatch(updateFilter({ enabled: showMeasurements, from: from.getTime(), until: until.getTime(), paddockId: filteredPaddock >= 0 ? filteredPaddock : undefined }))
+                        dispatch(updateFilter({ enabled: false, from_stats: from.getTime(), until_stats: until.getTime() }))
                         props.navigation.dispatch(
                             CommonActions.navigate({
-                                name: 'PaddockHome'
+                                name: 'StatisticsHome'
                             })
                         )
                     }}
@@ -195,38 +192,6 @@ export default function FiltersScreen(props: Props) {
                     {TS.t('apply')}
                 </Button>
             </Box>
-            <BottomSheet index={-1} ref={sheetRef} snapPoints={['60%']} enablePanDownToClose backgroundStyle={{ backgroundColor: '#DDDDDD' }}>
-                <Heading marginLeft={5} marginBottom={5} fontSize={'2xl'} color={'trueGray.500'}>FILTRAR POR POTRERO</Heading>
-                <Divider />
-                <BottomSheetFlatList
-                    style={{ paddingTop: 15, position: 'relative' }}
-                    data={paddockList}
-                    renderItem={({ item, index }) => (
-                        <Box marginBottom={index >= paddockList.length - 1 ? 8 : 3} marginLeft={3} marginRight={3}>
-                            <TouchableHighlight style={{ borderRadius: 8 }} underlayColor={'#'} onPress={() => { setFilteredPaddock(item.id); sheetRef.current?.close() }}>
-                                <Box flexDir={'row'} borderWidth={1} borderColor={'#27ae60'} rounded={'lg'} backgroundColor={filteredPaddock == item.id ? '#27ae60' : 'trueGray.100'} padding={3}>
-                                    <Heading color={filteredPaddock == item.id ? '#fff' : '#27ae60'}> {item.name} </Heading>
-                                    <View flex={1}></View>
-                                    {filteredPaddock != item.id ? <></> :
-                                        <Icon as={FontAwesome5} name="check-circle" color={'#fff'} size={'2xl'} />
-                                    }
-                                </Box>
-                            </TouchableHighlight>
-                        </Box>
-                    )}
-                />
-                <Box padding={4} backgroundColor={'trueGray.600'}>
-                    <TouchableHighlight style={{ borderRadius: 8 }} underlayColor={'#'} onPress={() => { setFilteredPaddock(-1); sheetRef.current?.close(); }}>
-                        <Box flexDir={'row'} borderWidth={1} borderColor={'#428c97'} rounded={'lg'} backgroundColor={'#57a9b5'} padding={3}>
-                            <Heading color={'#fff'}> Todos los potreros </Heading>
-                            <View flex={1}></View>
-                            {filteredPaddock != -1 ? <></> :
-                                <Icon as={FontAwesome5} name="check-circle" color={'#fff'} size={'2xl'} />
-                            }
-                        </Box>
-                    </TouchableHighlight>
-                </Box>
-            </BottomSheet>
         </View>
     )
 }

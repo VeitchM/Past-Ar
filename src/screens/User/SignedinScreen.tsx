@@ -68,14 +68,13 @@ export default function signedinScreen() {
         <VStack>
           <Text fontSize='lg' marginBottom='-6px'>Última Sincronización</Text>
           <Text fontSize='2xl' fontWeight='normal'>{lastSyncLabel}</Text>
-
-
         </VStack>
         {/* TODO DELETE LATER */}
         <Button
           // TODO show a modal before signing out
           colorScheme='info'
           onPress={() => synchronize(true)}
+          marginTop={4} marginBottom={4}
         >
           Sincronizar
         </Button>

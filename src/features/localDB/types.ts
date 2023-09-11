@@ -41,11 +41,13 @@ export type calibrationsMeasurementsLocalDB = SendStatusLocalDB & {
 
 export type calibrationsFromFunctionFromBackend = BaseLocalDB & {uid: string}
 
+export type paddocksFromBackend = BaseLocalDB & {uid: string}
 
 export type PaddockLocalDB = BaseLocalDB & {
     ID: number,
     name:string,
     vertices_list: string | null,
+    color: string | undefined
 }
 
 export type ColumnDefinition = { name: string, type: SQLTypes }

@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo } from "react";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect, useRef, useState } from 'react';
-import { Heading, Icon, IconButton, VStack, View } from 'native-base';
+import { Box, Button, Heading, Icon, IconButton, Input, Modal, VStack, View } from 'native-base';
 import { getLocation } from '../../features/location/location';
 import { ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
 import { addPaddock, updatePaddock } from '../../features/store/paddockSlice';
-import { getPaddocks } from "../../features/localDB/paddocks";
+import { getCrossedPaddocks, getPaddocks } from "../../features/localDB/paddocks";
 import { insertMeasurement } from "../../features/localDB/measurements";
 import { Paddock } from '../../features/store/types';
 import { CommonActions, useFocusEffect } from '@react-navigation/native';
@@ -20,10 +20,14 @@ import MapView, { LatLng, Region } from 'react-native-maps';
 import DownloadTilesButton from "./Partials/DownloadTilesButton";
 import IMapView from "./Partials/MapViewInterface";
 import MapboxView from "./Partials/MapboxView";
+import MapLibreView from "./Partials/MapLibreView";
 import GoogleMapsView from "./Partials/GoogleMapsView";
-import Async,{AsyncReturn} from "../../features/utils/Async";
+import Async, { AsyncReturn } from "../../features/utils/Async";
 import { LocationObject } from "expo-location";
 import ColorUtils from "../../features/utils/ColorUtils";
+import { themeNavigation } from "../../theme";
+import { getPaddocksFromBack } from "../../features/backend/paddocks";
+import TS from "../../../TS";
 
 type Props = NativeStackScreenProps<StackParamList, 'PaddockHome'>;
 
@@ -32,6 +36,7 @@ export default function PaddockScreen(props: Props) {
     //-------CONST & HOOKS---------//
     const [currentCoords, setCurrentCoords] = useState<LatLng>({ latitude: 0, longitude: 0 });
     const [paddockList, setPaddockList] = useState<Paddock[]>([]);
+    const [paddocksFromBack, setPaddocksFromBack] = useState<number[]>([]);
     const [infoOpen, setInfoOpen] = useState(false);
     const [region, setRegion] = useState<LatLng & { zoom: number }>({ latitude: 0, longitude: 0, zoom: 12 });
     const [isLocationUpdating, setIsLocationUpdating] = useState(false);
@@ -40,13 +45,13 @@ export default function PaddockScreen(props: Props) {
     const mapRef = useRef<IMapView>(null);
     const snapPoints = useMemo(() => ['12%', '60%'], []);
     const dispatch = useTypedDispatch();
-
-
+    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+    
     //---------FUNCTIONS----------//
     useEffect(() => {
         props.navigation.setOptions({
             headerShown: true, headerTransparent: true, headerTintColor: 'white', headerStyle: {
-                backgroundColor: '#3498db77'
+                backgroundColor: themeNavigation.colors.primary + 'AA'
             }
         })
         initializePaddockList();
@@ -68,23 +73,24 @@ export default function PaddockScreen(props: Props) {
     /**
      * Loads every paddock from the Database into the state array
      */
-    function initializePaddockList() {
-        getPaddocks().then((result) => {
-            let paddocks = [...paddockList];
-            result.forEach((value) => {
-                let vertices: LatLng[] = JSON.parse(value.vertices_list!)
-                let paddockData: Paddock = { ID: value.ID, name: value.name, vertices: vertices }
-                if (vertices.length > 0 && !paddockList.some(p => { return p.ID == value.ID })) paddocks = ([...paddocks, paddockData]);;
-            });
-            setPaddockList(paddocks);
-        })
+    async function initializePaddockList() {
+        let resultPaddocks = await getPaddocks();
+        let paddocks: Paddock[] = [];
+        resultPaddocks.forEach((value) => {
+            let vertices: LatLng[] = JSON.parse(value.vertices_list!)
+            let paddockData: Paddock = { ID: value.ID, name: value.name, vertices: vertices, color: value.color }
+            if (vertices.length > 0 && !paddockList.some(p => { return p.ID == value.ID })) paddocks = ([...paddocks, paddockData]);;
+        });
+        const crossedPaddocks = await getCrossedPaddocks();
+        setPaddocksFromBack(crossedPaddocks.map(r => { return r.ID }));
+        setPaddockList(paddocks);
     }
 
     function showPaddockList() {
         getPaddocks().then((result) => {
             let concat = "";
             result.forEach((value) => {
-                concat += (`ID: ${value.ID} - name: ${value.name} - data: ${value.vertices_list}`)
+                concat += (`ID: ${value.ID} - name: ${value.name} - data: ${value.vertices_list} - color: ${value.color} ${paddocksFromBack}`)
             });
             showAlert('Paddock List', concat);
         })
@@ -93,12 +99,12 @@ export default function PaddockScreen(props: Props) {
 
     const fetchLocation = async () => {
         setIsLocationUpdating(true);
-        let loc = await Promise.race<LocationObject|AsyncReturn>([getLocation(), Async.resolveAfter(Async.MID)]);
-        if (loc instanceof AsyncReturn || !loc){
+        let loc = await Promise.race<LocationObject | AsyncReturn>([getLocation(), Async.resolveAfter(Async.MID)]);
+        if (loc instanceof AsyncReturn || !loc) {
             console.log('Error, cannot fetch location!')
             fetchLocation();
         }
-        else{
+        else {
             console.log('Location received, changing region!')
             changeRegion(loc.coords.latitude, loc.coords.longitude)
         }
@@ -122,10 +128,14 @@ export default function PaddockScreen(props: Props) {
      * updateRegion is called initially as a fallback for a possible error in fetchLocation()
      * , then is called again inside fetchLocation.
      */
-    const onMapReady = ()=>{
+    const onMapReady = () => {
         updateRegion();
         fetchLocation();
     }
+
+    // function printSearch(){
+    //     console.log(searchText);
+    // }
 
     //--------JSX-XTRA-COMPONENTS---------//
 
@@ -150,7 +160,7 @@ export default function PaddockScreen(props: Props) {
     function InfoButton() {
         return (
             <View flexDir={'row'} rounded={'full'} style={{ bottom: 100, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, padding: 10 }}>
-                <TouchableOpacity activeOpacity={0.5} onPress={() => { setInfoOpen(!infoOpen) }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => { setInfoOpen(!infoOpen); console.log(region.zoom) }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
                     <Icon as={FontAwesome5} size={10} name={'info-circle'} color='coolGray.600' />
                     {!infoOpen ? <></> :
                         <Heading size={'sm'} color={'#34495e'} marginLeft={1} marginRight={1}>
@@ -162,9 +172,19 @@ export default function PaddockScreen(props: Props) {
         );
     }
 
+    function LocateButton() {
+        return (
+            <View flexDir={'row'} rounded={'full'} style={{ bottom: 380, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, padding: 15 }}>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => { setIsSearchModalOpen(true); }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+                    <Icon as={FontAwesome5} size={8} name={'search'} color='coolGray.600' />
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
     function InsertMeasureTestButton() {
         return (
-            <View flexDir={'row'} rounded={'full'} style={{ bottom: 310, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, padding: 15 }}>
+            <View flexDir={'row'} rounded={'full'} style={{ bottom: 380, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, padding: 15 }}>
                 <TouchableOpacity activeOpacity={0.5} onPress={() => {
                     insertMeasurement({
                         height: Math.random() * 100,
@@ -179,6 +199,31 @@ export default function PaddockScreen(props: Props) {
         );
     }
 
+    const SearchModal = useCallback(() => {
+        const [searchText, setSearchText] = useState('');
+        return (
+            <Modal isOpen={isSearchModalOpen} closeOnOverlayClick onClose={() => { setIsSearchModalOpen(false) }} alignItems={'center'} justifyContent={'center'}>
+                <Box rounded={'lg'} paddingTop={5} paddingBottom={5} padding={5} backgroundColor={'#fff'}>
+                    <View flexDir={'column'} width={250}>
+                        <Heading>Insert coordinates</Heading>
+                        <Input onChangeText={setSearchText} marginTop={5} marginBottom={5}></Input>
+                        <Button width={'100%'} flexDirection={'row'} colorScheme={'primary'}
+                            endIcon={<Icon as={FontAwesome5} name="check" size="md" />}
+                            onPress={() => {
+                                let splitted = searchText.split(',');
+                                let x = parseFloat(splitted[0].trim()) || 1;
+                                let y = parseFloat(splitted[1].trim()) || 1;
+                                console.log(splitted);
+                                changeRegion(x,y);
+                                setIsSearchModalOpen(false);
+                            }}>
+                            {'Confirmar'}
+                        </Button>
+                    </View>
+                </Box>
+            </Modal>)
+    }, [isSearchModalOpen]);
+
     /**
      * Contains the Add and Filter buttons. Add button creates a new paddock.
      * Filter button lets specify a period and see the measurements taken during that time interval. 
@@ -187,8 +232,8 @@ export default function PaddockScreen(props: Props) {
     function ButtonDock() {
         return (
             <View style={{ position: 'absolute', right: 10, bottom: 110, backgroundColor: '#ffffff' }} rounded={'full'} padding={2}>
-                <View style={{ alignItems: 'center', marginBottom: 5 }}>
-                    <View rounded="full" backgroundColor={'#27ae60'} style={{ width: 70, height: 70 }} borderColor={'#27ae6088'} borderWidth={3}>
+                {/* <View style={{ alignItems: 'center', marginBottom: 5 }}>
+                    <View rounded="full" backgroundColor={themeNavigation.colors.primary} style={{ width: 70, height: 70 }} borderColor={themeNavigation.colors.primary + '88'} borderWidth={3}>
                         <TouchableOpacity onPress={() => {
                             sheetRef.current?.snapToIndex(0);
                             props.navigation.dispatch(CommonActions.navigate({ name: 'CreatePaddock', params: { paddockId: -1, create: true } }))
@@ -196,14 +241,15 @@ export default function PaddockScreen(props: Props) {
                             <Icon marginLeft={1} as={FontAwesome5} variant={"solid"} name="plus" size="2xl" color="#fff" />
                         </TouchableOpacity>
                     </View>
-                </View>
+                </View> */}
                 <View style={{ alignItems: 'center' }}>
-                    {filterState.enabled ? <View style={{ height: 5, backgroundColor: '#f1c40f', width: 25, borderRadius: 6, zIndex: 999, top: 58 }} /> : <></>}
                     <View rounded="full" backgroundColor={'#6c3483'} style={{ width: 70, height: 70 }} borderColor={'#6c348388'} borderWidth={3}>
+                        {/* {filterState.enabled ? <View style={{ height: 5, width: 20, backgroundColor: themeNavigation.colors.primary, borderRadius: 6, zIndex: 999, top: 37 }} /> : <></>} */}
                         <TouchableOpacity onPress={() => {
-                            props.navigation.dispatch(CommonActions.navigate({ name: 'FiltersScreen', params: { paddockId: 1, paddockList: paddockList.map(p=>{return {name: p.name, id:p.ID}}) } }))
+                            props.navigation.dispatch(CommonActions.navigate({ name: 'FiltersScreen', params: { paddockId: 1, paddockList: paddockList.map(p => { return { name: p.name, id: p.ID } }) } }))
                         }}>
                             <Icon as={FontAwesome5} name="filter" size="xl" color="#fff" />
+                            {filterState.enabled ? <Icon as={FontAwesome5} position={'absolute'} name="check" size="lg" left={-8} top={3} color={themeNavigation.colors.primary} /> : <></> }
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -215,28 +261,30 @@ export default function PaddockScreen(props: Props) {
      * Each item represents a paddock and has an edit and locate button related to that paddock.
      */
     const BottomSheetList = useCallback(() => {
+
         return (
             <BottomSheet
-                ref={sheetRef} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#27ae60EE' }}
+                ref={sheetRef} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: themeNavigation.colors.primary + 'EE' }}
                 handleIndicatorStyle={{ backgroundColor: '#fff' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', height: 50, marginBottom: 25 }}>
                     <Heading size="xl" color="coolGray.100"
                         style={{ marginLeft: 20, marginRight: 5, bottom: 2, textShadowOffset: { width: -0.5, height: 0.5 }, textShadowRadius: 5 }}
-                    >Potreros</Heading>
+                    >{TS.t('paddocks')}</Heading>
                 </View>
                 <BottomSheetFlatList contentContainerStyle={{ alignItems: 'center', paddingBottom: 25 }}
                     keyExtractor={(item, index) => 'FLIST' + index.toString()}
                     data={paddockList} refreshing={true}
                     renderItem={({ item, index }) => (
                         <BottomSheetItem title={item?.name} index={index} foreColor={'coolGray.800'}
-                            color={ColorUtils.getColor(index)}
+                            color={item.color ? item.color : ColorUtils.getColor(3)}
+                            canBeEdited={item.ID ? !paddocksFromBack.includes(item.ID) : false}
                             onLocatePress={() => {
                                 changeRegion(paddockList[index].vertices[0].latitude, paddockList[index].vertices[0].longitude)
                                 sheetRef.current?.snapToIndex(0);
                             }}
                             onEditPress={() => {
                                 let paddockData: Paddock = { ID: item.ID, name: item.name, vertices: item.vertices }
-                                let newIndex = dispatch(addPaddock({ data: paddockData })).payload.index ;
+                                let newIndex = dispatch(addPaddock({ data: paddockData })).payload.index;
                                 sheetRef.current?.snapToIndex(0);
                                 props.navigation.dispatch(
                                     CommonActions.navigate({
@@ -255,13 +303,16 @@ export default function PaddockScreen(props: Props) {
     //----------JSX-----------//
     return (
         <VStack bg='white' flex={1} alignItems='center'>
-            <GoogleMapsView key={'A' + filterState.enabled + filterState.from + filterState.until} ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} />
+            {/* <GoogleMapsView key={'A' + filterState.enabled + filterState.from + filterState.until} ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} /> */}
             {/* <MapboxView ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady}/> */}
+            <MapLibreView ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} />
             {/* <InsertMeasureTestButton /> */}
+            <LocateButton />
             <ButtonDock />
             <LocationButton />
             <InfoButton />
             <DownloadTilesButton mapRegion={region} zoomLevel={region.zoom} onLongPress={updateRegion} />
+            <SearchModal />
             <BottomSheetList />
         </VStack>
     );

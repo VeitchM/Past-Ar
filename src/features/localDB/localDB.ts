@@ -138,7 +138,14 @@ const createTableQueries = [
       `CREATE TABLE IF NOT EXISTS paddocks (
         ID INTEGER PRIMARY KEY,
         name TEXT,
-        vertices_list TEXT
+        vertices_list TEXT,
+        color TEXT
+      );`,
+      `CREATE TABLE IF NOT EXISTS paddocksFromServer (
+        ID INTEGER PRIMARY KEY,
+        updateTimestamp INTEGER,
+        uid TEXT,
+        FOREIGN KEY (ID) REFERENCES paddocks(ID) ON DELETE CASCADE
       );`,
 
 ]

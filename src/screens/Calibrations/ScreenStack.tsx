@@ -10,33 +10,25 @@ import CalibrationsList from "./ListScreen";
 import CreateFunctionCalibration from "./CreateFunctionScreen";
 import ForSendingCalibrationsScreen from "./ForSendingCalibrationsScreen";
 import { StackParamList } from "./Stack.types";
-
-
+import TS from "../../../TS";
 
 const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function CalibrationStackScreen() {
     const theme = useTheme()
     return (
-        // {/* <Text> Lallalala</Text> */}
         <Stack.Navigator screenOptions={
             {
                 headerTitleStyle: { fontWeight: 'bold', fontSize: 24 },
                 headerTintColor: theme.colors.muted[400]
             }}>
-            <Stack.Screen options={{ title: 'Calibraciónes' }} name='CalibrationHome' component={HomeCalibration} />
-            <Stack.Screen options={{ title: 'Medicion para calibración' }} name='CalibrationMeasurement' component={CalibrationMeasurementScreen} />
+            <Stack.Screen options={{ title: TS.t('calibration_home_title') }} name='CalibrationHome' component={HomeCalibration} />
+            <Stack.Screen options={{ title: TS.t('calibration_measure_received') }} name='CalibrationMeasurement' component={CalibrationMeasurementScreen} />
             <Stack.Screen name='SetCalibrations' component={SetCalibrationsScreen} />
-            <Stack.Screen options={{ title: 'Crear calibración' }} name='CreateCalibration' component={CreateCalibration} />
-            <Stack.Screen options={{ title: 'Lista de calibraciones' }} name='CalibrationsList' component={CalibrationsList} />
-            <Stack.Screen options={{ title: 'Crear función de calibración' }} name='CreateFunctionCalibration' component={CreateFunctionCalibration} />
-            <Stack.Screen options={{ title: 'Calibraciónes a enviar' }} name='ForSendingCalibrations' component={ForSendingCalibrationsScreen} />
-
-
-
-
+            <Stack.Screen options={{ title: TS.t('calibration_create_title') }} name='CreateCalibration' component={CreateCalibration} />
+            <Stack.Screen options={{ title: TS.t('calibration_list_title') }} name='CalibrationsList' component={CalibrationsList} />
+            <Stack.Screen options={{ title: TS.t('calibration_function_create_title') }} name='CreateFunctionCalibration' component={CreateFunctionCalibration} />
+            <Stack.Screen options={{ title: TS.t('calibration_send_title') }} name='ForSendingCalibrations' component={ForSendingCalibrationsScreen} />
         </Stack.Navigator>
     )
-
-
 }

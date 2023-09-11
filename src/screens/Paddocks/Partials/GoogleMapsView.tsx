@@ -6,10 +6,10 @@ import IMapView, { MapViewProps } from "./MapViewInterface";
 import * as FileSystem from 'expo-file-system'
 import { useFocusEffect } from "@react-navigation/native";
 import { Measurement } from "../../../features/store/types";
-import { getMeasurementsBetween } from "../../../features/localDB/localDB";
 import { useTypedSelector } from "../../../features/store/storeHooks";
 import Formatter from '../../../features/utils/FormatUtils';
 import ColorUtils from "../../../features/utils/ColorUtils";
+import { getMeasurementsBetween } from "../../../features/localDB/measurements";
 
 const AppConstants = {
     TILE_FOLDER: `${FileSystem.documentDirectory}/tiles`,

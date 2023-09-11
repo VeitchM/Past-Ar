@@ -3,7 +3,7 @@ import { StackParamList } from "./ScreenStack";
 import { Box, Button, Divider, Heading, Icon, Modal, ScrollView, Select, View } from "native-base";
 import { ActivityIndicator, Dimensions, Text, TouchableHighlight, TouchableOpacity } from "react-native";
 import { LineChart } from "react-native-chart-kit";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getLocation } from "../../features/location/location";
 import { LocationObject } from "expo-location";
 import { Measurement } from "../../features/store/types";
@@ -16,6 +16,9 @@ import FormatUtils from "../../features/utils/FormatUtils";
 
 import { getCalibrations, getCalibrationsFromMeasurementExtended } from "../../features/localDB/calibrations";
 import { getMeasurements, getMeasurementsBetween, insertMeasurement } from "../../features/localDB/measurements";
+import { themeNavigation } from "../../theme";
+import { CommonActions, useFocusEffect } from "@react-navigation/native";
+import { useTypedSelector } from "../../features/store/storeHooks";
 
 const screenWidth = Dimensions.get("window").width;
 const Tab = createMaterialTopTabNavigator();
@@ -23,25 +26,35 @@ const Tab = createMaterialTopTabNavigator();
 type Props = NativeStackScreenProps<StackParamList, 'StatisticsHome'>;
 
 export default function PaddockScreen(props: Props) {
-
     const [location, setLocation] = useState<LocationObject>();
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
     const [weight, setWeight] = useState(0);
     const [filterModalVisible, setFilterModalVisible] = useState(false);
     const [modalFrom, setModalFrom] = useState(false);
     const [modalUntil, setModalUntil] = useState(false);
-    const [from, setFrom] = useState((d=>new Date(d.setDate(d.getDate()-1)))(new Date()));
-    const [until, setUntil] = useState(new Date());
     const [selectedCalibration, setSelectedCalibration] = useState(-1);
     const [calibrations, setCalibrations] = useState<CalibrationLocalDB[]>([])
+    const filterState = useTypedSelector(state => state.filter);
 
     useEffect(() => {
-        readMeasurements();
+        // setFrom(new Date(filterState.from_stats));
+        // setUntil(new Date(filterState.until_stats));
+        readMeasurements(filterState.from_stats, filterState.until_stats);
         readCalibrations();
-    }, [])
+    }, [filterState])
+
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         console.log('Focused');
+    //         // setFrom(new Date(filterState.from_stats));
+    //         // setUntil(new Date(filterState.until_stats));
+    //         readMeasurements(filterState.from_stats, filterState.until_stats)
+    //         return () => {
+
+    //         }
+    //     }, []))
 
     const readMeasurements = async (_from?: number, _until?: number, calibration?: number) => {
-        setLocation(await getLocation());
         let date = new Date(); date.setDate(date.getDate() - 2);
         let f, u;
         if (_from == undefined || _until == undefined) {
@@ -66,7 +79,7 @@ export default function PaddockScreen(props: Props) {
     const meanHeight = (_measurements: Measurement[]) => {
         let sum = 0;
         _measurements.forEach(e => { sum += e.height });
-        return (sum / (_measurements.length * 1.0)).toFixed(3);
+        return (sum != 0) ? (sum / (_measurements.length * 1.0)).toFixed(3) : '0.0';
     }
 
 
@@ -74,8 +87,10 @@ export default function PaddockScreen(props: Props) {
     const FilterButton = () => {
         return (
             <View rounded={'full'} style={{ flex: 1, position: 'absolute', bottom: 15, right: 15, padding: 0 }}>
-                <TouchableOpacity activeOpacity={0.8} onPress={() => { setFilterModalVisible(!filterModalVisible) }}>
-                    <View flexDirection={'row'} rounded={'full'} background={'#6c3483'} height={70} borderWidth={4} borderColor={'#6c348388'} padding={4}>
+                <TouchableOpacity activeOpacity={0.8} onPress={() => {
+                    props.navigation.dispatch(CommonActions.navigate({ name: 'FiltersScreen' }))
+                }}>
+                    <View flexDirection={'row'} rounded={'full'} background={themeNavigation.colors.primary} height={70} width={70} borderWidth={4} borderColor={themeNavigation.colors.primary + '88'} padding={4}>
                         <Icon color={'#fff'} as={FontAwesome5} name={'filter'} size={'2xl'} marginTop={1}></Icon>
                     </View>
                 </TouchableOpacity>
@@ -104,7 +119,7 @@ export default function PaddockScreen(props: Props) {
                             marginBottom={5}
                             onPress={() => { setModalFrom(!modalFrom); }}
                         >
-                            {from.toDateString()}
+                            {(new Date(filterState.from_stats)).toDateString()}
                         </Button>
                         <Heading size='md' fontWeight='light'>Hasta</Heading>
                         <Button
@@ -115,14 +130,14 @@ export default function PaddockScreen(props: Props) {
                             endIcon={<Icon as={FontAwesome5} name="chevron-down" size="md" />}
                             onPress={() => { setModalUntil(!modalUntil); }}
                         >
-                            {until.toDateString()}
+                            {(new Date(filterState.until_stats)).toDateString()}
                         </Button>
                         <Divider marginTop={5} marginBottom={5} />
                         <Button
                             flexDirection={'row'}
                             colorScheme={'primary'}
                             endIcon={<Icon as={FontAwesome5} name="check" size="md" />}
-                            onPress={() => { setFilterModalVisible(false); readMeasurements(from.getTime(), until.getTime()); readMeasurements(from.getTime(), until.getTime()); }}
+                            onPress={() => { setFilterModalVisible(false); readMeasurements(filterState.from_stats, filterState.until_stats); readMeasurements(filterState.from_stats, filterState.until_stats); }}
                         >
                             {'Aplicar'}
                         </Button>
@@ -136,17 +151,10 @@ export default function PaddockScreen(props: Props) {
     function MainScreen() {
         return (
             <ScrollView flex={1} contentContainerStyle={{ alignItems: 'center' }}>
-                <Select backgroundColor={'#fff'} width={screenWidth * 0.90} borderColor={'#27ae60'} borderWidth={1} marginTop={5} selectedValue={selectedCalibration + ''} onValueChange={itemValue => { setSelectedCalibration(Number.parseInt(itemValue)); readMeasurements(from.getTime(), until.getTime(), Number.parseInt(itemValue)) }}  placeholder="Elegir Calibración" >
-                    {calibrations.map((calibration) => {
-                        return <Select.Item
-                            key={calibration.ID}
-                            label={calibration.name}
-                            value={calibration.ID.toString()} />
-                    })}
-                </Select>
+
                 <Box justifyContent='space-evenly' marginTop={15} alignItems={'center'} backgroundColor={'#7a7b87'}
                     rounded={'lg'} height={250} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
-                    <Heading size='lg' marginTop={4} marginBottom={4} color={'#fff'}>Ultimas Mediciones</Heading>
+                    <Heading size='lg' marginTop={4} marginBottom={4} color={'#fff'}>Mediciones</Heading>
                     {measurements.length == 0 || selectedCalibration == -1 ?
                         <>
                             <Heading size='lg' marginBottom={2}>No registra en periodo</Heading>
@@ -189,7 +197,15 @@ export default function PaddockScreen(props: Props) {
                         />
                     }
                 </Box>
-
+                <Divider marginBottom={3} marginTop={3} />
+                <Select width={screenWidth} placeholderTextColor={'#fff'} borderColor={themeNavigation.colors.primary} color={'#fff'} backgroundColor={themeNavigation.colors.primary} borderWidth={0} selectedValue={selectedCalibration + ''} onValueChange={itemValue => { setSelectedCalibration(Number.parseInt(itemValue)); readMeasurements(filterState.from_stats, filterState.until_stats, Number.parseInt(itemValue)) }} placeholder="Elegir Calibración" >
+                    {calibrations.map((calibration) => {
+                        return <Select.Item
+                            key={calibration.ID}
+                            label={calibration.name}
+                            value={calibration.ID.toString()} />
+                    })}
+                </Select>
                 <Box justifyContent='space-evenly' marginTop={2} alignItems={'center'} backgroundColor={'#fff'}
                     rounded={'lg'} height={90} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
 
@@ -243,11 +259,11 @@ export default function PaddockScreen(props: Props) {
                 </Box>
                 <Box marginBottom={15} justifyContent='space-evenly' marginTop={2} alignItems={'center'} backgroundColor={'#fff'}
                     rounded={'lg'} height={90} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
-                        <>
-                            <Heading size='lg' >{'Desde: '+FormatUtils.formatBasicDate(from)}</Heading>
-                            <Divider />
-                            <Heading size='lg' >{'Hasta: ' + FormatUtils.formatBasicDate(until)}</Heading>
-                        </>
+                    <>
+                        <Heading size='lg' >{'Desde: ' + FormatUtils.formatBasicDate(new Date(filterState.from_stats))}</Heading>
+                        <Divider />
+                        <Heading size='lg' >{'Hasta: ' + FormatUtils.formatBasicDate(new Date(filterState.until_stats))}</Heading>
+                    </>
                 </Box>
             </ScrollView>
         );
@@ -256,23 +272,23 @@ export default function PaddockScreen(props: Props) {
     return <>
         <MainScreen />
         <FilterButton />
-        {modalFrom || modalUntil ? <></> : <FilterModal />}
-        <DatePicker
+        {/* {modalFrom || modalUntil ? <></> : <FilterModal />} */}
+        {/* <DatePicker
             androidVariant="iosClone"
             mode="date"
             title="Selecciona fecha desde"
             modal open={modalFrom} date={from}
             onConfirm={(v) => { setModalFrom(false); setFrom(v); }}
             onCancel={() => { setModalFrom(false); }}
-        />
-        <DatePicker
+        /> */}
+        {/* <DatePicker
             androidVariant="iosClone"
             mode="date"
             title="Selecciona fecha hasta"
             modal open={modalUntil} date={until}
             onConfirm={(v) => { setModalUntil(false); setUntil(v); }}
             onCancel={() => { setModalUntil(false); }}
-        />
+        /> */}
     </>;
 
 }

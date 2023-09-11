@@ -32,14 +32,17 @@ type Notification = {
 
 type Paddock = {
     ID?: number, name: string, vertices: { latitude: number, longitude: number }[], 
-    holes?:{ latitude: number, longitude: number }[][]
+    holes?:{ latitude: number, longitude: number }[][],
+    color?:string
 }
 
 type Filter = {
     enabled: boolean,
     from: number,
     until: number,
-    paddockId?:number
+    paddockId?:number,
+    from_stats: number,
+    until_stats: number
 }
 
 export { MainCharacteristic, ErrorBleState, DeviceSerializable, Measurement, Notification, Paddock, Filter }

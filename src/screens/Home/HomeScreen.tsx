@@ -10,15 +10,17 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { View, Text, StatusBar, Button, Box, Badge, useTheme, Flex, IconButton, useColorMode, useColorModeValue, Heading, Divider, Center, Modal, FormControl, Input, FlatList, HStack, VStack, Spacer } from 'native-base';
 import { ReactNode, useEffect, useState } from 'react';
-import { ColorValue, TouchableOpacity } from 'react-native';
+import { ColorValue, TouchableOpacity, Image, Dimensions } from 'react-native';
 import RoundedContainer from '../../components/RoundedContainer';
 import { disconnectFromDevice } from '../../features/ble/ble';
-import { useTypedSelector } from '../../features/store/storeHooks';
+import { useTypedDispatch, useTypedSelector } from '../../features/store/storeHooks';
 import DevicesModal from '../../components/DevicesModal';
 import BatteryLevel from '../../components/Battery';
 import { LastMeasurement } from './components/LastMeasurement';
 import ConnectDeviceButton from '../../components/ConnectDevice';
 import Pasturometer from '../../components/Pasturometer';
+import { themeNavigation } from '../../theme';
+import { setConnectedDevice } from '../../features/store/bleSlice';
 
 
 
@@ -26,32 +28,58 @@ import Pasturometer from '../../components/Pasturometer';
 
 //TODO add modal of device, where you can set the height
 
-export default function HomeScreen() {
+export default function HomeScreen(props: any) {
 
     const bleConnectionState = useTypedSelector(state => state.ble.connectionState)
-
+    const dispatch = useTypedDispatch()
     //Not used yet, but will be needed in the future
-    // useEffect(() => {
-    //     props.navigation.setOptions({
-    //         headerRight: () => {
-    //             return (
-    //                 <TouchableOpacity style={{ marginRight: 16 }} onPress={() => props.navigation.navigate('Details')}>
-    //                     <Text>Details</Text>
-    //                 </TouchableOpacity>
-    //             )
-    //         }
-    //     })
-    // }, [])
+    useEffect(() => {
+        props.navigation.setOptions({
+            headerLeft: () => {
+                return (
+                    <HeaderLeft />
+                )
+            },
+            headerShown: true, headerTintColor: 'white', headerStyle: {
+                backgroundColor: '#18181b',
+            }
+        })
+
+    }, [])
+
+    const HeaderLeft = () => {
+        return (
+            <View marginBottom={3} marginLeft={2}>
+                <Image style={{ width: 220, height: 63 }}
+                    source={require('../../../assets/logo-small-white-text.png')} />
+            </View>
+        );
+    }
 
     return (
-        <VStack bg='white' flex={1} alignItems='center'>
-            <View height='60px' />
+        <VStack bg='white' flex={1} alignItems='center' backgroundColor={'red'}>
+            <StatusBar translucent
+                backgroundColor='transparent'
+                barStyle='light-content'
+            />
+            <View position={'absolute'} backgroundColor={themeNavigation.colors.primary}
+                height={5} width={'100%'}
+            ></View>
+            <View flex={1} />
             <LastMeasurement />
             <View height='20px' />
             <BatteryLevel />
-            <Flex>
-            </Flex>
+            <View flex={1}></View>
             <VStack justifyContent='flex-end' marginBottom='15%' flex={1}>
+                {/* <Button size='lg' isLoading={false} isLoadingText="Conectando"
+                    _spinner={{ size: 30 }}
+                    onPress={() => {
+                        const newDevice = { id: '123', name: 'pastu1', alias: 'pastualias', plateWidth: Number(2023) }
+                        dispatch(setConnectedDevice(newDevice))
+                    }} marginBottom={5}
+                >
+                    x HardLink x
+                </Button> */}
                 {bleConnectionState == 'connected' ?
                     <Pasturometer />
                     :
