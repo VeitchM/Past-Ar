@@ -39,7 +39,7 @@ function ModalPasturometer(props: { show: boolean, setShow: (show: boolean) => v
     const store = useTypedSelector(state => state.ble)
    
     const [alias, setAlias] = useState(store.connectedDevice?.alias || '')
-    const [plateWidth, setPlateWidth] = useState(store.connectedDevice?.plateWidth?.toString() || '')
+    const [plateWidth, setPlateWidth] = useState(store.connectedDevice?.baseHeight?.toString() || '')
     const [errorPlateWidth, setErrorPlateWidth] = useState(false)
 
     const dispatch = useTypedDispatch()
@@ -105,7 +105,7 @@ function ModalPasturometer(props: { show: boolean, setShow: (show: boolean) => v
                     <HStack style={{ justifyContent: 'space-between', }}>
                         <Heading
                             color={errorPlateWidth ? 'error.400' : undefined}
-                            size='md'>Grosor del Plato</Heading>
+                            size='md'>Altura Base</Heading>
                         <Icon as={Feather} name="edit-2" size={5} />
                     </HStack>
                     <Input

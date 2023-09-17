@@ -29,3 +29,13 @@ export const timePassedString = (timestamp:number) => {
     }
     return timePassed
 }
+
+export const formatDate = (timestamp:number)=>{
+    const date = new Date (timestamp)
+    return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
+}
+
+export const formatTime = (timestamp:number)=>{
+    const date = new Date (timestamp)
+    return `${date.getHours()}:${date.getMinutes()}hs`
+}

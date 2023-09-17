@@ -17,11 +17,11 @@ export default function BatteryLevel() {
     return <>
         {
             battery > 0 ?
-                <View >
-                    <Text fontWeight={400} fontSize={27}>Pasturometro</Text>
+                <View paddingBottom={2}>
+                    <Text fontWeight={400} fontSize='2xl'>Pasturometro</Text>
                     <HStack alignItems='center'>
-                        <Icon as={MaterialCommunityIcons} size={36} name={batteryIcon} color='muted.400' />
-                        <Text fontSize={30} fontWeight={800} >{battery}%</Text>
+                        <Icon as={MaterialCommunityIcons} size={'xl'} name={batteryIcon} color='muted.400' />
+                        <Text fontSize='2xl' fontWeight={800} >{battery}%</Text>
                     </HStack>
                 </View >
                 : null

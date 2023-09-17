@@ -10,7 +10,6 @@ import {  ErrorBleState, DeviceSerializable } from "./types";
 interface BLEState {
 
   //Connection state
-  bleState: string
   allDevices: DeviceSerializable[]
   connectedDevice: DeviceSerializable | null,
   connectionState: 'disconnected' | 'connecting' | 'connected'
@@ -18,21 +17,18 @@ interface BLEState {
 
   battery: number
 
-  //TODO Separate in measurment slice, and ble slice, manage database from redux
-  //Create redux folder and put all the slices there, add to measurement a receiving calibration variable that change on focus, and if true insert CalibrationMeasure
-
+  
 
   error: ErrorBleState,
 }
 //=========================================================
 
 const initialState: BLEState = {
-  bleState: 'unknown', //TODO verify
   allDevices: [],
   connectedDevice: null,
   connectionState: 'disconnected',
   permissionsGranted: false,
-
+  
   battery: -1,
 
   error: {}

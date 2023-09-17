@@ -63,10 +63,14 @@ const onAnomalousDisconnection = (deviceId: string) => {
     // console.log('Error on anomalous disconnection ', error, !!device);
     // error means there was an anomalous disconnection, not using the disconnect method
     // docummentation lies, if i disconnect the device it also gives null error.
-    if (store.getState().ble.connectionState != 'disconnected' && device) {
+
+    const bleStore = store.getState().ble
+    if (bleStore.connectionState != 'disconnected' && bleStore.connectedDevice) {
       store.dispatch(setTryingToConnect());
+      console.info("DEVICE",device,bleStore);
+      
       store.dispatch(addNotification({ title: 'El Pasturometro se ha desconectado', status: 'error' }))
-      tryToReconnect({ id: device.id, name: device.name }, RECONNECTIONS_INTENTS);
+      tryToReconnect({ id: bleStore.connectedDevice.id, name: bleStore.connectedDevice.name }, RECONNECTIONS_INTENTS);
     }
 
     //Else it was disconnected by the method disconnectToDevice()
@@ -222,6 +226,7 @@ import { pushNotification } from "../utils";
 import { getPersistedDevices } from "../localDB/device"
 import { getDeviceIfExists, updatePersistedDevices } from "./persistedDevices"
 import { DeviceMin } from "./type";
+import { log } from 'react-native-reanimated';
 
 /** Set callbacks in monitors for each characteristic, it is called by the connectToDevice function
 *

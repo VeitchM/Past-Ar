@@ -133,7 +133,8 @@ const createTableQueries = [
         id TEXT PRIMARY KEY,
         name TEXT,
         alias TEXT,
-        plateWidth REAL
+        baseHeight REAL,
+        model TEXT
       );`,
       `CREATE TABLE IF NOT EXISTS paddocks (
         ID INTEGER PRIMARY KEY,

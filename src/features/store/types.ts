@@ -18,7 +18,8 @@ type DeviceSerializable = {
     id: string
     name: string | null
     alias:string | null
-    plateWidth: number | null
+    baseHeight: number | null
+    model: string
 
 }
 

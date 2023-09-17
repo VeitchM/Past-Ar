@@ -41,7 +41,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pastar.app",
+      "bundleIdentifier": "com.pastech.app",
       "infoPlist": {
         "UIBackgroundModes": [
           "location",
