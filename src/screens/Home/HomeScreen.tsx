@@ -46,7 +46,7 @@ import ConnectDeviceButton from "../../components/ConnectDevice";
 import Pasturometer from "../../components/Pasturometer";
 import { themeNavigation } from "../../theme";
 import { setConnectedDevice } from "../../features/store/bleSlice";
-import MeasurementsList from "./components/ListMeasurments/ListMeasurements";
+import MeasurementsList from "./components/ListMeasurements/ListMeasurements";
 
 //TODO add modal of device, where you can set the height
 
@@ -70,7 +70,7 @@ export default function HomeScreen(props: any) {
 
   const HeaderLeft = () => {
     return (
-      <View  alignItems={'flex-start'}>
+      <View alignItems={"flex-start"}>
         <Image
           style={{ width: 220, height: 63 }}
           source={require("../../../assets/logo-small-white-text.png")}
@@ -93,22 +93,25 @@ export default function HomeScreen(props: any) {
         barStyle="light-content"
       />
       <VStack
-        backgroundColor={"amber.200"}
         alignItems="center"
         flex={1}
-        paddingBottom={5}
-        paddingTop={5}
+        backgroundColor={"white"}
+        paddingY={5}
+        paddingX={10}
       >
         <LastMeasurement />
 
         <BatteryLevel />
+        <View height={4} />
 
         {bleConnectionState == "connected" ? (
           <Pasturometer />
         ) : (
-          <ConnectDeviceButton />
+          <>
+            <ConnectDeviceButton />
+          </>
         )}
-        <View height={5}/>
+        <View height={5} />
         <MeasurementsList />
       </VStack>
     </>

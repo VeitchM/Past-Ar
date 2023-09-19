@@ -78,7 +78,7 @@ export default function HomeCalibration({ navigation }: PropsCalibrationHome) {
 
     return (
 
-        <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
+        <VStack flex={1} alignItems='end' bg='white' 
             style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
 
             <View flex={1} style={{

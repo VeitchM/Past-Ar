@@ -2,6 +2,8 @@
     "es": {
         "paddock": "Potrero",
         "paddocks": "Potreros",
-        "paddock_home_title": "Mapa de Potreros"
+        "paddock_home_title": "Mapa de Potreros",
+        "last_measurements": "Últimas mediciones"
+
     }
 }

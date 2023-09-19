@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { useTypedSelector } from "../../../features/store/storeHooks"
 import RoundedContainer from "../../../components/RoundedContainer"
 import { timePassedString } from "../../../utils/time"
+import TS from "../../../../TS"
 
 
 
@@ -44,9 +45,9 @@ export const LastMeasurement = () => {
                 }} >
 
                 <Text fontSize='xl' fontWeight='extrabold' >
-                    ULTIMA MEDICION</Text>
+                    {TS.t('last_measurement').toUpperCase()}</Text>
                 {timestamp <0 || height == -1 ? (
-                    <Text fontSize='xl' fontWeight='bold'>No hubo mediciones</Text>)
+                    <Text fontSize='xl' fontWeight='bold'>{TS.t('no_measurements')}</Text>)
                     : (<>
 
                         < Flex direction='row'>

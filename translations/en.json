@@ -1,38 +1,87 @@
 {
-    "en": {
-        "home_title": "Home",
-        "user_home_title": "User",
-        "calibration_home_title": "Calibrations",
-        "paddock_home_title": "Paddock Map",
-        "filter_screen_title": "Filters",
-        
-        "home_tab_title": "Home",
-        "paddock_tab_title": "Paddocks",
-        "calibration_tab_title": "Calibration",
-        "statistics_tab_title": "Statistics",
-        "user_tab_title":"User",
+  "en": {
+    "home_title": "Home",
+    "user_home_title": "User",
+    "calibration_home_title": "Calibrations",
+    "paddock_home_title": "Paddock Map",
+    "filter_screen_title": "Filters",
 
-        "paddock": "Paddock",
-        "paddocks": "Paddocks",
-        "measurements": "Measurements",
-        "calibration": "Calibration",
-        "calibrations": "Calibrations",
-        "show_measurements": "Show measurements",
-        "from": "From",
-        "to": "To",
-        "apply": "Apply",
-        "choose": "Choose",
-        "select_from_date": "Select from date",
-        "select_until_date": "Select until date",
+    "home_tab_title": "Home",
+    "paddock_tab_title": "Paddocks",
+    "calibration_tab_title": "Calibration",
+    "statistics_tab_title": "Statistics",
+    "user_tab_title": "User",
 
-        "calibration_list_title": "Calibration List",
-        "calibration_create_title": "Create Calibration",
-        "calibration_function_create_title": "Calibration Function",
-        "calibration_send_title": "Calibrations to Send",
-        "calibration_measure_received": "Measurement to Calibrate",
-        "calibration_home_header": "Load calibration measurements",
-        "calibration_list_button": "Calibration List",
-        "calibration_send_button": "Send calibration",
-        "ble_link_device": "Bind Pasturometro"
-    }
+    "paddock": "Paddock",
+    "paddocks": "Paddocks",
+    "measurements": "Measurements",
+    "calibration": "Calibration",
+    "calibrations": "Calibrations",
+    "show_measurements": "Show measurements",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply",
+    "choose": "Choose",
+    "select_from_date": "Select from date",
+    "select_until_date": "Select until date",
+
+    "calibration_list_title": "Calibration List",
+    "calibration_create_title": "Create Calibration",
+    "calibration_function_create_title": "Calibration Function",
+    "calibration_send_title": "Calibrations to Send",
+    "calibration_measure_received": "Measurement to Calibrate",
+    "calibration_home_header": "Load calibration measurements",
+    "calibration_list_button": "Calibration List",
+    "calibration_send_button": "Send calibration",
+    "ble_link_device": "Bind Pasturometro",
+
+    "last_measurements": "Last measurements",
+    "last_measurement": "Last measurement",
+    "measurement": "Measurement",
+
+    "NOT_SENT": "Hasn't been sent to server",
+    "SENT": "Has been sent to server",
+
+    "localization": "Localization",
+
+    "ago": "{{period}} ago",
+
+    "no_measurements": "There were no measurements",
+
+    "second": {
+      "one": "{{count}} second",
+      "others": "{{count}} seconds"
+    },
+
+    "minute": {
+      "one": "{{count}} minute",
+      "others": "{{count}} minutes"
+    },
+
+    "hour": {
+      "one": "{{count}} hour",
+      "others": "{{count}} hours"
+    },
+    "day": {
+      "one": "{{count}} day",
+      "others": "{{count}} days"
+    },
+
+    "pasturometer": "Pasturometer",
+
+    "disconnect": "Disconnect",
+    "exit": "Exit",
+    "save": "Save",
+
+    "date": "Date",
+
+    "name": "Name",
+    "alias": "Alias",
+    "MAC": "MAC",
+    "base_height": "Base height",
+
+    "delete": "Delete",
+    "cancel": "Cancel"
+
+  }
 }

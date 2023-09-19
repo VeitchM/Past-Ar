@@ -18,6 +18,7 @@ import {
   Icon,
   Pressable,
   Spinner,
+  Text,
 } from "native-base";
 // import {
 //   DeleteCalibrationModal,
@@ -31,10 +32,13 @@ import {
   getNLastMeasurements,
 } from "../../../../features/localDB/measurements";
 import { useTypedSelector } from "../../../../features/store/storeHooks";
+import { formatDate, formatTime } from "../../../../utils/time";
+import TS from "../../../../../TS";
+import MeasurementModal from "./MeasurementModal";
 
 //==== Navigation ==============================================
 
-const LIST_SIZE = 200;
+const LIST_SIZE = 50;
 
 export default function MeasurementsList() {
   //Value represents id in database
@@ -42,57 +46,66 @@ export default function MeasurementsList() {
 
   // const [selectedCalibration, setSelectedCalibration] =
   //   useState<CalibrationLocalDBExtended>();
-  // const [showInfoModal, setShowInfoModal] = useState(false);
   // const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const lastMeasurement = useTypedSelector(state=>state.measurement.lastMeasurement)
-  
+console.log("Rerendered MesurementList");
+
+
+  const [selectedMeasurement, setSelectedMeasurement] =
+    useState<MeasurementLocalDB>();
+  const lastMeasurement = useTypedSelector(
+    (state) => state.measurement.lastMeasurement
+  );
+
   const refreshList = useCallback(() => {
+    console.log("RefreshList");
+    
     getNLastMeasurements(LIST_SIZE).then((measurements) => {
       setMeasurements(measurements);
     });
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("refreshedListMeasurements");
-    
-    refreshList()
-  },[lastMeasurement])
+    setTimeout(() => {
+      refreshList();
+    });
+  }, [lastMeasurement]);
 
-  // useFocusEffect(refreshList);
+  function onPress(item: MeasurementLocalDB) {
+    console.log("Pressed Item");
+  }
 
-  // function onDelete(ID: number) {
-  //   deleteCalibration(ID).then(() => {
-  //     refreshList();
-  //   });
-  // }
- function onPress(item:MeasurementLocalDB){
-  console.log("Pressed Item");
-  
-
- }
-
+  function onDelete() {
+    //delete then
+    setTimeout(() => {
+      refreshList();
+    });
+  }
 
   return (
     <>
-      {/* <DeleteCalibrationModal
-        setShowModal={setShowDeleteModal}
-        info={selectedCalibration}
-        showModal={showDeleteModal}
-        onDelete={onDelete}
-      />
-      <InfoCalibrationModal
-        setShowModal={setShowInfoModal}
-        info={selectedCalibration}
-        showModal={showInfoModal}
-      /> */}
-
-      <VStack alignItems="center" flex={1} >
+      <VStack alignItems="center" width="100%" flex={1}>
+        <MeasurementModal
+          onDelete={onDelete}
+          setMeasurement={setSelectedMeasurement}
+          measurement={selectedMeasurement}
+        />
+        <Heading paddingBottom={2}>{TS.t("last_measurements")}</Heading>
         {measurements ? (
           <FlatList
-            style={{borderRadius:20, backgroundColor:'red'}}
+            borderRadius="2xl"
+            backgroundColor={"white"}
+            // shadow="3"
             width="100%"
             data={measurements}
-            renderItem={({ item }) => <Item item={item} onPress={onPress} />}
+            borderColor={"muted.300"}
+            borderWidth={2}
+            renderItem={({ item }) => (
+              <Item
+                item={item}
+                onPress={(item) => setSelectedMeasurement(item)}
+              />
+            )}
           />
         ) : (
           <VStack height={500} justifyContent="center">
@@ -112,33 +125,28 @@ function Item(props: {
   return (
     <Pressable onPress={() => onPress(item)}>
       <HStack
-        style={{ height: 60, flex: 1, paddingHorizontal: 30 }}
+        style={{ height: 60, width: "100%", flex: 1, paddingHorizontal: 30 }}
         justifyContent="space-between"
         alignItems="center"
       >
-        <HStack>
-          {/* I Could use a condition in just the icon name, but with cloud it will be a ternary */}
-          {/* {item.fromFunction != 1 && (
-            <Icon
-              marginRight={2}
-              alignSelf="center"
-              size="xl"
-              as={MaterialCommunityIcons}
-              name="ruler"
-            />
+        <HStack
+          width={100}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
+          {item.sendStatus ? (
+            <Icon as={MaterialCommunityIcons} name="upload" size="lg" />
+          ) : (
+            <HStack />
           )}
-          {item.fromMeasurement != 1 && (
-            <Icon
-              marginRight={2}
-              alignSelf="center"
-              size="xl"
-              as={MaterialCommunityIcons}
-              name="function-variant"
-            />
-          )} */}
-
-          <Heading>{item.height}</Heading>
+          <Text fontWeight={"medium"} fontSize={"xl"}>
+            {item.height.toFixed(1)}cm
+          </Text>
         </HStack>
+        <VStack>
+          <Text>{formatDate(item.timestamp)}</Text>
+          <Text fontWeight={"medium"}>{formatTime(item.timestamp)}</Text>
+        </VStack>
       </HStack>
       <Divider />
     </Pressable>
