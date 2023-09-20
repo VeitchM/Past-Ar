@@ -5,7 +5,6 @@ import { useFocusEffect } from "@react-navigation/native";
 //==== Icons ==================================================
 import { Entypo } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 //==== Components ===========================================
 import {
@@ -28,14 +27,14 @@ import {
 //==== LocalDB ==========================================
 import { MeasurementLocalDB } from "../../../../features/localDB/types";
 import {
-  // deleteMeasurement,
+  deleteMeasurement,
   getNLastMeasurements,
 } from "../../../../features/localDB/measurements";
 import { useTypedSelector } from "../../../../features/store/storeHooks";
 import { formatDate, formatTime } from "../../../../utils/time";
 import TS from "../../../../../TS";
 import MeasurementModal from "./MeasurementModal";
-
+import Item, { ITEM_HEIGHT } from "./ListItemMeasurement";
 //==== Navigation ==============================================
 
 const LIST_SIZE = 50;
@@ -47,8 +46,7 @@ export default function MeasurementsList() {
   // const [selectedCalibration, setSelectedCalibration] =
   //   useState<CalibrationLocalDBExtended>();
   // const [showDeleteModal, setShowDeleteModal] = useState(false);
-console.log("Rerendered MesurementList");
-
+  console.log("Rerendered MesurementList");
 
   const [selectedMeasurement, setSelectedMeasurement] =
     useState<MeasurementLocalDB>();
@@ -56,13 +54,13 @@ console.log("Rerendered MesurementList");
     (state) => state.measurement.lastMeasurement
   );
 
-  const refreshList = useCallback(() => {
+  const refreshList = () => {
     console.log("RefreshList");
-    
+
     getNLastMeasurements(LIST_SIZE).then((measurements) => {
       setMeasurements(measurements);
     });
-  }, []);
+  };
 
   useEffect(() => {
     console.log("refreshedListMeasurements");
@@ -76,11 +74,20 @@ console.log("Rerendered MesurementList");
   }
 
   function onDelete() {
-    //delete then
-    setTimeout(() => {
-      refreshList();
-    });
+    if (selectedMeasurement)
+      deleteMeasurement(selectedMeasurement).then(() => {
+        setSelectedMeasurement(undefined);
+        refreshList();
+      });
   }
+
+  //Optimization
+  const renderItem = useCallback(
+    ({ item }: { item: MeasurementLocalDB }) => (
+      <Item item={item} onPress={(item) => setSelectedMeasurement(item)} />
+    ),
+    []
+  );
 
   return (
     <>
@@ -100,12 +107,15 @@ console.log("Rerendered MesurementList");
             data={measurements}
             borderColor={"muted.300"}
             borderWidth={2}
-            renderItem={({ item }) => (
-              <Item
-                item={item}
-                onPress={(item) => setSelectedMeasurement(item)}
-              />
-            )}
+            // updateCellsBatchingPeriod={200}
+            // maxToRenderPerBatch={1}
+            keyExtractor={(item) => item.ID.toString()}
+            getItemLayout={(_measurements, index) => ({
+              length: ITEM_HEIGHT,
+              offset: ITEM_HEIGHT * index,
+              index,
+            })}
+            renderItem={renderItem}
           />
         ) : (
           <VStack height={500} justifyContent="center">
@@ -114,41 +124,5 @@ console.log("Rerendered MesurementList");
         )}
       </VStack>
     </>
-  );
-}
-
-function Item(props: {
-  item: MeasurementLocalDB;
-  onPress: (item: MeasurementLocalDB) => void;
-}) {
-  const { item, onPress } = props;
-  return (
-    <Pressable onPress={() => onPress(item)}>
-      <HStack
-        style={{ height: 60, width: "100%", flex: 1, paddingHorizontal: 30 }}
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <HStack
-          width={100}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-        >
-          {item.sendStatus ? (
-            <Icon as={MaterialCommunityIcons} name="upload" size="lg" />
-          ) : (
-            <HStack />
-          )}
-          <Text fontWeight={"medium"} fontSize={"xl"}>
-            {item.height.toFixed(1)}cm
-          </Text>
-        </HStack>
-        <VStack>
-          <Text>{formatDate(item.timestamp)}</Text>
-          <Text fontWeight={"medium"}>{formatTime(item.timestamp)}</Text>
-        </VStack>
-      </HStack>
-      <Divider />
-    </Pressable>
   );
 }

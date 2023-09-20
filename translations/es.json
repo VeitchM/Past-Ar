@@ -1,9 +1,97 @@
 {
-    "es": {
-        "paddock": "Potrero",
-        "paddocks": "Potreros",
-        "paddock_home_title": "Mapa de Potreros",
-        "last_measurements": "Últimas mediciones"
+  "es": {
+    "home_title": "Inicio",
+    "user_home_title": "Usuario",
+    "calibration_home_title": "Calibraciones",
+    "paddock_home_title": "Mapa del Paddock",
+    "filter_screen_title": "Filtros",
 
-    }
+    "home_tab_title": "Inicio",
+    "paddock_tab_title": "Paddocks",
+    "calibration_tab_title": "Calibración",
+    "statistics_tab_title": "Estadísticas",
+    "user_tab_title": "Usuario",
+
+    "paddock": "Paddock",
+    "paddocks": "Paddocks",
+    "measurements": "Mediciones",
+    "calibration": "Calibración",
+    "calibrations": "Calibraciones",
+    "show_measurements": "Mostrar mediciones",
+    "from": "Desde",
+    "to": "Hasta",
+    "apply": "Aplicar",
+    "choose": "Seleccionar",
+    "select_from_date": "Seleccionar desde fecha",
+    "select_until_date": "Seleccionar hasta fecha",
+
+    "calibration_list_title": "Lista de Calibraciones",
+    "create_calibration": "Crear Calibración",
+    "calibration_function_create_title": "Función de Calibración",
+    "calibration_send_title": "Calibraciones por Enviar",
+    "calibration_measure_received": "Medición a Calibrar",
+    "calibration_home_header": "Cargar mediciones de calibración",
+    "calibration_list_button": "Lista de Calibraciones",
+    "calibration_send_button": "Enviar calibración",
+    "ble_link_device": "Vincular Pasturómetro",
+
+    "last_measurements": "Últimas mediciones",
+    "last_measurement": "Última medición",
+    "measurement": "Medición",
+
+    "NOT_SENT": "No ha sido enviado al servidor",
+    "SENT": "Ha sido enviado al servidor",
+
+    "localization": "Localización",
+
+    "ago": "Hace {{period}}",
+
+    "no_measurements": "No hay mediciones",
+
+    "second": {
+      "one": "{{count}} segundo",
+      "other": "{{count}} segundos"
+    },
+
+    "minute": {
+      "one": "{{count}} minuto",
+      "other": "{{count}} minutos"
+    },
+
+    "hour": {
+      "one": "{{count}} hora",
+      "other": "{{count}} horas"
+    },
+    "day": {
+      "one": "{{count}} día",
+      "other": "{{count}} días"
+    },
+
+    "pasturometer": "Pasturómetro",
+
+    "disconnect": "Desconectar",
+    "exit": "Salir",
+    "save": "Guardar",
+
+    "date": "Fecha",
+
+    "name": "Nombre",
+    "alias": "Alias",
+    "MAC": "MAC",
+    "base_height": "Altura Base",
+
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+
+    "will_be": "Será",
+    "use_dot_for_decimals": "Use '.' para decimales y ',' para separar coeficientes.",
+    "enter_a_valid_polynomial": "Ingrese un polinomio válido.",
+    "enter_polynomial_coefficients": "Ingrese los coeficientes del polinomio.",
+    "example": "Ejemplo",
+
+    "calibrations_name": "Nombre de Calibración",
+    "write_calibrations_name": "Escriba el nombre de la calibración",
+    "from_function": "A partir de Función",
+    "from_measurements": "A partir de Mediciones"
+  }
 }

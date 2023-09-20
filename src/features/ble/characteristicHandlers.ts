@@ -15,6 +15,7 @@ import { insertCalibrationMeasurement, insertMeasurement } from "../localDB/meas
 import { addNotification } from "../store/notificationSlice";
 
 import {hardware as HardwareConstants} from '../../../config.json'
+import { pushNotification } from "../pushNotification";
 
 
 //==== LocalDB =================================================
@@ -143,11 +144,11 @@ const verifyMeasurements = (measurements: number[]) => {
 
     // TODO add Warning: A sensor was giving an invalid value, verify it is not obstructed 
     if (validNumbers < measurements.length)
-        store.dispatch(addNotification({ title: `Un sensor a dado una medida invalida, verifique que no este obstruido.`, status: "warning" }))
+        pushNotification( `Un sensor a dado una medida invalida, verifique que no este obstruido.`, "warning" )
     if (validNumbers > 1)
         return sum / validNumbers
     else {
-        store.dispatch(addNotification({ title: `Fallo en realizar medicion, verifique que los sensores no esten obstruidos.`, status: "error" }))
+        pushNotification( `Fallo en realizar medicion, verifique que los sensores no esten obstruidos.`, "error")
         return undefined
     }
 }

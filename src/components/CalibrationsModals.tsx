@@ -12,6 +12,7 @@ import PolynomialFunction from "./PolynomialFunction"
 import CalibrationsMeasurements from "./CalibrationMeasurements"
 import { addNotification } from "../features/store/notificationSlice"
 import { calibrationExists, insertCalibrationFromMeasurements } from "../features/localDB/calibrations"
+import { pushNotification } from "../features/pushNotification"
 
 
 /** A modal which explain that if accepted a calibration from measurement will be created */
@@ -42,7 +43,7 @@ export function NewCalibrationModal(props: { showModal: boolean, setShowModal: (
                     await insertCalibrationFromMeasurements(props.calibrationName)
                 }
                 else {
-                    dispatch(addNotification({ status: 'error', title: 'El nombre ya existe' }))
+                    pushNotification(  'El nombre ya existe','error' )
                     console.log('Name already exists');
                 }
                 props.setShowModal(false);

@@ -1,7 +1,7 @@
 import { SendStatus, setSending } from "../localDB/localDB";
 import { getMeasurements, getMeasurementsForBack } from "../localDB/measurements";
 import store from "../store/store";
-import { pushNotification } from "../utils";
+import { pushNotification } from "../pushNotification";
 import { mobileAPI } from "./config";
 import Permission from "./permission";
 import { MeasurementForBack } from "./types";

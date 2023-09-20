@@ -2,6 +2,7 @@ import { persistUserData,deleteUserData } from "../localDB/session";
 import { Tokens, TokensResponse, User, setSignIn, setTokens, setUser } from "../store/backendSlice";
 import { addNotification } from "../store/notificationSlice";
 import store from "../store/store";
+import { pushNotification } from "../pushNotification";
 import { mobileAPI } from "./config";
 import { getErrorLabel } from "./constants";
 import { SYNCHRONIZE_INTERVAL, synchronize } from "./synchronize";
@@ -37,7 +38,7 @@ export async function signin(email: string, password: string) {
             console.log(resObject);
             if (resObject.code) {
                 console.error(resObject.message);
-                store.dispatch(addNotification({ title: getErrorLabel(resObject.code), status: 'error' }))
+                pushNotification( getErrorLabel(resObject.code), 'error' )
 
             }
             else {
@@ -50,7 +51,7 @@ export async function signin(email: string, password: string) {
         .catch(error => {
             console.error(error);
 
-            store.dispatch(addNotification({ title: getErrorLabel('FAILED_CONNECTION'), status: 'error' }))
+            pushNotification(getErrorLabel('FAILED_CONNECTION'),  'error' )
         })
 
 

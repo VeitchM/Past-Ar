@@ -13,13 +13,15 @@ import { NewCalibrationModal } from "../../components/CalibrationsModals";
 
 //==== Navigation ==============================================
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { StackParamList } from "./ScreenStack";
 import BlockButton from "../../components/BlockButton";
 type Props = NativeStackScreenProps<StackParamList, 'CreateCalibration'>;
 
 //==== Icons ===============================
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { calibrationExists } from "../../features/localDB/calibrations";
+import { StackParamList } from "./Stack.types";
+import TS from "../../../TS";
+import { pushNotification } from "../../features/pushNotification";
 
 
 
@@ -48,7 +50,7 @@ export default function CreateCalibration({ navigation }: Props) {
                     if (!exists)
                         callback()
                     else
-                        dispatch(addNotification({ title: 'Ya existe Calibración con el mismo nombre', status: 'error' }))
+                        pushNotification('Ya existe Calibración con el mismo nombre','error' )
                 })
                 .catch((e) => console.error(e)
                 )
@@ -81,7 +83,7 @@ export default function CreateCalibration({ navigation }: Props) {
             <VStack flex={1} alignItems='end' bg='white' _dark={{ bg: 'black' }}
                 style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
                 <VStack style={{ marginTop: 80, alignItems: 'center' }}>
-                    <Heading size='xl' fontWeight='light' marginBottom={4} >Nombre de Calibración</Heading>
+                    <Heading size='xl' fontWeight='light' marginBottom={4} >{TS.t('calibrations_name')}</Heading>
                     <Input
 
                         fontSize={calibrationName ? 'xl' : 'lg'}
@@ -96,7 +98,7 @@ export default function CreateCalibration({ navigation }: Props) {
                 <VStack style={{ width: '100%' }} bg='muted.50'>
                     <BlockButton height={100}
 
-                        text="A partir de Función"
+                        text={TS.t('from_function')}
                         isDisabled={!calibrationName}
                         icon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='function-variant' size={60}
                             color='muted.400'
@@ -107,7 +109,7 @@ export default function CreateCalibration({ navigation }: Props) {
                     />
                     <BlockButton height={100}
                         isDisabled={!calibrationName}
-                        text="A partir de Mediciones"
+                        text={TS.t('from_measurements')}
                         icon={<Icon alignSelf='center' as={MaterialCommunityIcons} name='ruler' size={60}
                             color='muted.400'
                         />}

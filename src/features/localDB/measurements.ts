@@ -1,3 +1,4 @@
+import { log } from "react-native-reanimated";
 import { MeasurementForBack } from "../backend/types";
 import { Measurement } from "../store/types";
 import { SendStatus, execQuery, execTransaction } from "./localDB";
@@ -100,4 +101,16 @@ export async function getMeasurementsBetween(
     `SELECT * FROM measurements WHERE timestamp BETWEEN (?) AND (?)`,
     [from, until]
   );
+}
+
+
+export async function deleteMeasurement(
+measurement:MeasurementLocalDB
+) {
+  console.log("Deleting",measurement);
+  
+  return execQuery(
+    `DELETE FROM measurements WHERE ID=?`,
+    [measurement.ID]
+  )
 }

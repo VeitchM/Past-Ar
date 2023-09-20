@@ -1,6 +1,6 @@
 import { setLastSync } from "../store/backendSlice";
 import store from "../store/store";
-import { pushNotification } from "../utils";
+import { pushNotification } from "../pushNotification";
 import { synchronizeCalibrations } from "./calibrations";
 import { synchronizeMeasurements } from "./measurements";
 import AsyncStorage from '@react-native-async-storage/async-storage';

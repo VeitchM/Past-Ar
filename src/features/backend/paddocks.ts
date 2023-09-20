@@ -1,7 +1,7 @@
 import { LatLng } from "react-native-maps";
 import { getCrossedPaddocks, insertCrossedPaddock, updatePaddock } from "../localDB/paddocks";
 import store from "../store/store";
-import { pushNotification } from "../utils";
+import { pushNotification } from "../pushNotification";
 import { mobileAPI } from "./config";
 import Permission from "./permission";
 import { PaddockFromBack } from "./types";

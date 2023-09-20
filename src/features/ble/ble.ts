@@ -69,7 +69,7 @@ const onAnomalousDisconnection = (deviceId: string) => {
       store.dispatch(setTryingToConnect());
       console.info("DEVICE",device,bleStore);
       
-      store.dispatch(addNotification({ title: 'El Pasturometro se ha desconectado', status: 'error' }))
+      pushNotification('El Pasturometro se ha desconectado', 'error' )
       tryToReconnect({ id: bleStore.connectedDevice.id, name: bleStore.connectedDevice.name }, RECONNECTIONS_INTENTS);
     }
 
@@ -90,7 +90,7 @@ function tryToReconnect(device: DeviceMin, intentsLeft: number) {
           tryToReconnect(device, intentsLeft - 1)
         else {
           console.log('Reconnected');
-          store.dispatch(addNotification({ title: 'El Pasturometro ha restablecido la conexion', status: 'info' }))
+          pushNotification('El Pasturometro ha restablecido la conexion','info' )
         }
       })
 
@@ -222,7 +222,7 @@ const disconnectFromDevice = async () => {
 
 import { onCharacteristicUpdate } from "./characteristicHandlers";
 import { addNotification } from "../store/notificationSlice";
-import { pushNotification } from "../utils";
+import { pushNotification } from "../pushNotification";
 import { getPersistedDevices } from "../localDB/device"
 import { getDeviceIfExists, updatePersistedDevices } from "./persistedDevices"
 import { DeviceMin } from "./type";

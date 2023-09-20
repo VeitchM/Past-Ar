@@ -1,7 +1,7 @@
 import { getCalibrationsForBack, getCalibrationsFromBackInLocalDB, insertCalibrationFromFunctionFromServer, updateCalibrationFunction, updateToCalibrationFunctionFromServer } from "../localDB/calibrations";
 import { SendStatus, setSendStatus, setSending } from "../localDB/localDB";
 import { TablesNames } from "../localDB/tablesDefinition";
-import { pushNotification } from "../utils";
+import { pushNotification } from "../pushNotification";
 import { mobileAPI } from "./config";
 import Permission from "./permission";
 import { CalibrationForBack, CalibrationFromBack } from "./types";

@@ -41,7 +41,6 @@ export default function MeasurementModal(props: {
             {/* <Modal.CloseButton /> */}
           </Modal.Header>
           <Modal.Body style={{ marginLeft: 10 }}>
-            {/* It throws warning to Flatlist  */}
 
             <VStack >
               <Text fontSize={"lg"}>{TS.t("date")}</Text>

@@ -26,14 +26,14 @@
     "select_until_date": "Select until date",
 
     "calibration_list_title": "Calibration List",
-    "calibration_create_title": "Create Calibration",
+    "create_calibration": "Create Calibration",
     "calibration_function_create_title": "Calibration Function",
     "calibration_send_title": "Calibrations to Send",
     "calibration_measure_received": "Measurement to Calibrate",
     "calibration_home_header": "Load calibration measurements",
     "calibration_list_button": "Calibration List",
     "calibration_send_button": "Send calibration",
-    "ble_link_device": "Bind Pasturometro",
+    "ble_link_device": "Bind Pasturometer",
 
     "last_measurements": "Last measurements",
     "last_measurement": "Last measurement",
@@ -50,21 +50,21 @@
 
     "second": {
       "one": "{{count}} second",
-      "others": "{{count}} seconds"
+      "other": "{{count}} seconds"
     },
 
     "minute": {
       "one": "{{count}} minute",
-      "others": "{{count}} minutes"
+      "other": "{{count}} minutes"
     },
 
     "hour": {
       "one": "{{count}} hour",
-      "others": "{{count}} hours"
+      "other": "{{count}} hours"
     },
     "day": {
       "one": "{{count}} day",
-      "others": "{{count}} days"
+      "other": "{{count}} days"
     },
 
     "pasturometer": "Pasturometer",
@@ -81,7 +81,19 @@
     "base_height": "Base height",
 
     "delete": "Delete",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+
+    "will_be": "Will be",
+    "use_dot_for_decimals": "Use '.' for decimals and ',' to separate coefficients.",
+    "enter_a_valid_polynomial": "Enter a valid polynomial.",
+    "enter_polynomial_coefficients": "Enter polynomial coefficients.",
+    "example":"Example",
+    
+    "calibrations_name":
+    "Calibration's name",
+    "write_calibrations_name": "Write Calibration's name",
+    "from_function": "From Function",
+    "from_measurements": "From Measurements"
 
   }
 }
