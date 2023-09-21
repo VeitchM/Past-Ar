@@ -1,6 +1,10 @@
 import { addNotification } from "./store/notificationSlice";
 import store from "./store/store";
 import { Notification } from "./store/types";
+import { Platform } from "react-native";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -24,12 +28,6 @@ export function pushNotification(
     trigger: null,
   });
 }
-
-import { useState, useEffect, useRef } from "react";
-import { Platform } from "react-native";
-import * as Device from "expo-device";
-import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
 
 async function registerForPushNotificationsAsync() {
   let token;
