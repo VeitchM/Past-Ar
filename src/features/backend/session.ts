@@ -38,7 +38,7 @@ export async function signin(email: string, password: string) {
             console.log(resObject);
             if (resObject.code) {
                 console.error(resObject.message);
-                pushNotification( getErrorLabel(resObject.code), 'error' )
+                pushNotification( getErrorLabel(resObject.code), 'error',false )
 
             }
             else {
@@ -51,7 +51,7 @@ export async function signin(email: string, password: string) {
         .catch(error => {
             console.error(error);
 
-            pushNotification(getErrorLabel('FAILED_CONNECTION'),  'error' )
+            pushNotification(getErrorLabel('FAILED_CONNECTION'),  'error',false )
         })
 
 

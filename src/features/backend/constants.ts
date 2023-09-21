@@ -1,17 +1,24 @@
-const ErrorLabelEs = {
-    'VALIDATION_ERROR': 'Datos invalidos',
-    'AUTH_INVALID_LOGIN': 'Email o contraseña incorrectas',
-    'OTHERS' : 'Error del Servidor',
-    'FAILED_CONNECTION': 'No se ha podido conectar con el servido'
+import TS from "../../../TS"
 
+const ErrorLabelEs =
+{
+    'VALIDATION_ERROR': 'session_validation_error',
+    'AUTH_INVALID_LOGIN': 'session_auth_invalid_login',
+    'OTHERS': 'session_error_others',
+    'FAILED_CONNECTION': 'session_failed_connection'
 }
+
+
+
+
+
 /** If someday it is multilanguage, the language variable will change this line*/
 const ErrorLabel = ErrorLabelEs
 
 export const getErrorLabel = (errorLabel: string) => {
 
     if (errorLabel in ErrorLabel)
-        return ErrorLabel[errorLabel as keyof typeof ErrorLabel]
+        return TS.t(ErrorLabel[errorLabel as keyof typeof ErrorLabel])
     else
-        return ErrorLabel['OTHERS']
+        return TS.t(ErrorLabel['OTHERS'])
 }

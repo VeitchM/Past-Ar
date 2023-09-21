@@ -50,7 +50,7 @@ export default function CreateCalibration({ navigation }: Props) {
                     if (!exists)
                         callback()
                     else
-                        pushNotification('Ya existe Calibración con el mismo nombre','error' )
+                        pushNotification(TS.t('calibration_already_exists'),'error' )
                 })
                 .catch((e) => console.error(e)
                 )

@@ -87,13 +87,28 @@
     "use_dot_for_decimals": "Use '.' for decimals and ',' to separate coefficients.",
     "enter_a_valid_polynomial": "Enter a valid polynomial.",
     "enter_polynomial_coefficients": "Enter polynomial coefficients.",
-    "example":"Example",
-    
-    "calibrations_name":
-    "Calibration's name",
+    "example": "Example",
+
+    "calibrations_name": "Calibration's name",
     "write_calibrations_name": "Write Calibration's name",
     "from_function": "From Function",
-    "from_measurements": "From Measurements"
+    "from_measurements": "From Measurements",
 
+    "name_already_exists": "Name already exists",
+    "calibrations_could_not_be_synchronized": "The calibrations have not been able to be synchronized.",
+    "calibrations_synchronized": "Calibrations synchronized",
+    "measurements_synchronized": "The measurements have been synchronized.",
+    "measurements_not_synchronized": "The measurements have not been able to synchronized.",
+    "session_validation_error": "Invalid session data",
+    "session_auth_invalid_login": "Email or password invalid",
+    "session_error_others": "Server error",
+    "session_failed_connection": "Couldn't connect to server",
+    "pasturometer_disconnected": "Pasturometer disconnected",
+    "pasturometer_reconnected": "Pasturometer reconnected",
+    "turnon_bluetooth": "Turn on bluetooth",
+
+    "obstructed_sensor": "A sensor has provided an invalid measurement, please check that it is not obstructed.",
+    "failed_measurement": "Measurement failed, please check that the sensors are not obstructed.",
+    "calibration_already_exists": "There is already a Calibration with the same name."
   }
 }

@@ -34,7 +34,7 @@ export async function updateMeasurements(foreground?: boolean): Promise<boolean>
                 throw new Error(res)
             else {
                 setSending(SendStatus.SENT, 'measurements')
-                foreground && pushNotification("Se han sincronizado las mediciones", "success")
+                foreground && pushNotification(TS.t('calibrations_synchronized'), "success")
 
             }
         }
@@ -44,7 +44,7 @@ export async function updateMeasurements(foreground?: boolean): Promise<boolean>
     catch (e) {
         setSending(SendStatus.NOT_SENT, 'measurements')
         console.log(e)
-        foreground && pushNotification("No se ha podido sincronizar las mediciones", "error")
+        foreground && pushNotification(TS.t("calibrations_synchronized"), "error")
         return false
     }
 }

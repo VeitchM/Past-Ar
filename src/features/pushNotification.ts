@@ -18,15 +18,17 @@ registerForPushNotificationsAsync();
 
 export function pushNotification(
   title: Notification["title"],
-  status: Notification["status"]
+  status: Notification["status"],
+  SONotification = true
 ) {
   store.dispatch(addNotification({ title, status }));
-  Notifications.scheduleNotificationAsync({
-    content: {
-      title,
-    },
-    trigger: null,
-  });
+  if (SONotification)
+    Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+      },
+      trigger: null,
+    });
 }
 
 async function registerForPushNotificationsAsync() {

@@ -16,6 +16,7 @@ import { addNotification } from "../store/notificationSlice";
 
 import {hardware as HardwareConstants} from '../../../config.json'
 import { pushNotification } from "../pushNotification";
+import TS from "../../../TS";
 
 
 //==== LocalDB =================================================
@@ -144,11 +145,11 @@ const verifyMeasurements = (measurements: number[]) => {
 
     // TODO add Warning: A sensor was giving an invalid value, verify it is not obstructed 
     if (validNumbers < measurements.length)
-        pushNotification( `Un sensor a dado una medida invalida, verifique que no este obstruido.`, "warning" )
+        pushNotification( TS.t('obstructed_sensor'), "warning" )
     if (validNumbers > 1)
         return sum / validNumbers
     else {
-        pushNotification( `Fallo en realizar medicion, verifique que los sensores no esten obstruidos.`, "error")
+        pushNotification( TS.t("failed_measurement"), "error")
         return undefined
     }
 }
