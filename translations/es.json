@@ -92,6 +92,29 @@
     "calibrations_name": "Nombre de Calibración",
     "write_calibrations_name": "Escriba el nombre de la calibración",
     "from_function": "A partir de Función",
-    "from_measurements": "A partir de Mediciones"
+    "from_measurements": "A partir de Mediciones",
+
+    "name_already_exists": "El nombre ya existe",
+    "calibrations_could_not_be_synchronized": "No se pudieron sincronizar las calibraciones.",
+    "calibrations_synchronized": "Calibraciones sincronizadas",
+    "measurements_synchronized": "Las mediciones se han sincronizado.",
+    "measurements_not_synchronized": "No se han podido sincronizar las mediciones.",
+    "session_validation_error": "Datos de sesión no válidos",
+    "session_auth_invalid_login": "Correo electrónico o contraseña no válidos",
+    "session_error_others": "Error del servidor",
+    "session_failed_connection": "No se pudo conectar al servidor",
+    "pasturometer_disconnected": "Pasturómetro desconectado",
+    "pasturometer_reconnected": "Pasturómetro reconectado",
+    "turnon_bluetooth": "Encienda el Bluetooth",
+
+    "obstructed_sensor": "Un sensor ha proporcionado una medida inválida, por favor verifique que no esté obstruido.",
+    "failed_measurement": "Fallo en la medición, por favor verifique que los sensores no estén obstruidos.",
+    "calibration_already_exists": "Ya existe una calibración con el mismo nombre.",
+
+    "create": "Crear",
+    "undertood": "Entendido",
+
+    "delete_calibration": "Eliminar Calibración",
+    "if_delete_calibration": "Si presiona Borrar, la calibración se eliminará de manera local e irreversible:"
   }
 }
