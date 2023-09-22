@@ -72,7 +72,9 @@ export default function HomeScreen(props: any) {
     return (
       <View alignItems={"flex-start"}>
         <Image
-          style={{ width: 220, height: 63 }}
+          style={{ width: 150, height: 64, justifyContent:'flex-end', marginTop:10 }}
+          
+        
           source={require("../../../assets/logo-small-white-text.png")}
         />
 
@@ -89,7 +91,7 @@ export default function HomeScreen(props: any) {
     <>
       <StatusBar
         translucent
-        backgroundColor="transparent"
+        backgroundColor="black"
         barStyle="light-content"
       />
       <VStack

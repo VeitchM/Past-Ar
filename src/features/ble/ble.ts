@@ -133,7 +133,7 @@ const scanForPeripherals = () => {
         //errorCallback.current(error);
         console.error("Error scaning peripherals", error);
         if (error.errorCode == BleErrorCode.BluetoothPoweredOff) {
-          pushNotification(TS.t('turnon_bluetooth'), "error");
+          pushNotification(TS.t("turnon_bluetooth"), "error");
         }
       } else {
         //console.log('Found Device ',device?.name);

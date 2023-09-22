@@ -6,6 +6,19 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 
+const soundAsset = require("../../assets/sound.mp3");
+
+import { Audio } from "expo-av";
+
+async function playSound() {
+  const sound = (await Audio.Sound.createAsync(soundAsset)).sound;
+
+  if (sound) {
+    await sound.playAsync();
+    sound.unloadAsync();
+  }
+}
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -16,7 +29,7 @@ Notifications.setNotificationHandler({
 
 registerForPushNotificationsAsync();
 
-export function pushNotification(
+export async function pushNotification(
   title: Notification["title"],
   status: Notification["status"],
   SONotification = true
@@ -29,6 +42,7 @@ export function pushNotification(
       },
       trigger: null,
     });
+  // playSound();
 }
 
 async function registerForPushNotificationsAsync() {
@@ -59,6 +73,7 @@ async function registerForPushNotificationsAsync() {
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: "#FF231F7C",
+      sound:'sound.wav'
     });
   }
 
