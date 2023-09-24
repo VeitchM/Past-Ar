@@ -109,6 +109,13 @@
 
     "obstructed_sensor": "A sensor has provided an invalid measurement, please check that it is not obstructed.",
     "failed_measurement": "Measurement failed, please check that the sensors are not obstructed.",
-    "calibration_already_exists": "There is already a Calibration with the same name."
+    "calibration_already_exists": "There is already a Calibration with the same name.",
+
+    "create":"Create",
+    "undertood":"Undertood",
+
+    "delete_calibration": "Delete Calibration",
+    "if_delete_calibration": "If you press Delete, the calibration will be deleted locally and irreversibly:"
+
   }
 }
