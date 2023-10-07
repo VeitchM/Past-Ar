@@ -10,7 +10,6 @@ type Measurement = {
     timestamp: number,
     latitude: number,
     longitude: number,
-
 }
 
 type ErrorBleState = {}
@@ -19,7 +18,8 @@ type DeviceSerializable = {
     id: string
     name: string | null
     alias:string | null
-    plateWidth: number | null
+    baseHeight: number | null
+    model: string
 
 }
 
@@ -31,5 +31,19 @@ type Notification = {
     status: InterfaceAlertProps['status'],
 }
 
+type Paddock = {
+    ID?: number, name: string, vertices: { latitude: number, longitude: number }[], 
+    holes?:{ latitude: number, longitude: number }[][],
+    color?:string
+}
 
-export { MainCharacteristic, ErrorBleState, DeviceSerializable, Measurement, Notification }
+type Filter = {
+    enabled: boolean,
+    from: number,
+    until: number,
+    paddockId?:number,
+    from_stats: number,
+    until_stats: number
+}
+
+export { MainCharacteristic, ErrorBleState, DeviceSerializable, Measurement, Notification, Paddock, Filter }

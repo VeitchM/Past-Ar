@@ -14,6 +14,10 @@ import { setCalibrationMeasurementID, setLastMeasurement } from "../store/measur
 import { insertCalibrationMeasurement, insertMeasurement } from "../localDB/measurements";
 import { addNotification } from "../store/notificationSlice";
 
+import {hardware as HardwareConstants} from '../../../config.json'
+import { pushNotification } from "../pushNotification";
+import TS from "../../../TS";
+
 
 //==== LocalDB =================================================
 
@@ -98,17 +102,15 @@ async function rawDataToMeasurement(value: string): Promise<{ battery: number, m
     const measurementValue = verifyMeasurements(measurements)
     if (measurementValue !== undefined) {
 
-
-
         const battery = parseFloat(values[stringFields.BATERY])
-    const device = store.getState().ble.connectedDevice as DeviceSerializable
-    console.assert(device&&device.plateWidth,"Device wasnt on")
+        const device = store.getState().ble.connectedDevice as DeviceSerializable
+        console.assert(device && device.baseHeight, "Device wasnt on")
         const location = await getLocation()
         const measurement: Measurement = {
-            height: distanceCorrection(measurementValue, humidity, temperature,device.plateWidth!),
+            height: distanceCorrection(measurementValue, humidity, temperature, device.baseHeight!),
             timestamp: Date.now(),
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
+            latitude: location!.coords.latitude,
+            longitude: location!.coords.longitude,
         }
 
         return { battery: battery, measurement: measurement }
@@ -125,12 +127,12 @@ const verifyMeasurements = (measurements: number[]) => {
     let sum = 0
     let validNumbers = 0
     console.log('Measurements: ', measurements);
- 
+
 
     if (measurements.length > 0) {
 
         const median = measurements.sort()[Math.floor(measurements.length / 2)]
-        console.log({median,measurements});       
+        console.log({ median, measurements });
 
         measurements.forEach((number) => {
             //TODO validation of each sensor if()
@@ -143,11 +145,11 @@ const verifyMeasurements = (measurements: number[]) => {
 
     // TODO add Warning: A sensor was giving an invalid value, verify it is not obstructed 
     if (validNumbers < measurements.length)
-        store.dispatch(addNotification({ title: `Un sensor a dado una medida invalida, verifique que no este obstruido.`, status: "warning" }))
+        pushNotification( TS.t('obstructed_sensor'), "warning" )
     if (validNumbers > 1)
         return sum / validNumbers
     else {
-        store.dispatch(addNotification({ title: `Fallo en realizar medicion, verifique que los sensores no esten obstruidos.`, status: "error" }))
+        pushNotification( TS.t("failed_measurement"), "error")
         return undefined
     }
 }
@@ -175,10 +177,10 @@ function speedOfSound(humidity: number, temperature: number) {
     return 331.4 + 0.6 * temperature + 0.0124 * humidity
 }
 
-function distanceCorrection(distance: number, humidity: number, temperature: number,plateWidth: number) {
+function distanceCorrection(distance: number, humidity: number, temperature: number, plateHeight: number): number {
     // Add plate size in cm
     // const PLATE_SIZE = 1.34
+    // TODO MAYBE I SHOULD ADD AN DEFAULT HEIGHT AND PLATE WIDTH BUT YOU CAN CHANGE IT LOCALLY
     // This numbers are defined on the device documentation
-    return distance * 58 * speedOfSound(humidity, temperature) / 20000 + plateWidth
-
+    return plateHeight - distance * 58 * speedOfSound(humidity, temperature) / 20000 
 }

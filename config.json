@@ -5,6 +5,11 @@
     },
     "hardware":{
         "DEFAULT_PLATE_WIDTH":1.34,
-        "DEVICE_BRAND" : "PASTUROMETRO"
+        "DEVICE_BRAND" : "PASTUROMETRO",
+        "MODELS": {
+            "PROTOTYPE":{
+                "BASE_HEIGHT":91.4
+            }
+        }
     }
 }

@@ -1,20 +1,23 @@
 {
   "expo": {
-    "name": "Past-Ar",
-    "slug": "past-ar",
+    "name": "Pastech",
+    "slug": "pastech",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "plugins": [
       [
+        "expo-notifications",
+        {
+          "sounds": ["./assets/sound.wav"]
+        }
+      ],
+      [
         "@config-plugins/react-native-ble-plx",
         {
           "isBackgroundEnabled": true,
-          "modes": [
-            "peripheral",
-            "central"
-          ],
+          "modes": ["peripheral", "central"],
           "bluetoothAlwaysPermission": "Allow $(PRODUCT_NAME) to connect to bluetooth devices"
         }
       ],
@@ -23,27 +26,23 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
-      ]
+      ],
+      ["@maplibre/maplibre-react-native"]
     ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#222222"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pastar.app",
+      "bundleIdentifier": "com.pastech.app",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "location",
-          "fetch"
-        ]
+        "UIBackgroundModes": ["location", "fetch"]
       }
     },
     "android": {
@@ -59,14 +58,19 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.FOREGROUND_SERVICE"
       ],
-      "package": "com.pastar.app"
+      "package": "com.pastech.app",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBcB6F5VNz-0ZXEVJMom7ClPocoa49GoG4"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "30c6cbee-3d7d-44d3-8b63-e8e5380397f5"
+        "projectId": "c006d87b-b6dd-4d36-be11-1461dbad3568"
       }
     }
   }

@@ -26,6 +26,7 @@ import { SendStatus, setSendStatus } from "../../features/localDB/localDB";
 import { PropsCalibrationForSending } from "./Stack.types";
 
 import { addNotification } from "../../features/store/notificationSlice";
+import { pushNotification } from "../../features/pushNotification";
 
 
 
@@ -66,7 +67,7 @@ export default function ForSendingCalibrationsScreen({ navigation }: PropsCalibr
 
         setSendStatus(sendStatus, TablesNames.CALIBRATIONS_FROM_MEASUREMENTS, item.ID)
             .catch(err => {
-                dispatch(addNotification({ status: 'Error', title: 'No se ha podido agregar a la cola de envio la calibracion: ' + item.name }))
+                pushNotification( 'No se ha podido agregar a la cola de envio la calibracion: ' + item.name ,'error')
                 changeItemSendStatus(item, item.sendStatus)
                 console.error(err);
             })

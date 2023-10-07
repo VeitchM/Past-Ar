@@ -1,0 +1,121 @@
+{
+  "en": {
+    "home_title": "Home",
+    "user_home_title": "User",
+    "calibration_home_title": "Calibrations",
+    "paddock_home_title": "Paddock Map",
+    "filter_screen_title": "Filters",
+
+    "home_tab_title": "Home",
+    "paddock_tab_title": "Paddocks",
+    "calibration_tab_title": "Calibration",
+    "statistics_tab_title": "Statistics",
+    "user_tab_title": "User",
+
+    "paddock": "Paddock",
+    "paddocks": "Paddocks",
+    "measurements": "Measurements",
+    "calibration": "Calibration",
+    "calibrations": "Calibrations",
+    "show_measurements": "Show measurements",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply",
+    "choose": "Choose",
+    "select_from_date": "Select from date",
+    "select_until_date": "Select until date",
+
+    "calibration_list_title": "Calibration List",
+    "create_calibration": "Create Calibration",
+    "calibration_function_create_title": "Calibration Function",
+    "calibration_send_title": "Calibrations to Send",
+    "calibration_measure_received": "Measurement to Calibrate",
+    "calibration_home_header": "Load calibration measurements",
+    "calibration_list_button": "Calibration List",
+    "calibration_send_button": "Send calibration",
+    "ble_link_device": "Bind Pasturometer",
+
+    "last_measurements": "Last measurements",
+    "last_measurement": "Last measurement",
+    "measurement": "Measurement",
+
+    "NOT_SENT": "Hasn't been sent to server",
+    "SENT": "Has been sent to server",
+
+    "localization": "Localization",
+
+    "ago": "{{period}} ago",
+
+    "no_measurements": "There were no measurements",
+
+    "second": {
+      "one": "{{count}} second",
+      "other": "{{count}} seconds"
+    },
+
+    "minute": {
+      "one": "{{count}} minute",
+      "other": "{{count}} minutes"
+    },
+
+    "hour": {
+      "one": "{{count}} hour",
+      "other": "{{count}} hours"
+    },
+    "day": {
+      "one": "{{count}} day",
+      "other": "{{count}} days"
+    },
+
+    "pasturometer": "Pasturometer",
+
+    "disconnect": "Disconnect",
+    "exit": "Exit",
+    "save": "Save",
+
+    "date": "Date",
+
+    "name": "Name",
+    "alias": "Alias",
+    "MAC": "MAC",
+    "base_height": "Base height",
+
+    "delete": "Delete",
+    "cancel": "Cancel",
+
+    "will_be": "Will be",
+    "use_dot_for_decimals": "Use '.' for decimals and ',' to separate coefficients.",
+    "enter_a_valid_polynomial": "Enter a valid polynomial.",
+    "enter_polynomial_coefficients": "Enter polynomial coefficients.",
+    "example": "Example",
+
+    "calibrations_name": "Calibration's name",
+    "write_calibrations_name": "Write Calibration's name",
+    "from_function": "From Function",
+    "from_measurements": "From Measurements",
+
+    "name_already_exists": "Name already exists",
+    "calibrations_could_not_be_synchronized": "The calibrations have not been able to be synchronized.",
+    "calibrations_synchronized": "Calibrations synchronized",
+    "measurements_synchronized": "The measurements have been synchronized.",
+    "measurements_not_synchronized": "The measurements have not been able to synchronized.",
+    "session_validation_error": "Invalid session data",
+    "session_auth_invalid_login": "Email or password invalid",
+    "session_error_others": "Server error",
+    "session_failed_connection": "Couldn't connect to server",
+    "pasturometer_disconnected": "Pasturometer disconnected",
+    "pasturometer_reconnected": "Pasturometer reconnected",
+    "turnon_bluetooth": "Turn on bluetooth",
+
+    "obstructed_sensor": "A sensor has provided an invalid measurement, please check that it is not obstructed.",
+    "failed_measurement": "Measurement failed, please check that the sensors are not obstructed.",
+    "calibration_already_exists": "There is already a Calibration with the same name.",
+
+    "create":"Create",
+    "undertood":"Undertood",
+
+    "delete_calibration": "Delete Calibration",
+    "if_delete_calibration": "If you press Delete, the calibration will be deleted locally and irreversibly:"
+
+  }
+}

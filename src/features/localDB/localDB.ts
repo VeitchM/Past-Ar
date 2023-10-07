@@ -1,12 +1,8 @@
-
 import * as SQLite from 'expo-sqlite';
 import { SendableTables } from './types';
 import { TablesNames } from './tablesDefinition';
-import { onInit } from '../backend/onInit';
 
 const db = SQLite.openDatabase('pastar.db');
-
-
 
 //We declare foreigns key, for that, we should import a pragma module 
 //with a query
@@ -14,16 +10,11 @@ db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {
     createTables()
 })
 
-
 //Does it work?
 db.exec([{ sql: 'SELECT load_extension("libspatialite.so")', args: [] }], false, (error) => {
     console.log(error);
 
 });
-
-
-// dropTables('calibrations')
-// dropTables(TablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER)
 
 //========= Create and Delete tables =============================================
 
@@ -34,9 +25,6 @@ function dropTables(tableName: TablesNames): void {
 function createTables() {
     execTransaction(createTableQueries)
 }
-
-
-
 
 //======== Query Wrapper ==========================================================
 
@@ -72,10 +60,7 @@ export async function execTransaction(queries: string[], values: Array<any>[] = 
     })
 }
 
-
 export enum SendStatus { NOT_SENT, SENT, SENDING, FOR_SENDING }
-
-
 
 /** Set all rows which are marked as sending to SENT if success is true, and to NOT_SENT if it is false,   */
 export async function setSending(sendStatus: SendStatus, table: SendableTables) {
@@ -90,22 +75,6 @@ export async function setSendStatus(sendStatus: SendStatus, table: SendableTable
     return execQuery(query)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const createTableQueries = [
     `CREATE TABLE IF NOT EXISTS measurements (
@@ -164,8 +133,20 @@ const createTableQueries = [
         id TEXT PRIMARY KEY,
         name TEXT,
         alias TEXT,
-        plateWidth REAL
-      );`
-
+        baseHeight REAL,
+        model TEXT
+      );`,
+      `CREATE TABLE IF NOT EXISTS paddocks (
+        ID INTEGER PRIMARY KEY,
+        name TEXT,
+        vertices_list TEXT,
+        color TEXT
+      );`,
+      `CREATE TABLE IF NOT EXISTS paddocksFromServer (
+        ID INTEGER PRIMARY KEY,
+        updateTimestamp INTEGER,
+        uid TEXT,
+        FOREIGN KEY (ID) REFERENCES paddocks(ID) ON DELETE CASCADE
+      );`,
 
 ]

@@ -16,5 +16,20 @@ export type CalibrationForBack = {
 export type CalibrationFromBack = CalibrationForBack & {
     uid: string,
     curve: number[]
+}
 
+export type PaddockFromBack = {
+    uid: string,
+    area: string,
+    calibrationUid: string,
+    createdAt: Date,
+    displayColor: string,
+    geofence: {
+        coordinates: String[][],
+        type: string
+    },
+    groupUid: string,
+    name: string,
+    speciesUid: string,
+    stock: number
 }

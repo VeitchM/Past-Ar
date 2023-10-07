@@ -1,11 +1,12 @@
 import { SendStatus, setSending } from "../localDB/localDB";
 import { getMeasurements, getMeasurementsForBack } from "../localDB/measurements";
 import store from "../store/store";
-import { pushNotification } from "../utils";
+import { pushNotification } from "../pushNotification";
 import { mobileAPI } from "./config";
 import Permission from "./permission";
 import { MeasurementForBack } from "./types";
 import { createPayload } from "./utils";
+import TS from "../../../TS";
 
 
 
@@ -34,7 +35,7 @@ export async function updateMeasurements(foreground?: boolean): Promise<boolean>
                 throw new Error(res)
             else {
                 setSending(SendStatus.SENT, 'measurements')
-                foreground && pushNotification("Se han sincronizado las mediciones", "success")
+                foreground && pushNotification(TS.t('calibrations_synchronized'), "success")
 
             }
         }
@@ -44,7 +45,7 @@ export async function updateMeasurements(foreground?: boolean): Promise<boolean>
     catch (e) {
         setSending(SendStatus.NOT_SENT, 'measurements')
         console.log(e)
-        foreground && pushNotification("No se ha podido sincronizar las mediciones", "error")
+        foreground && pushNotification(TS.t("calibrations_synchronized"), "error")
         return false
     }
 }

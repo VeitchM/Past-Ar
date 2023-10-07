@@ -23,6 +23,7 @@ export type CalibrationLocalDB = BaseLocalDB & {
     function:string | null,
 }
 
+
 export type CalibrationLocalDBExtended = CalibrationLocalDB & {
     fromFunction:number,
     fromMeasurement:number,
@@ -40,9 +41,17 @@ export type calibrationsMeasurementsLocalDB = SendStatusLocalDB & {
 
 export type calibrationsFromFunctionFromBackend = BaseLocalDB & {uid: string}
 
+export type paddocksFromBackend = BaseLocalDB & {uid: string}
 
+export type PaddockLocalDB = BaseLocalDB & {
+    ID: number,
+    name:string,
+    vertices_list: string | null,
+    color: string | undefined
+}
 
 export type ColumnDefinition = { name: string, type: SQLTypes }
+
 /** columns doesn't include id which is an autoincremental in all cases */
 export type TableDefinition = {
     tableName: TablesNames
@@ -55,6 +64,7 @@ export type TableDefinition = {
 
 
 // export type TablesNames = 'user'|'measurements' | 'calibrations' | 'calibrationsFromMeasurements' | 'calibrationsMeasurements' | TablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER
+//export type TablesNames = 'measurements' | 'calibrations' | 'calibrationsFromMeasurements' | 'calibrationsMeasurements' | 'paddocks'
 
 type SQLTypes = 'REAL' | 'TEXT' | 'INTEGER' | 'INTEGER PRIMARY KEY'
 

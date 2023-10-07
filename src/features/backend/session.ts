@@ -2,9 +2,10 @@ import { persistUserData,deleteUserData } from "../localDB/session";
 import { Tokens, TokensResponse, User, setSignIn, setTokens, setUser } from "../store/backendSlice";
 import { addNotification } from "../store/notificationSlice";
 import store from "../store/store";
+import { pushNotification } from "../pushNotification";
 import { mobileAPI } from "./config";
 import { getErrorLabel } from "./constants";
-import { SYNCRHOIZE_INTERVAL, synchronize } from "./synchronize";
+import { SYNCHRONIZE_INTERVAL, synchronize } from "./synchronize";
 import { createPayload } from "./utils";
 import jwtDecode from "jwt-decode";
 
@@ -37,7 +38,7 @@ export async function signin(email: string, password: string) {
             console.log(resObject);
             if (resObject.code) {
                 console.error(resObject.message);
-                store.dispatch(addNotification({ title: getErrorLabel(resObject.code), status: 'error' }))
+                pushNotification( getErrorLabel(resObject.code), 'error',false )
 
             }
             else {
@@ -50,7 +51,7 @@ export async function signin(email: string, password: string) {
         .catch(error => {
             console.error(error);
 
-            store.dispatch(addNotification({ title: getErrorLabel('FAILED_CONNECTION'), status: 'error' }))
+            pushNotification(getErrorLabel('FAILED_CONNECTION'),  'error',false )
         })
 
 
@@ -98,7 +99,7 @@ function setSynchronizeDataInterval(){
     clearInterval(unsubscribeSynchronize)
     unsubscribeSynchronize = setInterval(() => {       
         synchronize()
-    }, SYNCRHOIZE_INTERVAL) as unknown as number
+    }, SYNCHRONIZE_INTERVAL) as unknown as number
 
     
  
@@ -123,7 +124,6 @@ function getUserData(token: string) {
     //Get locally without authentication, with https it shouldn't be possible to have a MitM attack
     const { id, firstName, lastName, email, roles, groupUid }: User = jwtDecode(token)
     return { id, firstName, lastName, email, roles, groupUid }
-
 
 }
 

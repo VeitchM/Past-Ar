@@ -6,6 +6,7 @@ import { useTypedSelector } from "../features/store/storeHooks";
 
 
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import TS from "../../TS";
 
 
 export default function ConnectDevice() {
@@ -23,7 +24,7 @@ export default function ConnectDevice() {
                 leftIcon={<Icon as={MaterialCommunityIcons} name='connection' size='2xl' />}
                 
                 >
-                Vincular Pasturometro
+                {TS.t('ble_link_device')}
             </Button>
 
             <DevicesModal showModal={showModal} setShowModal={setShowModal} />

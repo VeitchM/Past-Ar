@@ -50,7 +50,7 @@ export const themeNative = extendTheme({
     },
 
     colors: {
-        primary: {
+        primary_old: {
             "50": "#a4f5c8",
             "100": "#86edb5",
             "200": "#6be3a1",
@@ -61,6 +61,18 @@ export const themeNative = extendTheme({
             "700": "#348e5d",
             "800": "#337953",
             "900": "#316548"
+        },
+        primary: {
+            "50": "#f7fee7",
+            "100": "#ecfccb",
+            "200": "#d9f99d",
+            "300": "#bef264",
+            "400": "#a3e635",
+            "500": "#84cc16",
+            "600": "#65a30d",
+            "700": "#4d7c0f",
+            "800": "#3f6212",
+            "900": "#365314"
         }
         ,
         //     //300: '#d97706'// 'muted.300'
@@ -123,7 +135,7 @@ export const themeNative = extendTheme({
             },
 
             defaultProps: {
-                // colorScheme: 'buttonColors',
+                //colorScheme: 'lime',
                 size: 'lg',
                 _text: {
                     // color: 'buttonColors.900',

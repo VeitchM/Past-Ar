@@ -3,6 +3,7 @@
 import {  MaterialCommunityIcons } from '@expo/vector-icons';
 import { HStack, Icon, Text, View } from 'native-base';
 import { useTypedSelector } from '../features/store/storeHooks';
+import TS from '../../TS';
 
 type BatteryIcons = 'battery'|'battery-10'|'battery-20'|'battery-30'|'battery-40'|'battery-50'|
 'battery-60'|'battery-70'|'battery-80'|'battery-90'| 'battery-alert'
@@ -18,10 +19,10 @@ export default function BatteryLevel() {
         {
             battery > 0 ?
                 <View >
-                    <Text fontWeight={400} fontSize={27}>Pasturometro</Text>
+                    <Text fontWeight={400} fontSize='2xl'>{TS.t('pasturometer')}</Text>
                     <HStack alignItems='center'>
-                        <Icon as={MaterialCommunityIcons} size={36} name={batteryIcon} color='muted.400' />
-                        <Text fontSize={30} fontWeight={800} >{battery}%</Text>
+                        <Icon as={MaterialCommunityIcons} size={'xl'} name={batteryIcon} color='muted.400' />
+                        <Text fontSize='2xl' fontWeight={800} >{battery}%</Text>
                     </HStack>
                 </View >
                 : null

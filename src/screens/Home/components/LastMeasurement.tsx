@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { useTypedSelector } from "../../../features/store/storeHooks"
 import RoundedContainer from "../../../components/RoundedContainer"
 import { timePassedString } from "../../../utils/time"
+import TS from "../../../../TS"
 
 
 
@@ -14,7 +15,7 @@ import { timePassedString } from "../../../utils/time"
  */
 export const LastMeasurement = () => {
 
-    const RINGSIZE = 300
+    const RINGSIZE = 250
     const UPDATE_TIME = 10000
 
     const [timePassed, setTimePassed] = useState('')
@@ -44,17 +45,17 @@ export const LastMeasurement = () => {
                 }} >
 
                 <Text fontSize='xl' fontWeight='extrabold' >
-                    ULTIMA MEDICION</Text>
+                    {TS.t('last_measurement').toUpperCase()}</Text>
                 {timestamp <0 || height == -1 ? (
-                    <Text fontSize='2xl' fontWeight='bold'>No hubo mediciones</Text>)
+                    <Text fontSize='xl' fontWeight='bold'>{TS.t('no_measurements')}</Text>)
                     : (<>
 
                         < Flex direction='row'>
-                            <Text fontSize='8xl' lineHeight='xs' fontWeight='bold' >
+                            <Text fontSize='7xl' lineHeight='xs' fontWeight='bold' >
                                 {height.toFixed(1)}</Text>
                             <Text fontSize='4xl' fontWeight='bold'>cm</Text>
                         </Flex>
-                        <Text fontSize='3xl' lineHeight='2xs'>
+                        <Text fontSize='2xl' lineHeight='2xs'>
                             {timePassed}</Text>
                     </>
                     )}

@@ -59,6 +59,7 @@ export async function deleteUserData() {
 
 
 function separateInTokensAndUser(data: UserTable) {
+    const roles = data.roles.toString().trim().split(',');
     const tokens: Tokens = {
         refreshToken: data.refreshToken,
         accessToken: data.accessToken,
@@ -71,7 +72,7 @@ function separateInTokensAndUser(data: UserTable) {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        roles: data.roles,
+        roles: roles,
     }
     const signedIn = data.signedIn
     return { tokens, user, signedIn }
