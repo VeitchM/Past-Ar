@@ -50,12 +50,6 @@ export type PaddockLocalDB = BaseLocalDB & {
     color: string | undefined
 }
 
-export type SectorLocalDB = BaseLocalDB & {
-    ID: number,
-    start_date:number,
-    finish_date:number
-}
-
 export type ColumnDefinition = { name: string, type: SQLTypes }
 
 /** columns doesn't include id which is an autoincremental in all cases */

@@ -148,9 +148,5 @@ const createTableQueries = [
         uid TEXT,
         FOREIGN KEY (ID) REFERENCES paddocks(ID) ON DELETE CASCADE
       );`,
-      `CREATE TABLE IF NOT EXISTS sectors (
-        ID INTEGER PRIMARY KEY,
-        start_date INTEGER,
-        finish_date INTEGER
-      );`
+
 ]

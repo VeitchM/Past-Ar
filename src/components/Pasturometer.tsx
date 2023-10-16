@@ -39,7 +39,7 @@ export default function Pasturometer() {
           <Icon
             alignSelf="center"
             as={MaterialCommunityIcons}
-            name="wrench"
+            name="ruler"
             size={30}
           />
         }

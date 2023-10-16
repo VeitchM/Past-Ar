@@ -7,8 +7,7 @@ export enum TablesNames {
     CALIBRATIONS_FROM_FUNCTIONS = 'calibrationsFromFunction',
     CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER = 'calibrationsFromFunctionFromBackend',
     PADDOCKS = 'paddocks',
-    PADDOCKS_FROM_SERVER = 'paddocksFromServer',
-    SECTORS = 'sectors'
+    PADDOCKS_FROM_SERVER = 'paddocksFromServer'
 }
 //Too much complexity it doesn't justify itself
 
@@ -63,22 +62,13 @@ export const paddocksTableDefinition: TableDefinition = {
     ]
 }
 
-export const sectorsTableDefinition: TableDefinition = {
-    tableName: TablesNames.SECTORS,
-    columns: [
-        ID,
-        { name: 'start_date', type: 'REAL' },
-        { name: 'finish_date', type: 'REAL' },
-    ]
-}
 
 const tablesDefinitions: TableDefinition[] = [
     measurementsTableDefinition,
     calibrationsTableDefinition,
     calibrationsFromMeasurementsTableDefinition,
     calibrationsMeasurementsTableDefinition,
-    paddocksTableDefinition,
-    sectorsTableDefinition
+    paddocksTableDefinition
 ]
 
 

@@ -47,9 +47,6 @@ import Pasturometer from "../../components/Pasturometer";
 import { themeNavigation } from "../../theme";
 import { setConnectedDevice } from "../../features/store/bleSlice";
 import MeasurementsList from "./components/ListMeasurements/ListMeasurements";
-import TS from "../../../TS";
-import { finishSector, getSectors, startSector } from "../../features/localDB/sectors";
-import { TouchableHighlight } from "react-native-gesture-handler";
 
 //TODO add modal of device, where you can set the height
 
@@ -58,8 +55,6 @@ export default function HomeScreen(props: any) {
     (state) => state.ble.connectionState
   );
   const dispatch = useTypedDispatch();
-  const [sectoring, setSectoring] = useState(false);
-  const [currentSector, setCurrentSector] = useState(-1);
   //Not used yet, but will be needed in the future
   useEffect(() => {
     props.navigation.setOptions({
@@ -71,21 +66,15 @@ export default function HomeScreen(props: any) {
         backgroundColor: "#18181b",
       },
     });
-    showSectors();
   }, []);
-
-  const showSectors = async () => {
-    let sectors = await getSectors();
-    console.log(sectors);
-  }
 
   const HeaderLeft = () => {
     return (
       <View alignItems={"flex-start"}>
         <Image
-          style={{ width: 150, height: 54, justifyContent: 'flex-end', marginTop: 15, marginLeft: 5 }}
-
-
+          style={{ width: 150, height: 64, justifyContent:'flex-end', marginTop:10 }}
+          
+        
           source={require("../../../assets/logo-small-white-text.png")}
         />
 
@@ -98,18 +87,6 @@ export default function HomeScreen(props: any) {
     );
   };
 
-  const SectorPressHandler = async () => {
-    if (sectoring) {
-      finishSector(currentSector, Date.now());
-      setCurrentSector(-1);
-    }
-    else {
-      let sId = await startSector(Date.now());
-      setCurrentSector(sId);
-    }
-    setSectoring(!sectoring);
-  }
-
   return (
     <>
       <StatusBar
@@ -121,35 +98,24 @@ export default function HomeScreen(props: any) {
         alignItems="center"
         flex={1}
         backgroundColor={"white"}
-        paddingY={0}
+        paddingY={5}
         paddingX={10}
       >
-        <View height={8} />
         <LastMeasurement />
+
         <BatteryLevel />
-        <View height={2} />
-        <MeasurementsList />
-        <View height={3} />
-        {bleConnectionState == "connected" || true ? (
+        <View height={4} />
+
+        {bleConnectionState == "connected" ? (
           <Pasturometer />
         ) : (
           <>
             <ConnectDeviceButton />
           </>
         )}
-        <View height={3} />
-        <TouchableHighlight underlayColor={'#f5f5f5'} onPress={SectorPressHandler}>
-          <View justifyContent={'flex-start'} backgroundColor={'trueGray.700'} paddingTop={2} paddingBottom={2} paddingLeft={45} height='85px' width={Dimensions.get('screen').width * 1} flexDirection={'row'}>
-            <View rounded={'full'} borderWidth={3} borderColor={'trueGray.300'} height={70} width={70}>
-              <View backgroundColor={sectoring ? 'red.500' : 'amber.300'} rounded={'full'} height={52} width={52}></View>
-            </View>
-            <View alignItems={'flex-start'}>
-              <Text marginLeft={2} fontWeight={400} color={'white'} fontSize='xl'>{sectoring ? 'Recording Sector ...' : 'Not Recording Sector'}</Text>
-              <Text marginLeft={2} italic fontWeight={400} color={'white'} fontSize='md'>{sectoring ? 'Press to stop ' : 'Press to record '}</Text>
-            </View>
-          </View>
-        </TouchableHighlight>
-      </VStack >
+        <View height={5} />
+        <MeasurementsList />
+      </VStack>
     </>
   );
 }

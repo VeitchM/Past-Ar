@@ -15,11 +15,15 @@ import TS from "../../../../TS"
  */
 export const LastMeasurement = () => {
 
-    const RINGSIZE = 260
+    const RINGSIZE = 250
     const UPDATE_TIME = 10000
 
     const [timePassed, setTimePassed] = useState('')
-    const { height, timestamp } = useTypedSelector(state => state.measurement.lastMeasurement)
+
+ const {height,timestamp} = useTypedSelector(state=>state.measurement.lastMeasurement)
+
+
+
 
     //Refresh minutes when a certain amount of time passed
     useEffect(() => {
@@ -33,28 +37,30 @@ export const LastMeasurement = () => {
     }, [timestamp])
 
     return (
-        <RoundedContainer size={RINGSIZE} borderColor={'lime.400'} borderWidth={10}>
-            <RoundedContainer size={RINGSIZE - 15} borderColor={'lime.600'} borderWidth={8}>
-                <VStack style={{
-                    width: RINGSIZE,
-                    alignItems: 'center'
-                }} >
-                    <Text fontSize='lg' fontWeight='extrabold' >{TS.t('last_measurement').toUpperCase()}</Text>
-                    {timestamp < 0 || height == -1 ? (
-                        <Text fontSize='xl' fontWeight='bold'>{TS.t('no_measurements')}</Text>)
-                        : (<>
 
-                            < Flex direction='row'>
-                                <Text fontSize='7xl' lineHeight='xs' fontWeight='bold' >
-                                    {height.toFixed(1)}</Text>
-                                <Text fontSize='4xl' fontWeight='bold'>cm</Text>
-                            </Flex>
-                            <Text fontSize='2xl' lineHeight='2xs'>
-                                {timePassed}</Text>
-                        </>
-                        )}
-                </VStack>
-            </RoundedContainer >
+        <RoundedContainer size={RINGSIZE}>
+            <VStack  style={{ width: RINGSIZE,
+                // justifyContent: 's', 
+                alignItems: 'center' 
+                }} >
+
+                <Text fontSize='xl' fontWeight='extrabold' >
+                    {TS.t('last_measurement').toUpperCase()}</Text>
+                {timestamp <0 || height == -1 ? (
+                    <Text fontSize='xl' fontWeight='bold'>{TS.t('no_measurements')}</Text>)
+                    : (<>
+
+                        < Flex direction='row'>
+                            <Text fontSize='7xl' lineHeight='xs' fontWeight='bold' >
+                                {height.toFixed(1)}</Text>
+                            <Text fontSize='4xl' fontWeight='bold'>cm</Text>
+                        </Flex>
+                        <Text fontSize='2xl' lineHeight='2xs'>
+                            {timePassed}</Text>
+                    </>
+                    )}
+            </VStack>
+
         </RoundedContainer >
     )
 }

@@ -41,12 +41,9 @@ type Filter = {
     enabled: boolean,
     from: number,
     until: number,
-    filteredPaddock?:number,
-    filteredSector?:number,
+    paddockId?:number,
     from_stats: number,
-    until_stats: number,
-    shortcutFilterId?: string,
-    shortcutMapId?: string
+    until_stats: number
 }
 
 export { MainCharacteristic, ErrorBleState, DeviceSerializable, Measurement, Notification, Paddock, Filter }
