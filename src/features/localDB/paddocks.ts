@@ -10,6 +10,13 @@ export async function getPaddocks() {
         .then((result) => result.rows._array as PaddockLocalDB[])
 }
 
+export async function getPaddockByID(paddockId: number) {
+    return execQuery(
+    `SELECT ID, name, vertices_list, color FROM paddocks WHERE ID = (?)`
+    , [paddockId])
+        .then((result) => result.rows._array[0] as PaddockLocalDB)
+}
+
 /** It gets the rows from the local db which comes from the server */
 export async function getCrossedPaddocks(){
     return execTransaction([
