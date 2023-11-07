@@ -116,9 +116,10 @@ export default function MeasurementsList() {
               index,
             })}
             renderItem={renderItem}
+            ItemSeparatorComponent={()=>{return(<Divider/>)}}
           />
         ) : (
-          <VStack height={500} justifyContent="center">
+          <VStack height={150} justifyContent="center">
             <Spinner size={90} />
           </VStack>
         )}

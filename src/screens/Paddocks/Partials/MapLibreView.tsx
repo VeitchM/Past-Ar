@@ -7,10 +7,14 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Measurement } from "../../../features/store/types";
 import { getMeasurementsBetween } from "../../../features/localDB/measurements";
 import { useTypedSelector } from "../../../features/store/storeHooks";
-import MapLibreGL from "@maplibre/maplibre-react-native";
+import MapLibreGL, { Logger } from "@maplibre/maplibre-react-native";
 import { Heading, Icon, View } from "native-base";
 import { TouchableOpacity } from "react-native";
 import { FontAwesome5 } from '@expo/vector-icons';
+import { getSectorByID } from "../../../features/localDB/sectors";
+import { getPaddockByID } from "../../../features/localDB/paddocks";
+import PolyHelper from "../../../features/utils/GeometricHelper";
+import ColorUtils from "../../../features/utils/ColorUtils";
 
 
 const AppConstants = {
@@ -24,7 +28,7 @@ MapLibreGL.setAccessToken(null);
 
 function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
 
-    const [activeMeasurements, setActiveMeasurements] = useState<Measurement[]>([]);
+    const [measurements, setMeasurements] = useState<Measurement[]>([]);
     const filterState = useTypedSelector(state => state.filter);
     const [isOffline, setIsOffline] = useState(false);
     const [polygons, setPolygons] = useState<LatLng[][]>([]);
@@ -46,6 +50,7 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
     useEffect(() => {
         setPolygons(props.paddockList.map(e => { return e.vertices }));
         if (props.markerList) setCurrentMarkers(props.markerList);
+        Logger.setLogLevel('error');
     }, [props.markerList, props.paddockList])
 
     useEffect(() => { readDB() }, [filterState, terrainMode]);
@@ -58,15 +63,28 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
     );
 
     async function readDB() {
-        let json;
 
         if (filterState.enabled) {
-            json = await getMeasurementsBetween(filterState.from, filterState.until);
-            let mets: Measurement[] = JSON.parse(JSON.stringify(json))['rows']['_array'];
-            setActiveMeasurements(mets);
+            let f = filterState.from;
+            let u = filterState.until;
+            if (!!filterState.filteredSector) {
+                let tmpSector = await getSectorByID(filterState.filteredSector);
+                if (tmpSector.start_date > f) f = tmpSector.start_date;
+                if (tmpSector.finish_date < u) u = tmpSector.finish_date;
+            }
+            let mes: Measurement[] = (await getMeasurementsBetween(f, u)).rows._array;
+            if (filterState.filteredPaddock != undefined) {
+                let foundedPaddock = (await getPaddockByID(filterState.filteredPaddock));
+                let vertices: LatLng[] = JSON.parse(foundedPaddock.vertices_list!)
+
+                let points = mes.map((m) => { return { latitude: m.latitude, longitude: m.longitude } });
+                let results = PolyHelper.getPointsInsidePoly(points, vertices);
+                mes = mes.filter((m) => { return results.some((r) => { return m.latitude == r.latitude }) });
+            }
+            setMeasurements(mes);
         }
         else {
-            setActiveMeasurements([]);
+            setMeasurements([]);
         }
     }
 
@@ -158,10 +176,10 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
                         id={"POLYSHAPE_" + index}
                         shape={BuildPolygonShape([...paddock, paddock[0]])}
                     >
-                        <MapLibreGL.FillLayer maxZoomLevel={100000} id={"POLYFILL_" + index} style={{ fillColor: props.paddockList[index] ? props.paddockList[index].color+'BB' : colors[index]+'BB', fillOpacity: 0.8, fillOutlineColor: '#ffffff' }} />
-                        <MapLibreGL.LineLayer maxZoomLevel={100000} id={"POLYLINE_" + index} style={{ lineColor: props.paddockList[index] ? props.paddockList[index].color : colors[index] }} />
+                        <MapLibreGL.FillLayer maxZoomLevel={100000} id={"POLYFILL_" + index} style={{ fillColor: props.paddockList[index] ? props.paddockList[index].color + 'BB' : ColorUtils.getColor(index) + 'BB', fillOpacity: 0.8, fillOutlineColor: '#ffffff' }} />
+                        <MapLibreGL.LineLayer maxZoomLevel={100000} id={"POLYLINE_" + index} style={{ lineColor: props.paddockList[index] ? props.paddockList[index].color : ColorUtils.getColor(index) }} />
                         <MapLibreGL.SymbolLayer id={"POLYTEXT_" + index}
-                            style={{ textColor:'#525252',textHaloColor:'#ffffff',textHaloWidth:1, textField: props.paddockList[index] ? props.paddockList[index].name : '' }}
+                            style={{ textColor: '#525252', textHaloColor: '#ffffff', textHaloWidth: 1, textField: props.paddockList[index] ? props.paddockList[index].name : '' }}
                         ></MapLibreGL.SymbolLayer>
                     </MapLibreGL.ShapeSource>
                 )
@@ -171,17 +189,18 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
 
     const MeasurementsLayer = useCallback(() => {
         return (<>{
-            (!activeMeasurements || activeMeasurements.length < 2) ? <></> :
-                <MapLibreGL.ShapeSource id="SHPLAY"
-                    shape={BuildMPoint([...activeMeasurements, activeMeasurements[0]])}
-                >
-                    <MapLibreGL.SymbolLayer id="SYMLAY"
 
-                        style={{ iconAllowOverlap: true, iconImage: require("../../../../assets/maps-and-flags.png"), iconSize: 0.3, iconAnchor: "bottom" }}
-                    />
-                </MapLibreGL.ShapeSource>
+            <MapLibreGL.ShapeSource id={"SHPLAY"}
+                shape={BuildMPoint([...measurements])}
+            >
+                <MapLibreGL.SymbolLayer id={"SYMLAY"}
+
+                    style={{ iconAllowOverlap: true, iconImage: require("../../../../assets/maps-and-flags.png"), iconSize: 0.3, iconAnchor: "bottom" }}
+                />
+
+            </MapLibreGL.ShapeSource>
         }</>);
-    }, [activeMeasurements, terrainMode])
+    }, [measurements, terrainMode])
 
     return (
         <>
@@ -190,32 +209,17 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
                 style={{ flex: 1, alignSelf: 'stretch' }}
                 attributionPosition={{ right: 20, top: 150 }}
                 logoEnabled={false}
-                onPress={(e) => { }}
                 compassEnabled={false}
                 onRegionDidChange={(s) => { props.onDragEnd() }}
                 rotateEnabled={false}
                 onDidFinishLoadingMap={props.onFinishLoad}
             >
                 <MapLibreGL.Camera ref={camRef} key={'-' + camRef.current} />
-
                 <OfflineLayer />
-                {terrainMode?<></>:<OnlineLayer />}
-                
-
+                <OnlineLayer />
                 <PaddocksLayer />
                 <MeasurementsLayer />
                 <UserLocation />
-                {/* {
-                    currentMarkers.map((point, v_index) => {
-                        return (
-                            <MapLibreGL.PointAnnotation
-                                key={"POINT" + v_index + polygons.length}
-                                id={"POINT_0" + "_" + v_index}
-                                coordinate={[point.longitude, point.latitude]}
-                            ></MapLibreGL.PointAnnotation>
-                        )
-                    })
-                } */}
             </MapLibreGL.MapView>
             <InfoButton />
         </>
@@ -223,33 +227,3 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
 }
 
 export default forwardRef<IMapView, MapViewProps>(MLibreView);
-
-const colors = [
-    "#ffbe0b",
-    "#fb5607",
-    "#ff006e",
-    "#3a86ff",
-    "#7FFF00",
-    "#FFFF00",
-    "#FF6347",
-    "#00FFFF",
-    "#FF00FF",
-    "#FF1493",
-    "#FF69B4",
-    "#FF8C00",
-    "#FFD700",
-    "#00FF00",
-    "#00CED1",
-    "#FF4500",
-    "#FF00FF",
-    "#FF7F50",
-    "#00BFFF",
-    "#1E90FF",
-    "#ADFF2F",
-    "#FF6347",
-    "#FF69B4",
-    "#FF8C00",
-    "#FFD700",
-    "#00FF7F",
-    "#00CED1"
-]
