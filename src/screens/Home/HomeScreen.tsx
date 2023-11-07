@@ -130,7 +130,7 @@ export default function HomeScreen(props: any) {
         <View height={2} />
         <MeasurementsList />
         <View height={3} />
-        {bleConnectionState == "connected" || true ? (
+        {bleConnectionState == "connected" ? (
           <Pasturometer />
         ) : (
           <>
@@ -144,8 +144,8 @@ export default function HomeScreen(props: any) {
               <View backgroundColor={sectoring ? 'red.500' : 'amber.300'} rounded={'full'} height={52} width={52}></View>
             </View>
             <View alignItems={'flex-start'}>
-              <Text marginLeft={2} fontWeight={400} color={'white'} fontSize='xl'>{sectoring ? 'Recording Sector ...' : 'Not Recording Sector'}</Text>
-              <Text marginLeft={2} italic fontWeight={400} color={'white'} fontSize='md'>{sectoring ? 'Press to stop ' : 'Press to record '}</Text>
+              <Text marginLeft={2} fontWeight={400} color={'white'} fontSize='xl'>{sectoring ? TS.t('recording_sector') : TS.t('not_recording_sector')}</Text>
+              <Text marginLeft={2} italic fontWeight={400} color={'white'} fontSize='md'>{sectoring ? TS.t('press_to_stop') : TS.t('press_to_record')}</Text>
             </View>
           </View>
         </TouchableHighlight>

@@ -79,13 +79,12 @@ export function NewCalibrationModal(props: {
 
   return (
     <BaseModal
-      title="Crear calibracion"
+      title={TS.t("create_calibration")}
       showModal={props.showModal}
       calibrationName={props.calibrationName}
       setShowModal={props.setShowModal}
       lines={[
-        "Si presiona continuar se creara una calibracion calculada desde mediciones",
-        "Una vez creada usted podra seleccionarla para realizar las mediciones para su calculo",
+        TS.t("calibration_ask_create"),TS.t("calibration_info_create")
       ]}
     >
       <>
@@ -123,13 +122,13 @@ type PropsDeleteModal = { onDelete: (id: number) => void } & PropsInfoModal;
 export function DeleteCalibrationModal(props: PropsDeleteModal) {
   return (
     <BaseModal
-      title="Borrar Calibración"
+      title={TS.t("delete_calibration")}
       calibrationName={props.info?.name}
       showModal={props.showModal}
       setShowModal={props.setShowModal}
       lines={[
-        `${TS.t("if_delete_calibration")} ${props.info?.name}`,
-        `Hagalo si esta seguro que asi lo quiere`,
+        `${TS.t("if_delete_calibration")}`,
+        // `Hagalo si esta seguro que asi lo quiere`,
       ]}
     >
       <>
@@ -167,13 +166,13 @@ export enum CalibrationTypesEnum {
   fromCloud,
 }
 export const calibrationTypesNames = [
-  " a partir de Mediciones",
-  " a partir de Función",
+  TS.t("cal_from_measurements"),
+  TS.t("cal_from_function"),
   " descargada",
 ];
 
 export function InfoCalibrationModal(props: PropsInfoModal) {
-  let type = "Calibración creada";
+  let type = TS.t("calibration_created");
   if (props.info && "fromFunction" in props.info && props.info?.fromFunction)
     props.info?.fromFunction &&
       (type += calibrationTypesNames[CalibrationTypesEnum.fromFunction]);
@@ -183,7 +182,7 @@ export function InfoCalibrationModal(props: PropsInfoModal) {
 
   return (
     <BaseModal
-      title="Calibración"
+      title={TS.t("calibration")}
       calibrationName={props.info?.name}
       showModal={props.showModal}
       setShowModal={props.setShowModal}

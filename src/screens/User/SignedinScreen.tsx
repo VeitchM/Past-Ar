@@ -4,12 +4,13 @@ import { synchronize, } from "../../features/backend/synchronize";
 import { timePassedString } from "../../utils/time";
 import { useEffect, useState } from "react";
 import { signout } from "../../features/backend/session";
+import TS from "../../../TS";
 
 export default function signedinScreen() {
   const userData = useTypedSelector(state => state.backend.user)
   const lastSync = useTypedSelector(state => state.backend.lastSync)
 
-  const [lastSyncLabel, setLastSyncLabel] = useState('Sin sincronizar')
+  const [lastSyncLabel, setLastSyncLabel] = useState(TS.t("user_not_sync"))
 
   const textColor = 'coolGray.500'
 
@@ -45,7 +46,7 @@ export default function signedinScreen() {
             size="lg"
             color={textColor}
           >
-            Bienvenido
+            {TS.t("user_welcome")}
           </Heading>
           <Heading
             size="2xl"
@@ -56,17 +57,17 @@ export default function signedinScreen() {
         </VStack>
 
         <VStack bgColor='warmGray.50' marginX={-5} padding={5} rounded={10}>
-          <Text fontSize='lg' color={textColor} marginBottom='-6px'>Email</Text>
+          <Text fontSize='lg' color={textColor} marginBottom='-6px'>{TS.t("user_email")}</Text>
           <Text fontSize='2xl' color={textColor} fontWeight='normal'>{userData?.email}</Text>
 
           <Divider marginY={4} />
-          <Text fontSize='lg' color={textColor} marginBottom='-6px'>Roles</Text>
+          <Text fontSize='lg' color={textColor} marginBottom='-6px'>{TS.t("user_roles")}</Text>
           <Text fontSize='2xl' color={textColor} fontWeight='normal'>{userData?.roles.toString()}</Text>
 
         </VStack>
 
         <VStack>
-          <Text fontSize='lg' marginBottom='-6px'>Última Sincronización</Text>
+          <Text fontSize='lg' marginBottom='-6px'>{TS.t("user_last_sync")}</Text>
           <Text fontSize='2xl' fontWeight='normal'>{lastSyncLabel}</Text>
         </VStack>
         {/* TODO DELETE LATER */}
@@ -76,14 +77,14 @@ export default function signedinScreen() {
           onPress={() => synchronize(true)}
           marginTop={4} marginBottom={4}
         >
-          Sincronizar
+          {TS.t("user_synchronize")}
         </Button>
         <Button
           // TODO show a modal before signing out
           colorScheme='danger'
           onPress={signout}
         >
-          Cerrar sesion
+          {TS.t("user_logout")}
         </Button>
 
 

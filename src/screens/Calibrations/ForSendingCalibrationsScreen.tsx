@@ -27,6 +27,7 @@ import { PropsCalibrationForSending } from "./Stack.types";
 
 import { addNotification } from "../../features/store/notificationSlice";
 import { pushNotification } from "../../features/pushNotification";
+import TS from "../../../TS";
 
 
 
@@ -114,7 +115,7 @@ export default function ForSendingCalibrationsScreen({ navigation }: PropsCalibr
                         <Spinner size={90} />
                     </VStack>
                 }
-                <Button onPress={() => navigation.goBack()}>Volver</Button>
+                <Button onPress={() => navigation.goBack()}>{TS.t("back")}</Button>
             </VStack>
         </>
     )

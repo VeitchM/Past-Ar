@@ -83,7 +83,7 @@ export default function CreateCalibration({ navigation }: Props) {
             value={calibrationName}
             size="2xl"
             onChangeText={setCalibrationName}
-            placeholder="Escriba el nombre de la calibracion"
+            placeholder={TS.t("write_calibrations_name")}
           />
         </VStack>
 

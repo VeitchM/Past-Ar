@@ -24,6 +24,7 @@ import { getSectorByID, getSectors, getSectorsBetween } from "../../features/loc
 import { getLocales } from "expo-localization";
 import { getPaddockByID } from "../../features/localDB/paddocks";
 import { LatLng } from "react-native-maps";
+import TS from "../../../TS";
 
 const screenWidth = Dimensions.get("window").width;
 const Tab = createMaterialTopTabNavigator();
@@ -53,16 +54,6 @@ export default function PaddockScreen(props: Props) {
         readSectors(filterState.from_stats, filterState.until_stats);
     }, [filterState])
 
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         console.log('Focused');
-    //         // setFrom(new Date(filterState.from_stats));
-    //         // setUntil(new Date(filterState.until_stats));
-    //         readMeasurements(filterState.from_stats, filterState.until_stats)
-    //         return () => {
-
-    //         }
-    //     }, []))
 
     const readMeasurements = async (calibration?: number) => {
         let date = new Date(); date.setDate(date.getDate() - 2);
@@ -193,10 +184,10 @@ export default function PaddockScreen(props: Props) {
 
                 <Box shadow={3} justifyContent='space-evenly' marginTop={15} alignItems={'center'} backgroundColor={'#7a7b87'}
                     rounded={'lg'} height={220} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
-                    <Heading size='lg' marginTop={2} marginBottom={2} color={'#fff'}>Mediciones</Heading>
+                    <Heading size='lg' marginTop={2} marginBottom={2} color={'#fff'}>{TS.t('stats_measures')}</Heading>
                     {measurements.length == 0 ?
                         <>
-                            <Heading size='lg' marginBottom={2}>No registra en periodo</Heading>
+                            <Heading size='lg' marginBottom={2}>{TS.t("stats_no_records")}</Heading>
                         </>
                         :
                         <LineChart
@@ -239,9 +230,9 @@ export default function PaddockScreen(props: Props) {
                 <Box shadow={3} justifyContent='space-evenly' marginTop={2} alignItems={'center'} backgroundColor={'#fff'}
                     rounded={'lg'} height={90} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
                     <>
-                        <Heading size='lg' >{'Desde: ' + FormatUtils.formatBasicDate(new Date(filterState.from_stats))}</Heading>
+                        <Heading size='lg' >{TS.t("stats_from") + FormatUtils.formatBasicDate(new Date(filterState.from_stats))}</Heading>
                         <Divider />
-                        <Heading size='lg' >{'Hasta: ' + FormatUtils.formatBasicDate(new Date(filterState.until_stats))}</Heading>
+                        <Heading size='lg' >{TS.t("stats_until") + FormatUtils.formatBasicDate(new Date(filterState.until_stats))}</Heading>
                     </>
                 </Box>
                 <View margin={2} />
@@ -252,15 +243,15 @@ export default function PaddockScreen(props: Props) {
 
                         {measurements.length > 0 ?
                             <>
-                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>Altura Media  (cm)</Heading>
+                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>{TS.t("stats_mean_height")}</Heading>
                                 <Divider marginTop={3} />
                                 <Heading size='3xl' marginBottom={2}>{meanHeight(measurements)}</Heading>
                             </>
                             :
                             <>
-                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>Altura Media  (cm)</Heading>
+                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>{TS.t("stats_mean_height")}</Heading>
                                 <Divider marginTop={3} />
-                                <Heading size='lg' marginBottom={2}>No registra en periodo</Heading>
+                                <Heading size='lg' marginBottom={2}>{TS.t("stats_no_records")}</Heading>
                             </>
                         }
                     </Box>
@@ -269,15 +260,15 @@ export default function PaddockScreen(props: Props) {
                         rounded={'lg'} height={90} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
                         {measurements.length > 0 ?
                             <>
-                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>Mediciones</Heading>
+                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>{TS.t("stats_measures")}</Heading>
                                 <Divider marginTop={3} />
                                 <Heading size='3xl' marginBottom={2}>{measurements.length}</Heading>
                             </>
                             :
                             <>
-                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>Mediciones</Heading>
+                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>{TS.t("stats_measures")}</Heading>
                                 <Divider marginTop={3} />
-                                <Heading size='lg' marginBottom={2}>No registra en periodo</Heading>
+                                <Heading size='lg' marginBottom={2}>{TS.t("stats_no_records")}</Heading>
                             </>
                         }
                     </Box>
@@ -294,7 +285,7 @@ export default function PaddockScreen(props: Props) {
                             setSelectedCalibration(Number.parseInt(itemValue));
                             readMeasurements(Number.parseInt(itemValue));
                         }}
-                        placeholder="Elegir Calibración" >
+                        placeholder={TS.t("stats_choose_calibration")} >
                         {calibrations.map((calibration) => {
                             return <Select.Item
                                 key={calibration.ID}
@@ -306,15 +297,15 @@ export default function PaddockScreen(props: Props) {
                         rounded={'lg'} height={90} width={'95%'} borderWidth={1} borderColor={'coolGray.200'}>
                         {measurements.length > 0 ?
                             <>
-                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>Peso Medio  (kgMS/ha)</Heading>
+                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>{TS.t("stats_mean_weight")}</Heading>
                                 <Divider marginTop={3} />
-                                <Heading size={selectedCalibration >= 0 ? '3xl' : 'lg'} marginBottom={2} marginRight={5}>{selectedCalibration >= 0 ? weight.toFixed(1) : 'Seleccione una calibración'}</Heading>
+                                <Heading size={selectedCalibration >= 0 ? '3xl' : 'lg'} marginBottom={2} marginRight={5}>{selectedCalibration >= 0 ? weight.toFixed(1) : TS.t("stats_error_choose_cal")}</Heading>
                             </>
                             :
                             <>
-                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>Peso Medio  (kgMS/ha)</Heading>
+                                <Heading color={'trueGray.300'} size='lg' marginTop={3}>{TS.t("stats_mean_weight")}</Heading>
                                 <Divider marginTop={3} />
-                                <Heading size='lg' marginBottom={2}>No registra en periodo</Heading>
+                                <Heading size='lg' marginBottom={2}>{TS.t("stats_no_records")}</Heading>
                             </>
                         }
                     </Box>

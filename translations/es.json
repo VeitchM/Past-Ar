@@ -3,8 +3,9 @@
     "home_title": "Inicio",
     "user_home_title": "Usuario",
     "calibration_home_title": "Calibraciones",
-    "paddock_home_title": "Mapa del Paddock",
+    "paddock_home_title": "Mapa de Potreros",
     "filter_screen_title": "Filtros",
+    "stats_screen_title": "Estadísticas",
 
     "home_tab_title": "Inicio",
     "paddock_tab_title": "Paddocks",
@@ -12,8 +13,8 @@
     "statistics_tab_title": "Estadísticas",
     "user_tab_title": "Usuario",
 
-    "paddock": "Paddock",
-    "paddocks": "Paddocks",
+    "paddock": "Potrero",
+    "paddocks": "Potreros",
     "measurements": "Mediciones",
     "calibration": "Calibración",
     "calibrations": "Calibraciones",
@@ -28,7 +29,7 @@
     "calibration_list_title": "Lista de Calibraciones",
     "create_calibration": "Crear Calibración",
     "calibration_function_create_title": "Función de Calibración",
-    "calibration_send_title": "Calibraciones por Enviar",
+    "calibration_send_title": "Calibraciones por enviar",
     "calibration_measure_received": "Medición a Calibrar",
     "calibration_home_header": "Cargar mediciones de calibración",
     "calibration_list_button": "Lista de Calibraciones",
@@ -68,10 +69,15 @@
     },
 
     "pasturometer": "Pasturómetro",
+    "not_recording_sector": "No Grabando Sector",
+    "recording_sector": "Grabando Sector",
+    "press_to_record": "Presione para grabar",
+    "press_to_stop": "Presione para detener",
 
     "disconnect": "Desconectar",
     "exit": "Salir",
     "save": "Guardar",
+    "back": "Volver",
 
     "date": "Fecha",
 
@@ -95,10 +101,13 @@
     "from_measurements": "A partir de Mediciones",
 
     "name_already_exists": "El nombre ya existe",
-    "calibrations_could_not_be_synchronized": "No se pudieron sincronizar las calibraciones.",
-    "calibrations_synchronized": "Calibraciones sincronizadas",
+    "calibrations_synchronized": "Las Calibraciones se han sincronizado.",
     "measurements_synchronized": "Las mediciones se han sincronizado.",
-    "measurements_not_synchronized": "No se han podido sincronizar las mediciones.",
+    "paddocks_synchronized": "Los Potreros se han sincronizado.",
+    "calibrations_cannot_sync": "No se han podido sincronizar las calibraciones.",
+    "measurements_cannot_sync": "No se han podido sincronizar las mediciones.",
+    "paddocks_cannot_sync": "No se han podido sincronizar los potreros.",
+
     "session_validation_error": "Datos de sesión no válidos",
     "session_auth_invalid_login": "Correo electrónico o contraseña no válidos",
     "session_error_others": "Error del servidor",
@@ -112,9 +121,59 @@
     "calibration_already_exists": "Ya existe una calibración con el mismo nombre.",
 
     "create": "Crear",
-    "undertood": "Entendido",
+    "understood": "Entendido",
 
     "delete_calibration": "Eliminar Calibración",
-    "if_delete_calibration": "Si presiona Borrar, la calibración se eliminará de manera local e irreversible:"
+    "if_delete_calibration": "Si presiona Borrar, la calibración se eliminará de manera local e irreversible.",
+    "calibration_ask_create": "Se creará una calibración a partir de mediciones.",
+    "calibration_info_create": "Una vez creada podrá recibir mediciones para su calculo.",
+    "calibration_created": "Calibración creada",
+    "cal_from_function": " a partir de Función",
+    "cal_from_measurements": " a partir de Mediciones",
+
+    "user_welcome": "Bienvenido",
+    "user_email": "Email",
+    "user_roles": "Roles",
+    "user_last_sync": "Última Sincronización",
+    "user_not_sync": "Sin sincronizar",
+    "user_synchronize": "Sincronizar",
+    "user_logout": "Cerrar sesión",
+    "user_require_login": "¡Ingrese para continuar!",
+    "user_pass": "Contraseña",
+    "user_login": "Ingresar",
+
+    "hour_short": "h",
+    "week_short": "Sem",
+    "month_short": "Mes",
+    "year_short": "Año",
+
+    "stats_no_records": "No registra en periodo",
+    "stats_measure_title": "Mediciones",
+    "stats_mean_height": "Altura Media (cm)",
+    "stats_measures": "Mediciones",
+    "stats_choose_calibration": "Elegir Calibración",
+    "stats_mean_weight": "Peso Medio (kgMS/ha)",
+    "stats_error_choose_cal": " ¡Seleccione una calibración!",
+    "stats_from": "Desde: ",
+    "stats_until": "Hasta: ",
+
+    "filters_paddock": "Potrero",
+    "filters_sector": "Sector",
+    "filters_by_paddock": "Filtrar por potrero",
+    "filters_by_sector": "Filtrar por sector",
+    "filters_all_paddocks": "Todos los potreros",
+    "filters_all_sectors": "Todos los sectores",
+
+    "paddocks_search": "Buscar",
+    "paddocks_insert_coords": "Ir a coordenada",
+    "paddocks_insert_explain": "( Latitud , Longitud )",
+    "paddocks_info_title": "Información útil",
+    "paddocks_search_info": "Buscar coordenadas",
+    "paddocks_terrain_info": "Cambiar terreno",
+    "paddocks_download_info": "Descargar mapa actual",
+    "paddocks_location_info": "Ir hacia ubicación actual",
+    "paddocks_info_latitude": "Latitud",
+    "paddocks_info_longitude": "Longitud"
+
   }
 }

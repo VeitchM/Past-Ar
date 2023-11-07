@@ -101,7 +101,7 @@ export default function FiltersScreen(props: Props) {
                     height={55}
                     flexDirection={"row"}
                     colorScheme={"coolGray"}
-                    onPress={() => { onPress(); setCurrentButton(label);  }}
+                    onPress={() => { onPress(); setCurrentButton(label); }}
                 >
                     {label}
                 </Button>
@@ -170,7 +170,7 @@ export default function FiltersScreen(props: Props) {
                         endIcon={<Icon as={FontAwesome5} marginLeft={5} name="chevron-down" size="md" />}
                         marginBottom={5}
                         onPress={() => { setIsFromVisible(true) }}>
-                        {from ? Formatter.formatBasicDate(from) : 'Fecha desde'}
+                        {from ? Formatter.formatBasicDate(from) : '<-'}
                     </Button>
                 </View>
                 <View justifyContent={'flex-start'} flexDirection={'row'}>
@@ -187,18 +187,18 @@ export default function FiltersScreen(props: Props) {
                         endIcon={<Icon as={FontAwesome5} marginLeft={5} name="chevron-down" size="md" />}
                         marginBottom={5}
                         onPress={() => { setIsUntilVisible(true) }}>
-                        {until ? Formatter.formatBasicDate(until) : 'Fecha hasta'}
+                        {until ? Formatter.formatBasicDate(until) : '->'}
                     </Button>
                 </View>
                 <View flex={1} />
                 <Divider style={{ marginTop: 10, marginBottom: 10 }} />
                 <Box flexWrap={'wrap'} flexDir={'row'} justifyContent={'space-evenly'}>
-                    <FilterButton label="24 h" onPress={() => { setFilterPeriod('days', 1) }} />
-                    <FilterButton label="48 h" onPress={() => { setFilterPeriod('days', 2) }} />
-                    <FilterButton label="1 Sem" onPress={() => { setFilterPeriod('days', 7) }} />
-                    <FilterButton label="1 Mes" onPress={() => { setFilterPeriod('months', 1) }} />
-                    <FilterButton label="5 Mes" onPress={() => { setFilterPeriod('months', 5) }} />
-                    <FilterButton label="1 Año" onPress={() => { setFilterPeriod('years', 1) }} />
+                    <FilterButton label={"24 " + TS.t("hour_short")} onPress={() => { setFilterPeriod('days', 1) }} />
+                    <FilterButton label={"48 " + TS.t("hour_short")} onPress={() => { setFilterPeriod('days', 2) }} />
+                    <FilterButton label={"1 " + TS.t("week_short")} onPress={() => { setFilterPeriod('days', 7) }} />
+                    <FilterButton label={"1 " + TS.t("month_short")} onPress={() => { setFilterPeriod('months', 1) }} />
+                    <FilterButton label={"5 " + TS.t("month_short")} onPress={() => { setFilterPeriod('months', 5) }} />
+                    <FilterButton label={"1 " + TS.t("year_short")} onPress={() => { setFilterPeriod('years', 1) }} />
                 </Box>
                 <Divider marginBottom={5} marginTop={3} />
                 <View flexDirection={'row'}>
@@ -206,14 +206,14 @@ export default function FiltersScreen(props: Props) {
                         onPress={() => { paddockSheet.current?.snapToIndex(0) }}
                         endIcon={filteredPaddock >= 0 ? <Icon as={FontAwesome5} name="check-circle" size="md" /> : <></>}
                     >
-                        Potrero
+                        {TS.t("filters_paddock")}
                     </Button>
                     <View width={3} />
                     <Button flex={1} height={55} flexDirection={"row"} backgroundColor={"#D97706"} isDisabled={!showMeasurements}
                         onPress={() => { sectorSheet.current?.snapToIndex(0) }}
                         endIcon={filteredSector >= 0 ? <Icon as={FontAwesome5} name="check-circle" size="md" /> : <></>}
                     >
-                        Sector
+                        {TS.t("filters_sector")}
                     </Button>
                 </View>
                 <Divider marginBottom={5} marginTop={5} />
@@ -232,11 +232,8 @@ export default function FiltersScreen(props: Props) {
                 >
                     {TS.t('apply')}
                 </Button>
-
-                {/* //------ Paddocks Botom Sheet ------// */}
-
                 <BottomSheet index={-1} ref={paddockSheet} snapPoints={['75%']} enablePanDownToClose backgroundStyle={{ backgroundColor: '#DDDDDD' }}>
-                    <Heading marginLeft={5} marginBottom={5} fontSize={'2xl'} color={'trueGray.500'}>FILTRAR POR POTRERO</Heading>
+                    <Heading marginLeft={5} marginBottom={5} fontSize={'2xl'} color={'trueGray.500'}>{TS.t("filters_by_paddock").toUpperCase()}</Heading>
                     <Divider />
                     <BottomSheetFlatList
                         style={{ paddingTop: 15, position: 'relative' }}
@@ -258,7 +255,7 @@ export default function FiltersScreen(props: Props) {
                     <Box padding={4} backgroundColor={'trueGray.600'}>
                         <TouchableHighlight style={{ borderRadius: 8 }} underlayColor={'#'} onPress={() => { setFilteredPaddock(-1); paddockSheet.current?.close(); }}>
                             <Box flexDir={'row'} borderWidth={1} borderColor={'#2563EB'} rounded={'lg'} backgroundColor={'#3B82F6'} padding={3}>
-                                <Heading color={'#fff'}> Todos los potreros </Heading>
+                                <Heading color={'#fff'}>{TS.t("filters_all_paddocks")}</Heading>
                                 <View flex={1}></View>
                                 {filteredPaddock != -1 ? <></> :
                                     <Icon as={FontAwesome5} name="check-circle" color={'#fff'} size={'2xl'} />
@@ -268,10 +265,10 @@ export default function FiltersScreen(props: Props) {
                     </Box>
                 </BottomSheet>
 
-                {/* //------ Sectors Botom Sheet ------// */}
+                {/* //------------ */}
 
                 <BottomSheet index={-1} ref={sectorSheet} snapPoints={['75%']} enablePanDownToClose backgroundStyle={{ backgroundColor: '#DDDDDD' }}>
-                    <Heading marginLeft={5} marginBottom={5} fontSize={'2xl'} color={'trueGray.500'}>FILTRAR POR SECTOR</Heading>
+                    <Heading marginLeft={5} marginBottom={5} fontSize={'2xl'} color={'trueGray.500'}>{TS.t("filters_by_sector").toUpperCase()}</Heading>
                     <Divider />
                     <BottomSheetFlatList
                         style={{ paddingTop: 15, position: 'relative' }}
@@ -293,7 +290,7 @@ export default function FiltersScreen(props: Props) {
                     <Box padding={4} backgroundColor={'trueGray.600'}>
                         <TouchableHighlight style={{ borderRadius: 8 }} underlayColor={'#'} onPress={() => { setFilteredSector(-1); sectorSheet.current?.close(); }}>
                             <Box flexDir={'row'} borderWidth={1} borderColor={'#D97706'} rounded={'lg'} backgroundColor={'#F59E0B'} padding={3}>
-                                <Heading color={'#fff'}> Todos los sectores </Heading>
+                                <Heading color={'#fff'}>{TS.t("filters_all_sectors")}</Heading>
                                 <View flex={1}></View>
                                 {filteredSector != -1 ? <></> :
                                     <Icon as={FontAwesome5} name="check-circle" color={'#fff'} size={'2xl'} />

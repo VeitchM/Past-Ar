@@ -3,6 +3,7 @@ import { useTypedDispatch } from "../../features/store/storeHooks";
 import { addNotification } from "../../features/store/notificationSlice";
 import { useEffect, useState } from "react";
 import { signin } from "../../features/backend/backend";
+import TS from "../../../TS";
 
 export default function SigninScreen() {
 
@@ -31,10 +32,10 @@ export default function SigninScreen() {
           <Heading
             size="lg"
             color="coolGray.800" >
-            Bienvenido
+            {TS.t("user_welcome")}
           </Heading>
           <Heading mt="1" color="coolGray.600" fontWeight="medium" size="xs">
-            Ingrese para continuar!
+            {TS.t("user_require_login")}
           </Heading>
 
           <VStack space={3} mt="5">
@@ -50,7 +51,7 @@ export default function SigninScreen() {
 
 
             <FormControl>
-              <FormControl.Label>Contraseña</FormControl.Label>
+              <FormControl.Label>{TS.t("user_pass")}</FormControl.Label>
               <Input type="password" value={password} onChangeText={setPassword} />
               {/* <Link _text={{
                 fontSize: "xs",
@@ -78,7 +79,7 @@ export default function SigninScreen() {
             }}
 
           >
-            Ingresar
+            {TS.t("user_login")}
           </Button>
           <HStack mt="6" justifyContent="center">
             {/* <Text fontSize="sm" color="coolGray.600" _dark={{
