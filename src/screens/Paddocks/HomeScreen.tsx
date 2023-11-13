@@ -28,6 +28,7 @@ import ColorUtils from "../../features/utils/ColorUtils";
 import { themeNavigation } from "../../theme";
 import { getPaddocksFromBack } from "../../features/backend/paddocks";
 import TS from "../../../TS";
+import { setUpdateMeasures } from "../../features/store/filterSlice";
 
 type Props = NativeStackScreenProps<StackParamList, 'PaddockHome'>;
 
@@ -173,7 +174,7 @@ export default function PaddockScreen(props: Props) {
                     <View justifyContent={'space-evenly'} backgroundColor={'#fff'} width={300} height={430}>
                         <Box justifyContent={'flex-end'} width={'100%'} flexDir={'row'} marginBottom={3}>
                             <Heading size={'lg'}>{TS.t('paddocks_info_title')}</Heading>
-                            <View flex={1}/>
+                            <View flex={1} />
                             <TouchableOpacity onPress={() => { setInfoOpen(false) }}>
                                 <Icon as={FontAwesome5} size={8} name={'times'} color='trueGray.500' />
                             </TouchableOpacity>
@@ -223,12 +224,14 @@ export default function PaddockScreen(props: Props) {
         async function insertMesHandler() {
             let loc = await fetchLocation(false);
             if (!!loc) {
-                insertMeasurement({
+                await insertMeasurement({
                     height: Math.random() * 100,
                     timestamp: Date.now(),
                     latitude: loc.coords.latitude,
                     longitude: loc.coords.longitude
                 })
+                Alert.alert("Inserted measure")
+                dispatch(setUpdateMeasures({ update: true }))
             }
         }
 
@@ -254,12 +257,17 @@ export default function PaddockScreen(props: Props) {
                         <Button width={'100%'} flexDirection={'row'} colorScheme={'primary'}
                             endIcon={<Icon as={FontAwesome5} name="check" size="md" />}
                             onPress={() => {
-                                let splitted = searchText.split(',');
-                                let x = parseFloat(splitted[0].trim()) || 1;
-                                let y = parseFloat(splitted[1].trim()) || 1;
-                                console.log(splitted);
-                                changeRegion(x, y);
-                                setIsSearchModalOpen(false);
+                                if (searchText != "" && searchText.includes(",")) {
+                                    let splitted = searchText.split(',');
+                                    let x = parseFloat(splitted[0].trim()) || 1;
+                                    let y = parseFloat(splitted[1].trim()) || 1;
+                                    console.log(splitted);
+                                    changeRegion(x, y);
+                                    setIsSearchModalOpen(false);
+                                }
+                                else{
+                                    Alert.alert('Error, ingrese coordenadas validas.');
+                                }
                             }}>
                             {TS.t("paddocks_search")}
                         </Button>
@@ -362,7 +370,7 @@ export default function PaddockScreen(props: Props) {
             {/* <GoogleMapsView key={'A' + filterState.enabled + filterState.from + filterState.until} ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} /> */}
             {/* <MapboxView ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady}/> */}
             <MapLibreView ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} />
-            <InsertMeasureTestButton />
+            {/* <InsertMeasureTestButton /> */}
             <SearchButton />
             {/* <ButtonDock /> */}
             <LocationButton />
@@ -370,7 +378,7 @@ export default function PaddockScreen(props: Props) {
             <DownloadTilesButton mapRegion={region} zoomLevel={region.zoom} onLongPress={updateRegion} />
             <SearchModal />
             <InfoModal />
-            <FilterButton/> 
+            <FilterButton />
             <PaddockBottomSheetList />
         </VStack>
     );

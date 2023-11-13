@@ -38,6 +38,7 @@ import {
 } from "../features/localDB/calibrations";
 import { pushNotification } from "../features/pushNotification";
 import TS from "../../TS";
+import { setUpdateCalibration } from "../features/store/filterSlice";
 
 /** A modal which explain that if accepted a calibration from measurement will be created */
 export function NewCalibrationModal(props: {
@@ -62,6 +63,7 @@ export function NewCalibrationModal(props: {
         const exists = await calibrationExists(props.calibrationName);
         if (!exists) {
           await insertCalibrationFromMeasurements(props.calibrationName);
+          dispatch(setUpdateCalibration({update:true}))
         } else {
           pushNotification(TS.t("name_already_exists"), "error");
           console.log("Name already exists");

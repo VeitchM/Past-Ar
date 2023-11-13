@@ -24,6 +24,7 @@ import {
 import { addNotification } from "../../features/store/notificationSlice";
 import { StackParamList } from "./Stack.types";
 import TS from "../../../TS";
+import { setUpdateCalibration } from "../../features/store/filterSlice";
 type Props = NativeStackScreenProps<
   StackParamList,
   "CreateFunctionCalibration"
@@ -63,7 +64,7 @@ function CreateFunctionCalibration({ navigation, route }: Props) {
             route.params.name,
             coeficients.toString()
           );
-        } else {
+          dispatch(setUpdateCalibration({update:true}))
         }
         setIsCreating(false);
         navigation.navigate("CalibrationsList");

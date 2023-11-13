@@ -143,7 +143,7 @@ export default function FiltersScreen(props: Props) {
   ) {
     let _from = new Date();
     let _until = new Date();
-
+    _until.setDate(_until.getDate()+1);
     switch (timeAmmount) {
       case "days":
         {

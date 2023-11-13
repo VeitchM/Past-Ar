@@ -29,7 +29,7 @@ export async function synchronizeCalibrations(
     //It should not be necessary to setSending on error case
     //setSending(SendStatus.NOT_SENT, TablesNames.CALIBRATIONS_FROM_MEASUREMENTS)
     foreground &&
-      pushNotification(TS.t("calibrations_could_not_be_synchronized"), "error");
+      pushNotification(TS.t("calibrations_cannot_sync"), "error");
     console.error(e);
     return false;
   }

@@ -10,8 +10,21 @@ interface FilterState extends Filter {
 //=========================================================
 
 const initialState: FilterState = {
-    enabled: false, from: (new Date()).getTime(), until: (new Date()).getTime(),
-    from_stats: (new Date()).getTime(), until_stats: (new Date()).getTime()
+    enabled: false, from: getYesterdayDate().getTime(), until: getTomorrowDate().getTime(),
+    from_stats: getYesterdayDate().getTime(), until_stats: getTomorrowDate().getTime(),
+    updateCalibrations: false, updateMeasures: false
+}
+
+function getYesterdayDate(){
+    let date = new Date();
+    date.setDate(date.getDate()-1);
+    return date;
+}
+
+function getTomorrowDate(){
+    let date = new Date();
+    date.setDate(date.getDate()+1);
+    return date;
 }
 
 //================Slice================================
@@ -25,7 +38,9 @@ interface PayloadType {
     from_stats?: number,
     until_stats?: number,
     shortcutFilterId?: string,
-    shortcutMapId?: string
+    shortcutMapId?: string,
+    updateCalibrations?: boolean,
+    updateMeasures?: boolean
 }
 
 export const filterSlice = createSlice({
@@ -46,12 +61,18 @@ export const filterSlice = createSlice({
             state.filteredSector = action.payload.filteredSector;
             if (action.payload.shortcutFilterId != undefined) state.shortcutFilterId = action.payload.shortcutFilterId;
             if (action.payload.shortcutMapId != undefined) state.shortcutMapId = action.payload.shortcutMapId;
+        },
+        setUpdateCalibration: (state, action: PayloadAction<{update:boolean}>)=>{
+            if (action.payload.update != undefined) state.updateCalibrations = action.payload.update;
+        },
+        setUpdateMeasures: (state, action: PayloadAction<{update:boolean}>)=>{
+            if (action.payload.update != undefined) state.updateMeasures = action.payload.update;
         }
     }
 })
 
 export const {
-    updateFilter
+    updateFilter,setUpdateCalibration,setUpdateMeasures
 } = filterSlice.actions
 
 export default filterSlice.reducer
