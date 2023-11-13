@@ -46,7 +46,9 @@ type Filter = {
     from_stats: number,
     until_stats: number,
     shortcutFilterId?: string,
-    shortcutMapId?: string
+    shortcutMapId?: string,
+    updateCalibrations: boolean,
+    updateMeasures: boolean
 }
 
 export { MainCharacteristic, ErrorBleState, DeviceSerializable, Measurement, Notification, Paddock, Filter }

@@ -130,7 +130,7 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
         },
     }));
 
-    function InfoButton() {
+    function TerrainButton() {
         return (
             <View flexDir={'row'} rounded={'full'} style={{ bottom: 310, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, height: 60, width: 60 }}>
                 <TouchableOpacity activeOpacity={0.5} onPress={() => { setTerrainMode(!terrainMode) }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
@@ -221,7 +221,7 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
                 <MeasurementsLayer />
                 <UserLocation />
             </MapLibreGL.MapView>
-            <InfoButton />
+            <TerrainButton />
         </>
     )
 }

@@ -91,11 +91,11 @@ export default function HomeCalibration({ navigation }: PropsCalibrationHome) {
 
                 <RoundedContainer size={329} height={264} borderRadius={33}>
                     <VStack flex={1} justifyContent='space-around' >
-                        <Heading paddingTop={5} size='md'>{TS.t('calibration_home_header')}</Heading>
+                        <Heading paddingTop={5} height={85} width={220} size='md'>{TS.t('calibration_home_header')}</Heading>
                         <View><Divider /></View>
-                        <HStack style={{ justifyContent: "space-between", marginTop: 3, padding: 5 }}>
+                        <HStack width={280} style={{ justifyContent: "space-between", marginTop: 3, padding: 5 }}>
                             <Text fontSize='lg' fontWeight='bold' style={{ alignSelf: 'center' }} >{TS.t('calibration')}</Text>
-
+                            
                             <Select selectedValue={selectedCalibration} onValueChange={itemValue => setSelectedCalibration(itemValue)} minWidth="150" placeholder={TS.t('choose')} >
                                 {calibrations.map((calibration) => {
                                     return <Select.Item key={calibration.ID}

@@ -17,6 +17,7 @@ import { addNotification } from "../store/notificationSlice";
 import {hardware as HardwareConstants} from '../../../config.json'
 import { pushNotification } from "../pushNotification";
 import TS from "../../../TS";
+import { setUpdateMeasures } from "../store/filterSlice";
 
 
 //==== LocalDB =================================================
@@ -44,6 +45,7 @@ const onCharacteristicUpdate = async (error: BleError | null, characteristic: Ch
                 store.dispatch(setBattery(battery));
 
                 const measurementID = await insertMeasurement(measurement) //TODO call bleSlice and measurementSlice
+                store.dispatch(setUpdateMeasures({update:true}))
                 // getMeasurements()
 
                 if (store.getState().measurement.calibrationMode) {

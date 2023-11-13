@@ -1,5 +1,5 @@
 import React, { FC, useState, useMemo } from 'react'
-import { StyleSheet, Slider, ActivityIndicator } from 'react-native'
+import { StyleSheet, Slider, ActivityIndicator, Alert } from 'react-native'
 import * as FileSystem from 'expo-file-system'
 import { Button } from 'react-native-elements'
 import { LatLng, Region } from 'react-native-maps'
@@ -8,6 +8,8 @@ import { showAlert, showXmas } from '../../../features/utils/Logger';
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import MapUtils from '../../../features/utils/MapUtils'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import Async, { AsyncReturn } from '../../../features/utils/Async'
+import * as Network from 'expo-network';
 
 type Props = {
     mapRegion: LatLng
@@ -68,9 +70,18 @@ const DownloadTilesButton: FC<Props> = ({ mapRegion, zoomLevel, onLongPress }) =
         }
 
         await Promise.all(batch)
-        alert('Finalizó la descarga del mapa, está viendo la versión offline.')
-
         setIsLoading(false)
+        Alert.alert('Mapa descargado correctamente.')
+    }
+
+    async function checkConnectionAndFetchTiles(){
+        let state = await Network.getNetworkStateAsync();
+        if (state.isInternetReachable){
+            fetchTiles();
+        }
+        else{
+            Alert.alert('No se ha podido descargar. Intente más tarde.')
+        }
     }
 
     const saveButton = (title: string, onPress: VoidFunction): JSX.Element => {
@@ -90,7 +101,7 @@ const DownloadTilesButton: FC<Props> = ({ mapRegion, zoomLevel, onLongPress }) =
 
     return (
         <>
-            {saveButton("", fetchTiles)}
+            {saveButton("", checkConnectionAndFetchTiles)}
         </>
     )
 }

@@ -1,11 +1,11 @@
 import { LatLng } from "react-native-maps";
 import { getCrossedPaddocks, insertCrossedPaddock, updatePaddock } from "../localDB/paddocks";
-import store from "../store/store";
 import { pushNotification } from "../pushNotification";
 import { mobileAPI } from "./config";
 import Permission from "./permission";
 import { PaddockFromBack } from "./types";
 import { createPayload } from "./utils";
+import TS from "../../../TS";
 
 declare interface paddockResponse {
     data: {
@@ -20,20 +20,13 @@ declare interface paddockResponse {
 export async function synchronizePaddocks(foreground?: boolean): Promise<boolean> {
     try {
 
-        // if (Permission.postPaddocks())
-        //     await updatePaddocks(foreground)
         if (Permission.getPaddocks()) {
             await downloadPaddocks(foreground)
-            console.log('FINISHED DOWLOADING PADDOCKS!!!');
         }
         return true
     }
     catch (e) {
-
-        //It should not be necessary to setSending on error case
-        //setSending(SendStatus.NOT_SENT, TablesNames.CALIBRATIONS_FROM_MEASUREMENTS)
-        foreground && pushNotification('No se han podido sincronizar las calibraciones', 'error')
-        //console.error(e)
+        foreground && pushNotification(TS.t("paddocks_cannot_sync"), 'error')
         return false
     }
 }
@@ -44,7 +37,7 @@ async function downloadPaddocks(foreground?: boolean) {
         if (responseAllPaddocks.length > 0) {
             updateLocalPaddocks(responseAllPaddocks);
         }
-        foreground && pushNotification('Potreros sincronizados', 'success')
+        foreground && pushNotification(TS.t("paddocks_synchronized"), 'success')
         return true
     }
     else {
@@ -87,11 +80,11 @@ export async function getPaddocksFromBack() {
     let pageNumber = 0;
     let endOfPages = false;
     while (!endOfPages) {
-        console.log('PAGE READED!!!');
+        //console.log('PAGE READED!!!');
         let page = await fetch(`${mobileAPI}/paddocks/?pageNumber=${pageNumber}&pageSize=10`,
             createPayload('GET'))
         let response: paddockResponse = ((await page.json()));
-        console.log(response);
+        //console.log(response);
         if (response && response.data && response.data.content) {
             if (response.data.totalPages > 0) {
                 results = [...results, ...response.data.content];
@@ -105,12 +98,15 @@ export async function getPaddocksFromBack() {
             }
         }
     }
-    console.log('Received Paddocks: ');
-    console.log(results);
-    console.log(results[0].geofence.coordinates[0]);
+    //showResults();
     return results;
 }
 
+function showResults(results: PaddockFromBack[]){
+    console.log('Received Paddocks: ');
+    console.log(results);
+    console.log(results[0].geofence.coordinates[0]);
+}
 
 /**
  * 

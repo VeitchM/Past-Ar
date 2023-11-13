@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from "react";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect, useRef, useState } from 'react';
-import { Box, Button, Heading, Icon, IconButton, Input, Modal, VStack, View } from 'native-base';
+import { Box, Button, Divider, Heading, Icon, IconButton, Input, Modal, VStack, View } from 'native-base';
 import { getLocation } from '../../features/location/location';
-import { ActivityIndicator, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
@@ -28,6 +28,7 @@ import ColorUtils from "../../features/utils/ColorUtils";
 import { themeNavigation } from "../../theme";
 import { getPaddocksFromBack } from "../../features/backend/paddocks";
 import TS from "../../../TS";
+import { setUpdateMeasures } from "../../features/store/filterSlice";
 
 type Props = NativeStackScreenProps<StackParamList, 'PaddockHome'>;
 
@@ -144,8 +145,8 @@ export default function PaddockScreen(props: Props) {
      */
     const LocationButton = useCallback(() => {
         return (
-            <View flexDir={'row'} rounded={'full'} style={{ bottom: 170, left: 0, alignItems: 'center', position: 'absolute', justifyContent: 'center', backgroundColor: '#ffffff', borderWidth: 0, borderColor: '#ffffffB5', alignSelf: 'flex-start', margin: 10, marginRight: 5, padding: 10 }}>
-                <TouchableOpacity activeOpacity={0.5} onPress={()=>{fetchLocation()}} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+            <View flexDir={'row'} rounded={'full'} height={60} width={60} style={{ bottom: 170, left: 0, alignItems: 'center', position: 'absolute', justifyContent: 'center', backgroundColor: '#ffffff', borderWidth: 0, borderColor: '#ffffffB5', alignSelf: 'flex-start', margin: 10, marginRight: 5, padding: 10 }}>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => { fetchLocation() }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
                     <Icon as={FontAwesome5} size={10} name={isLocationUpdating ? undefined : 'compass'} color='coolGray.600' />
                     <ActivityIndicator style={{ position: 'absolute' }} animating={isLocationUpdating} size={'large'} color={'#4b5563'} />
                 </TouchableOpacity>
@@ -161,17 +162,54 @@ export default function PaddockScreen(props: Props) {
             <View flexDir={'row'} rounded={'full'} style={{ bottom: 100, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, padding: 10 }}>
                 <TouchableOpacity activeOpacity={0.5} onPress={() => { setInfoOpen(!infoOpen); console.log(region.zoom) }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
                     <Icon as={FontAwesome5} size={10} name={'info-circle'} color='coolGray.600' />
-                    {!infoOpen ? <></> :
-                        <Heading size={'sm'} color={'#34495e'} marginLeft={1} marginRight={1}>
-                            {`lat: ${currentCoords.latitude + '\n'}lng: ${currentCoords.longitude}`}
-                        </Heading>
-                    }
                 </TouchableOpacity>
             </View>
         );
     }
 
-    function LocateButton() {
+    const InfoModal = useCallback(() => {
+        return (
+            <Modal isOpen={infoOpen} alignItems={'center'} justifyContent={'center'} closeOnOverlayClick onClose={() => { setInfoOpen(false) }}>
+                <Box rounded={'lg'} paddingTop={5} paddingBottom={5} padding={5} backgroundColor={'#fff'}>
+                    <View justifyContent={'space-evenly'} backgroundColor={'#fff'} width={300} height={430}>
+                        <Box justifyContent={'flex-end'} width={'100%'} flexDir={'row'} marginBottom={3}>
+                            <Heading size={'lg'}>{TS.t('paddocks_info_title')}</Heading>
+                            <View flex={1} />
+                            <TouchableOpacity onPress={() => { setInfoOpen(false) }}>
+                                <Icon as={FontAwesome5} size={8} name={'times'} color='trueGray.500' />
+                            </TouchableOpacity>
+                        </Box>
+                        <Box alignItems={'center'} width={'100%'} flexDir={'row'} borderColor={'gray.300'} borderWidth={1} rounded={'lg'} padding={3} backgroundColor={'#fff'}>
+                            <Icon as={FontAwesome5} size={8} name={'search'} color='trueGray.500' />
+                            <View width={3} />
+                            <Heading size={'md'}>{TS.t('paddocks_search_info')}</Heading>
+                        </Box>
+                        <Box alignItems={'center'} width={'100%'} flexDir={'row'} borderColor={'gray.300'} borderWidth={1} rounded={'lg'} padding={3} backgroundColor={'#fff'}>
+                            <Icon as={FontAwesome5} size={8} name={'sync'} color='trueGray.500' />
+                            <View width={3} />
+                            <Heading size={'md'}>{TS.t('paddocks_terrain_info')}</Heading>
+                        </Box>
+                        <Box alignItems={'center'} width={'100%'} flexDir={'row'} borderColor={'gray.300'} borderWidth={1} rounded={'lg'} padding={3} backgroundColor={'#fff'}>
+                            <Icon as={FontAwesome5} size={8} name={'download'} color='trueGray.500' />
+                            <View width={3} />
+                            <Heading size={'md'}>{TS.t('paddocks_download_info')}</Heading>
+                        </Box>
+                        <Box alignItems={'center'} width={'100%'} flexDir={'row'} borderColor={'gray.300'} borderWidth={1} rounded={'lg'} padding={3} backgroundColor={'#fff'}>
+                            <Icon as={FontAwesome5} size={8} name={'compass'} color='trueGray.500' />
+                            <View width={3} />
+                            <Heading size={'md'}>{TS.t('paddocks_location_info')}</Heading>
+                        </Box>
+                        <Divider margin={4} />
+                        <Heading size={'md'} textAlign={'left'}>
+                            {`${TS.t('paddocks_info_latitude')}:     ${currentCoords.latitude + '\n' + TS.t('paddocks_info_longitude')}:  ${currentCoords.longitude}`}
+                        </Heading>
+                    </View>
+                </Box>
+            </Modal>
+        );
+    }, [infoOpen])
+
+    function SearchButton() {
         return (
             <View flexDir={'row'} rounded={'full'} style={{ bottom: 380, left: 0, position: 'absolute', backgroundColor: '#ffffff', margin: 10, padding: 15 }}>
                 <TouchableOpacity activeOpacity={0.5} onPress={() => { setIsSearchModalOpen(true); }} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
@@ -186,12 +224,14 @@ export default function PaddockScreen(props: Props) {
         async function insertMesHandler() {
             let loc = await fetchLocation(false);
             if (!!loc) {
-                insertMeasurement({
+                await insertMeasurement({
                     height: Math.random() * 100,
                     timestamp: Date.now(),
                     latitude: loc.coords.latitude,
                     longitude: loc.coords.longitude
                 })
+                Alert.alert("Inserted measure")
+                dispatch(setUpdateMeasures({ update: true }))
             }
         }
 
@@ -210,19 +250,26 @@ export default function PaddockScreen(props: Props) {
             <Modal isOpen={isSearchModalOpen} closeOnOverlayClick onClose={() => { setIsSearchModalOpen(false) }} alignItems={'center'} justifyContent={'center'}>
                 <Box rounded={'lg'} paddingTop={5} paddingBottom={5} padding={5} backgroundColor={'#fff'}>
                     <View flexDir={'column'} width={250}>
-                        <Heading>Insert coordinates</Heading>
-                        <Input onChangeText={setSearchText} marginTop={5} marginBottom={5}></Input>
+                        <Heading>{TS.t("paddocks_insert_coords")}</Heading>
+                        <Heading size={'md'}>{TS.t("paddocks_insert_explain")}</Heading>
+                        <Input keyboardType="decimal-pad" onChangeText={setSearchText} marginTop={5} marginBottom={2}></Input>
+                        <Heading size={'md'} marginBottom={3}>ex. 1.5646 , -20.1547</Heading>
                         <Button width={'100%'} flexDirection={'row'} colorScheme={'primary'}
                             endIcon={<Icon as={FontAwesome5} name="check" size="md" />}
                             onPress={() => {
-                                let splitted = searchText.split(',');
-                                let x = parseFloat(splitted[0].trim()) || 1;
-                                let y = parseFloat(splitted[1].trim()) || 1;
-                                console.log(splitted);
-                                changeRegion(x, y);
-                                setIsSearchModalOpen(false);
+                                if (searchText != "" && searchText.includes(",")) {
+                                    let splitted = searchText.split(',');
+                                    let x = parseFloat(splitted[0].trim()) || 1;
+                                    let y = parseFloat(splitted[1].trim()) || 1;
+                                    console.log(splitted);
+                                    changeRegion(x, y);
+                                    setIsSearchModalOpen(false);
+                                }
+                                else{
+                                    Alert.alert('Error, ingrese coordenadas validas.');
+                                }
                             }}>
-                            {'Confirmar'}
+                            {TS.t("paddocks_search")}
                         </Button>
                     </View>
                 </Box>
@@ -303,6 +350,19 @@ export default function PaddockScreen(props: Props) {
         );
     }, [paddockList])
 
+    const FilterButton = () => {
+        return (
+            <View rounded={'full'} style={{ flex: 1, position: 'absolute', bottom: 110, right: 15, padding: 0 }}>
+                <TouchableOpacity activeOpacity={0.8} onPress={() => {
+                    props.navigation.dispatch(CommonActions.navigate({ name: 'FiltersScreen', params: { paddockId: 1, paddockList: paddockList.map(p => { return { name: p.name, id: p.ID } }) } }))
+                }}>
+                    <View flexDirection={'row'} rounded={'full'} background={'#ffa726'} height={70} width={70} borderWidth={4} borderColor={'#fff'} padding={4}>
+                        <Icon color={'#fff'} as={FontAwesome5} name={'filter'} size={'2xl'} marginTop={1}></Icon>
+                    </View>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     //----------JSX-----------//
     return (
@@ -310,13 +370,15 @@ export default function PaddockScreen(props: Props) {
             {/* <GoogleMapsView key={'A' + filterState.enabled + filterState.from + filterState.until} ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} /> */}
             {/* <MapboxView ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady}/> */}
             <MapLibreView ref={mapRef} paddockList={paddockList} onDragEnd={updateRegion} onFinishLoad={onMapReady} />
-            <InsertMeasureTestButton />
-            <LocateButton />
-            <ButtonDock />
+            {/* <InsertMeasureTestButton /> */}
+            <SearchButton />
+            {/* <ButtonDock /> */}
             <LocationButton />
             <InfoButton />
             <DownloadTilesButton mapRegion={region} zoomLevel={region.zoom} onLongPress={updateRegion} />
             <SearchModal />
+            <InfoModal />
+            <FilterButton />
             <PaddockBottomSheetList />
         </VStack>
     );

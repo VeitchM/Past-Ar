@@ -3,8 +3,9 @@
     "home_title": "Home",
     "user_home_title": "User",
     "calibration_home_title": "Calibrations",
-    "paddock_home_title": "Paddock Map",
+    "paddock_home_title": "Paddocks Map",
     "filter_screen_title": "Filters",
+    "stats_screen_title": "Statistics",
 
     "home_tab_title": "Home",
     "paddock_tab_title": "Paddocks",
@@ -28,7 +29,7 @@
     "calibration_list_title": "Calibration List",
     "create_calibration": "Create Calibration",
     "calibration_function_create_title": "Calibration Function",
-    "calibration_send_title": "Calibrations to Send",
+    "calibration_send_title": "Calibrations to send",
     "calibration_measure_received": "Measurement to Calibrate",
     "calibration_home_header": "Load calibration measurements",
     "calibration_list_button": "Calibration List",
@@ -69,9 +70,15 @@
 
     "pasturometer": "Pasturometer",
 
+    "not_recording_sector": "Not Recording Sector",
+    "recording_sector": "Recording Sector",
+    "press_to_record": "Press to record",
+    "press_to_stop": "Press to stop",
+
     "disconnect": "Disconnect",
     "exit": "Exit",
     "save": "Save",
+    "back": "Back",
 
     "date": "Date",
 
@@ -90,15 +97,18 @@
     "example": "Example",
 
     "calibrations_name": "Calibration's name",
-    "write_calibrations_name": "Write Calibration's name",
+    "write_calibrations_name": "Write calibration's name",
     "from_function": "From Function",
     "from_measurements": "From Measurements",
 
     "name_already_exists": "Name already exists",
-    "calibrations_could_not_be_synchronized": "The calibrations have not been able to be synchronized.",
-    "calibrations_synchronized": "Calibrations synchronized",
-    "measurements_synchronized": "The measurements have been synchronized.",
-    "measurements_not_synchronized": "The measurements have not been able to synchronized.",
+    "calibrations_synchronized": "Calibrations have been synchronized.",
+    "measurements_synchronized": "Measurements have been synchronized.",
+    "paddocks_synchronized": "Paddocks have been synchronized.",
+    "calibrations_cannot_sync": "Calibrations could not be synchronized.",
+    "measurements_cannot_sync": "Measurements could not be synchronized.",
+    "paddocks_cannot_sync": "Paddocks could not be synchronized.",
+
     "session_validation_error": "Invalid session data",
     "session_auth_invalid_login": "Email or password invalid",
     "session_error_others": "Server error",
@@ -112,10 +122,60 @@
     "calibration_already_exists": "There is already a Calibration with the same name.",
 
     "create":"Create",
-    "undertood":"Undertood",
+    "understood":"Understood",
 
     "delete_calibration": "Delete Calibration",
-    "if_delete_calibration": "If you press Delete, the calibration will be deleted locally and irreversibly:"
+    "if_delete_calibration": "If you press Delete, the calibration will be deleted locally and irreversibly.",
+    "calibration_ask_create": "A calibration calculated from measurements will be created.",
+    "calibration_info_create": "Once created it will be able to receive measurements for calculations.",
+    "calibration_created": "Calibration created",
+    "cal_from_function": " from Function",
+    "cal_from_measurements": " from Measurements",
 
+    "user_welcome": "Welcome",
+    "user_email": "Email",
+    "user_roles": "Roles",
+    "user_last_sync": "Last Synchronization",
+    "user_not_sync": "Not synchronized",
+    "user_synchronize": "Synchronize",
+    "user_logout": "Logout",
+    "user_require_login": "Sign in to continue!",
+    "user_pass": "Password",
+    "user_login": "Login",
+
+    "hour_short": "h",
+    "week_short": "w",
+    "month_short": "Mon",
+    "year_short": "Y",
+
+    "stats_no_records": "No records in period",
+    "stats_measure_title": "Measurements",
+    "stats_mean_height": "Mean Height (cm)",
+    "stats_measures": "Measurements",
+    "stats_choose_calibration": "Choose Calibration",
+    "stats_mean_weight": "Mean Weight (kgMS/ha)",
+    "stats_error_choose_cal": " Choose a calibration!",
+    "stats_from": "From: ",
+    "stats_until": "Until: ",
+
+    "filters_paddock": "Paddock",
+    "filters_sector": "Sector",
+    "filters_by_paddock": "Filter by paddock",
+    "filters_by_sector": "Filter by sector",
+    "filters_all_paddocks": "All paddocks",
+    "filters_all_sectors": "All sectors",
+
+    "paddocks_search": "Search",
+    "paddocks_map_title": "Paddocks map",
+    "paddocks_insert_coords": "Go to coordinates",
+    "paddocks_insert_explain": "( Latitude , Longitude )",
+    "paddocks_info_title": "Useful info",
+    "paddocks_search_info": "Search by coordinates",
+    "paddocks_terrain_info": "Change terrain mode",
+    "paddocks_download_info": "Download current map",
+    "paddocks_location_info": "Go to user's location",
+    "paddocks_info_latitude": "Latitude",
+    "paddocks_info_longitude": "Longitude"
+    
   }
 }
