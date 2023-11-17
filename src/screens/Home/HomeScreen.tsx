@@ -48,7 +48,11 @@ import { themeNavigation } from "../../theme";
 import { setConnectedDevice } from "../../features/store/bleSlice";
 import MeasurementsList from "./components/ListMeasurements/ListMeasurements";
 import TS from "../../../TS";
-import { finishSector, getSectors, startSector } from "../../features/localDB/sectors";
+import {
+  finishSector,
+  getSectors,
+  startSector,
+} from "../../features/localDB/sectors";
 import { TouchableHighlight } from "react-native-gesture-handler";
 
 //TODO add modal of device, where you can set the height
@@ -77,18 +81,21 @@ export default function HomeScreen(props: any) {
   const showSectors = async () => {
     let sectors = await getSectors();
     console.log(sectors);
-  }
+  };
 
   const HeaderLeft = () => {
     return (
       <View alignItems={"flex-start"}>
         <Image
-          style={{ width: 150, height: 54, justifyContent: 'flex-end', marginTop: 15, marginLeft: 5 }}
-
-
+          style={{
+            width: 150,
+            height: 54,
+            justifyContent: "flex-end",
+            marginTop: 15,
+            marginLeft: 5,
+          }}
           source={require("../../../assets/logo-small-white-text.png")}
         />
-
         <View
           backgroundColor={themeNavigation.colors.primary}
           height={5}
@@ -102,21 +109,16 @@ export default function HomeScreen(props: any) {
     if (sectoring) {
       finishSector(currentSector, Date.now());
       setCurrentSector(-1);
-    }
-    else {
+    } else {
       let sId = await startSector(Date.now());
       setCurrentSector(sId);
     }
     setSectoring(!sectoring);
-  }
+  };
 
   return (
     <>
-      <StatusBar
-        translucent
-        backgroundColor="black"
-        barStyle="light-content"
-      />
+      <StatusBar translucent backgroundColor="black" barStyle="light-content" />
       <VStack
         alignItems="center"
         flex={1}
@@ -133,23 +135,61 @@ export default function HomeScreen(props: any) {
         {bleConnectionState == "connected" ? (
           <Pasturometer />
         ) : (
-          <>
-            <ConnectDeviceButton />
-          </>
+          <ConnectDeviceButton />
         )}
         <View height={3} />
-        <TouchableHighlight underlayColor={'#f5f5f5'} onPress={SectorPressHandler}>
-          <View justifyContent={'flex-start'} backgroundColor={'trueGray.700'} paddingTop={2} paddingBottom={2} paddingLeft={45} height='85px' width={Dimensions.get('screen').width * 1} flexDirection={'row'}>
-            <View rounded={'full'} borderWidth={3} borderColor={'trueGray.300'} height={70} width={70}>
-              <View backgroundColor={sectoring ? 'red.500' : 'amber.300'} rounded={'full'} height={52} width={52}></View>
+        <TouchableHighlight
+          underlayColor={"#f5f5f5"}
+          onPress={SectorPressHandler}
+        >
+          <View
+            justifyContent={"flex-start"}
+            backgroundColor={"trueGray.700"}
+            paddingTop={2}
+            paddingBottom={2}
+            paddingLeft={45}
+            height="85px"
+            width={Dimensions.get("screen").width }
+            flexDirection={"row"}
+          >
+            <View
+              rounded={"full"}
+              borderWidth={3}
+              borderColor={"trueGray.300"}
+              height={70}
+              width={70}
+            >
+              <View
+                backgroundColor={sectoring ? "red.500" : "amber.300"}
+                rounded={"full"}
+                height={52}
+                width={52}
+              ></View>
             </View>
-            <View alignItems={'flex-start'}>
-              <Text marginLeft={2} fontWeight={400} color={'white'} fontSize='xl'>{sectoring ? TS.t('recording_sector') : TS.t('not_recording_sector')}</Text>
-              <Text marginLeft={2} italic fontWeight={400} color={'white'} fontSize='md'>{sectoring ? TS.t('press_to_stop') : TS.t('press_to_record')}</Text>
+            <View alignItems={"flex-start"}>
+              <Text
+                marginLeft={2}
+                fontWeight={400}
+                color={"white"}
+                fontSize="xl"
+              >
+                {sectoring
+                  ? TS.t("recording_sector")
+                  : TS.t("not_recording_sector")}
+              </Text>
+              <Text
+                marginLeft={2}
+                italic
+                fontWeight={400}
+                color={"white"}
+                fontSize="md"
+              >
+                {sectoring ? TS.t("press_to_stop") : TS.t("press_to_record")}
+              </Text>
             </View>
           </View>
         </TouchableHighlight>
-      </VStack >
+      </VStack>
     </>
   );
 }

@@ -1,23 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
-import { ListRenderItem } from "react-native";
+import { ListRenderItem, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 //==== Icons ==================================================
 import { Entypo } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 
+import { FlashList } from "@shopify/flash-list";
+
 //==== Components ===========================================
 import {
   Heading,
-  HStack,
   VStack,
-  FlatList,
-  IconButton,
   Divider,
-  Icon,
-  Pressable,
   Spinner,
-  Text,
+  useTheme,
 } from "native-base";
 // import {
 //   DeleteCalibrationModal,
@@ -31,7 +28,6 @@ import {
   getNLastMeasurements,
 } from "../../../../features/localDB/measurements";
 import { useTypedSelector } from "../../../../features/store/storeHooks";
-import { formatDate, formatTime } from "../../../../utils/time";
 import TS from "../../../../../TS";
 import MeasurementModal from "./MeasurementModal";
 import Item, { ITEM_HEIGHT } from "./ListItemMeasurement";
@@ -39,28 +35,25 @@ import Item, { ITEM_HEIGHT } from "./ListItemMeasurement";
 
 const LIST_SIZE = 50;
 
+type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+
 export default function MeasurementsList() {
   //Value represents id in database
+  const theme = useTheme();
   const [measurements, setMeasurements] = useState<MeasurementLocalDB[]>();
-
-  // const [selectedCalibration, setSelectedCalibration] =
-  //   useState<CalibrationLocalDBExtended>();
-  // const [showDeleteModal, setShowDeleteModal] = useState(false);
-  console.log("Rerendered MesurementList");
-
   const [selectedMeasurement, setSelectedMeasurement] =
     useState<MeasurementLocalDB>();
+
   const lastMeasurement = useTypedSelector(
     (state) => state.measurement.lastMeasurement
   );
 
-  const refreshList = () => {
+  const refreshList = useCallback(() => {
     console.log("RefreshList");
-
     getNLastMeasurements(LIST_SIZE).then((measurements) => {
       setMeasurements(measurements);
     });
-  };
+  }, [setMeasurements]);
 
   useEffect(() => {
     console.log("refreshedListMeasurements");
@@ -69,61 +62,69 @@ export default function MeasurementsList() {
     });
   }, [lastMeasurement]);
 
-  function onPress(item: MeasurementLocalDB) {
-    console.log("Pressed Item");
-  }
-
-  function onDelete() {
+  const onDelete = useCallback(() => {
     if (selectedMeasurement)
       deleteMeasurement(selectedMeasurement).then(() => {
         setSelectedMeasurement(undefined);
         refreshList();
       });
-  }
+  }, [selectedMeasurement]);
 
-  //Optimization
-  const renderItem = useCallback(
-    ({ item }: { item: MeasurementLocalDB }) => (
-      <Item item={item} onPress={(item) => setSelectedMeasurement(item)} />
-    ),
-    []
-  );
-
+  console.log("Rerendered MesurementList", measurements);
   return (
-    <>
-      <VStack alignItems="center" width="100%" flex={1}>
-        <MeasurementModal
-          onDelete={onDelete}
-          setMeasurement={setSelectedMeasurement}
-          measurement={selectedMeasurement}
-        />
-        <Heading paddingBottom={2}>{TS.t("last_measurements")}</Heading>
-        {measurements ? (
-          <FlatList
-            borderRadius="2xl"
-            backgroundColor={"white"}
+    <VStack
+      alignItems="center"
+      width="100%"
+      flex={1}
+      // backgroundColor={"blue.300"}
+    >
+      <MeasurementModal
+        onDelete={onDelete}
+        setMeasurement={setSelectedMeasurement}
+        measurement={selectedMeasurement}
+      />
+      <Heading paddingBottom={2}>{TS.t("last_measurements")}</Heading>
+      {measurements ? (
+        <View
+          style={{
+            borderRadius: 30,
+            overflow:'hidden',
+            // backgroundColor:  theme.colors.muted[300],
+            width: "100%",
+            // flex:1,
+            height: 200,
+            borderColor: theme.colors.muted[300],
+            borderWidth: 2,
+          }}
+        >
+          <FlashList
+            // style={{
+            //   borderRadius: 10,
+            //   backgroundColor: "white",
+            //   width: "100%",
+            //   // flex:1,
+            //   height:200,
+            //   borderColor: theme.colors.muted[300],
+            //   borderWidth: 2,
+            // }}
             // shadow="3"
-            width="100%"
+            // style={{height:300, width:300}}
+            extraData={setSelectedMeasurement}
             data={measurements}
-            borderColor={"muted.300"}
-            borderWidth={2}
+            estimatedItemSize={ITEM_HEIGHT}
             // updateCellsBatchingPeriod={200}
             // maxToRenderPerBatch={1}
-            keyExtractor={(item) => item.ID.toString()}
-            getItemLayout={(_measurements, index) => ({
-              length: ITEM_HEIGHT,
-              offset: ITEM_HEIGHT * index,
-              index,
-            })}
-            renderItem={renderItem}
-            ItemSeparatorComponent={()=>{return(<Divider/>)}}
+            renderItem={Item}
+            ItemSeparatorComponent={ListDivider}
           />
-        ) : (
-          <VStack height={150} justifyContent="center">
-            <Spinner size={90} />
-          </VStack>
-        )}
-      </VStack>
-    </>
+        </View>
+      ) : (
+        <VStack height={150} justifyContent="center">
+          <Spinner size={90} />
+        </VStack>
+      )}
+    </VStack>
   );
 }
+
+const ListDivider = ()=> <Divider   width={"85%"} alignSelf={"center"} />
