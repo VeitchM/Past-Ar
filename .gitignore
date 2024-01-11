@@ -10,9 +10,9 @@ npm-debug.*
 *.orig.*
 web-build/
 
-#Added for androids builds
-android/app/build
-android
+#Platforms generated files
+android/*
+ios/*
 
 # macOS
 .DS_Store
