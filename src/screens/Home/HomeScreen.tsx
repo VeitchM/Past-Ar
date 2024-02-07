@@ -91,15 +91,9 @@ export default function HomeScreen(props: any) {
             width: 150,
             height: 54,
             justifyContent: "flex-end",
-            marginTop: 15,
             marginLeft: 5,
           }}
           source={require("../../../assets/logo-small-white-text.png")}
-        />
-        <View
-          backgroundColor={themeNavigation.colors.primary}
-          height={5}
-          width={1000}
         />
       </View>
     );
@@ -126,7 +120,7 @@ export default function HomeScreen(props: any) {
         paddingY={0}
         paddingX={10}
       >
-        <View height={8} />
+        <View height={2} />
         <LastMeasurement />
         <BatteryLevel />
         <View height={2} />

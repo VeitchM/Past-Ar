@@ -1,11 +1,11 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Button, Box, Select, View, Input, Icon, ChevronDownIcon, Divider, Heading, Switch, Modal, HStack } from "native-base";
+import { Button, Box, Select, View, Input, Icon, ChevronDownIcon, Divider, Heading, Switch, Modal, HStack, ScrollView } from "native-base";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import DatePicker from 'react-native-date-picker'
 import { StackParamList } from "./ScreenStack";
 import { CommonActions } from "@react-navigation/native";
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
-import { event } from "react-native-reanimated";
+import event from "react-native-reanimated";
 import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
 import { updateFilter } from "../../features/store/filterSlice";
 import CalendarPicker from "react-native-calendar-picker";
@@ -130,7 +130,7 @@ export default function FiltersScreen(props: Props) {
     }
 
     return (
-        <View backgroundColor={'white'} flex={1} padding={5}>
+        <ScrollView backgroundColor={'white'} flex={1} padding={5}>
             <Box width={'100%'} height={'100%'} rounded="lg" overflow="hidden" borderColor="coolGray.200" borderWidth="1" padding={5}>
                 <DatePicker
                     mode="date"
@@ -300,6 +300,6 @@ export default function FiltersScreen(props: Props) {
                     </Box>
                 </BottomSheet>
             </Box>
-        </View>
+        </ScrollView>
     )
 }

@@ -76,7 +76,6 @@ export default function MeasurementsList() {
       alignItems="center"
       width="100%"
       flex={1}
-      // backgroundColor={"blue.300"}
     >
       <MeasurementModal
         onDelete={onDelete}
@@ -91,8 +90,8 @@ export default function MeasurementsList() {
             overflow:'hidden',
             // backgroundColor:  theme.colors.muted[300],
             width: "100%",
-            // flex:1,
-            height: 200,
+             flex:1,
+            //height: 100,
             borderColor: theme.colors.muted[300],
             borderWidth: 2,
           }}

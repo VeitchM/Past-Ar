@@ -12,13 +12,14 @@ import {
   Switch,
   Modal,
   HStack,
+  ScrollView,
 } from "native-base";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import DatePicker from "react-native-date-picker";
 import { StackParamList } from "./ScreenStack";
 import { CommonActions, useFocusEffect } from "@react-navigation/native";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
-import { event } from "react-native-reanimated";
+import event from "react-native-reanimated";
 import {
   useTypedDispatch,
   useTypedSelector,
@@ -165,7 +166,7 @@ export default function FiltersScreen(props: Props) {
   }
 
   return (
-    <View backgroundColor={"white"} flex={1} padding={5}>
+    <ScrollView backgroundColor={"white"} flex={1} padding={5}>
       <Box
         width={"100%"}
         height={"100%"}
@@ -357,6 +358,6 @@ export default function FiltersScreen(props: Props) {
           </Box>
         </BottomSheet>
       </Box>
-    </View>
+    </ScrollView>
   );
 }

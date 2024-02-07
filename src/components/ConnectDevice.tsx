@@ -15,9 +15,6 @@ export default function ConnectDevice() {
     const state = useTypedSelector(state => state.ble.connectionState)
     return (
         <>
-
-
-
             <Button size='lg' isLoading={state == 'connecting'} isLoadingText="Conectando"
                 _spinner={{ size: 30 }}
                 onPress={() => setShowModal(true)}
@@ -26,7 +23,6 @@ export default function ConnectDevice() {
                 >
                 {TS.t('ble_link_device')}
             </Button>
-
             <DevicesModal showModal={showModal} setShowModal={setShowModal} />
         </>
     )

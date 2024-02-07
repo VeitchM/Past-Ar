@@ -207,7 +207,7 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
             <MapLibreGL.MapView
                 key={"MAP_"} ref={mapRef}
                 style={{ flex: 1, alignSelf: 'stretch' }}
-                attributionPosition={{ right: 20, top: 150 }}
+                attributionPosition={{ right: 5, top: 20 }}
                 logoEnabled={false}
                 compassEnabled={false}
                 onRegionDidChange={(s) => { props.onDragEnd() }}

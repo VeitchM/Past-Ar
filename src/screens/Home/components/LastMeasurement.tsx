@@ -4,6 +4,7 @@ import { useTypedSelector } from "../../../features/store/storeHooks"
 import RoundedContainer from "../../../components/RoundedContainer"
 import { timePassedString } from "../../../utils/time"
 import TS from "../../../../TS"
+import { Dimensions } from "react-native"
 
 
 
@@ -14,8 +15,9 @@ import TS from "../../../../TS"
  * @returns a component which displays the last measurement and the time elapsed since the measurement was made
  */
 export const LastMeasurement = () => {
-
-    const RINGSIZE = 260
+    //260
+    const SCALE_FACTOR = 0.65
+    const RINGSIZE = Dimensions.get('screen').width * SCALE_FACTOR
     const UPDATE_TIME = 10000
 
     const [timePassed, setTimePassed] = useState('')
