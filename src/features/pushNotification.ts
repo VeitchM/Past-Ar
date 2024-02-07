@@ -47,7 +47,7 @@ export async function pushNotification(
 
 async function registerForPushNotificationsAsync() {
   let token;
-  if (Device.isDevice || true) {
+  if (Device.isDevice) {
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -62,7 +62,9 @@ async function registerForPushNotificationsAsync() {
     token = await Notifications.getExpoPushTokenAsync({
       projectId: Constants.expoConfig?.extra?.eas.projectId,
     });
-    console.log(token);
+    console.log('////////////');
+    console.log(token)
+    console.log('////////////');
   } else {
     console.error("Must use physical device for Push Notifications");
   }
