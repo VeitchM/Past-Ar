@@ -41,6 +41,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.pastech.app",
+      "buildNumber": "3",
       "infoPlist": {
         "UIBackgroundModes": ["location", "fetch"]
       }
