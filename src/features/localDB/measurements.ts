@@ -1,4 +1,3 @@
-import { log } from "react-native-reanimated";
 import { MeasurementForBack } from "../backend/types";
 import { Measurement } from "../store/types";
 import { SendStatus, execQuery, execTransaction } from "./localDB";

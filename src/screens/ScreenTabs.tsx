@@ -27,7 +27,7 @@ export default function ScreenTabs() {
                 initialRouteName='Home'
                 backBehavior='history'
                 screenOptions={{
-                    tabBarStyle: { height: '11%' },
+                    tabBarStyle: { height: 60 },
                     headerShown: false
                 }}
             >

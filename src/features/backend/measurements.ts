@@ -28,7 +28,7 @@ export async function updateMeasurements(foreground?: boolean): Promise<boolean>
         const measurements = await getMeasurementsForBack()
         console.log('Unsent measurements', JSON.stringify(measurements));
 
-        if (measurements.length > 0 && store.getState().backend.user?.roles.find(rol => rol == 'OWNER' || 'ADMIN' || 'WORKER')) {
+        if (measurements.length > 0 && Permission.postMeasurements()) {
             const res = await postMeasurements(measurements)
             console.log(res);
             if (res.code)
