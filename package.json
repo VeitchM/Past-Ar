@@ -64,7 +64,8 @@
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.2.2",
     "react-navigation": "^4.4.4",
-    "react-redux": "^8.0.5"
+    "react-redux": "^8.0.5",
+    "expo-build-properties": "~0.8.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

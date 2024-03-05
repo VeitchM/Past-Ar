@@ -10,17 +10,14 @@ export const ITEM_HEIGHT = 60;
 
 function Item(props: {
   item: MeasurementLocalDB;
-  // onPress: (item: MeasurementLocalDB) => void;
   extraData?: SetState<MeasurementLocalDB | undefined>;
 }) {
-  // const { item } = props;
   const onPress = () => {
     console.log("Pressed");
     console.log("Pressed", props.extraData);
 
     props.extraData && props.extraData(props.item);
   };
-  // const onPress = useCallback(() => props.onPress(item), [item, props.onPress]);
   return (
     <Pressable onPress={onPress}>
       <HStack

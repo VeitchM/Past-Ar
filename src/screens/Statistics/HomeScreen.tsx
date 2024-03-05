@@ -137,72 +137,7 @@ export default function PaddockScreen(props: Props) {
         );
     }
 
-    const RefreshButton = () => {
-        return (
-            <View rounded={'full'} style={{ flex: 1, position: 'absolute', bottom: 100, right: 15, padding: 0 }}>
-                <TouchableOpacity activeOpacity={0.8} onPress={() => {
-                    dispatch(updateFilter({enabled:false, until_stats:(new Date()).getTime()}));
-                }}>
-                    <View flexDirection={'row'} rounded={'full'} background={'#ffa726'} height={70} width={70} borderWidth={4} borderColor={'#fff'} padding={4}>
-                        <Icon color={'#fff'} as={FontAwesome5} name={'sync'} size={'2xl'} marginTop={1}></Icon>
-                    </View>
-                </TouchableOpacity>
-            </View>
-        );
-    }
-
-    function FilterModal() {
-        return (
-            <Modal isOpen={filterModalVisible} backdropVisible padding={10} onClose={() => { setFilterModalVisible(false) }}>
-                <Modal.Content width={'100%'}>
-                    <Modal.Header>Filtrar Estadisticas</Modal.Header>
-                    <TouchableHighlight underlayColor={'#00000055'} style={{ position: 'absolute', top: 10, right: 10, borderRadius: 6 }} onPress={() => { setFilterModalVisible(false) }}>
-                        <View rounded={'md'} style={{ backgroundColor: 'red', height: 35, width: 35, paddingLeft: 7, elevation: 4 }}>
-                            <Icon as={FontAwesome5} name="times" size={'lg'} color={'#fff'} />
-                        </View>
-                    </TouchableHighlight>
-                    <Modal.Body>
-                        <Heading size='md' fontWeight='light'>Desde</Heading>
-                        <Button
-                            isDisabled={false}
-                            flexDirection={'row'}
-                            variant={'subtle'}
-                            colorScheme={'trueGray'}
-                            endIcon={<Icon as={FontAwesome5} name="chevron-down" size="md" />}
-                            marginBottom={5}
-                            onPress={() => { setModalFrom(!modalFrom); }}
-                        >
-                            {(new Date(filterState.from_stats)).toDateString()}
-                        </Button>
-                        <Heading size='md' fontWeight='light'>Hasta</Heading>
-                        <Button
-                            isDisabled={false}
-                            flexDirection={'row'}
-                            variant={'subtle'}
-                            colorScheme={'trueGray'}
-                            endIcon={<Icon as={FontAwesome5} name="chevron-down" size="md" />}
-                            onPress={() => { setModalUntil(!modalUntil); }}
-                        >
-                            {(new Date(filterState.until_stats)).toDateString()}
-                        </Button>
-                        <Divider marginTop={5} marginBottom={5} />
-                        <Button
-                            flexDirection={'row'}
-                            colorScheme={'primary'}
-                            endIcon={<Icon as={FontAwesome5} name="check" size="md" />}
-                            onPress={() => { setFilterModalVisible(false); readMeasurements(); readMeasurements(); }}
-                        >
-                            {'Aplicar'}
-                        </Button>
-                    </Modal.Body>
-                </Modal.Content>
-            </Modal>
-        );
-    }
-
-    //setSelectedSector
-    //readMeasurements(sectors[item].start_date, sectors[item].finish_date)
-
+//  Why??????????
     const MainScreen = useCallback(() => {
         return (
             <ScrollView flex={1} contentContainerStyle={{ alignItems: 'center' }}>
@@ -343,6 +278,7 @@ export default function PaddockScreen(props: Props) {
     }, [filterState, measurements]);
 
     return <>
+    {/* Why?? */}
         <MainScreen />
         <FilterButton />
         {/* <RefreshButton /> */}

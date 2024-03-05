@@ -83,7 +83,7 @@ export default function MeasurementsList() {
         measurement={selectedMeasurement}
       />
       <Heading paddingBottom={2}>{TS.t("last_measurements")}</Heading>
-      {measurements ? (
+      {measurements && measurements.length ? (
         <View
           style={{
             borderRadius: 30,
@@ -97,22 +97,9 @@ export default function MeasurementsList() {
           }}
         >
           <FlashList
-            // style={{
-            //   borderRadius: 10,
-            //   backgroundColor: "white",
-            //   width: "100%",
-            //   // flex:1,
-            //   height:200,
-            //   borderColor: theme.colors.muted[300],
-            //   borderWidth: 2,
-            // }}
-            // shadow="3"
-            // style={{height:300, width:300}}
             extraData={setSelectedMeasurement}
             data={measurements}
             estimatedItemSize={ITEM_HEIGHT}
-            // updateCellsBatchingPeriod={200}
-            // maxToRenderPerBatch={1}
             renderItem={Item}
             ItemSeparatorComponent={ListDivider}
           />

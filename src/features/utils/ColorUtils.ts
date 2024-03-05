@@ -7,7 +7,7 @@ function getColor(index: number){
 }
 
 export default { getFixedColors, getColor };
-
+//wtf
 const colors = [
     "#ffbe0b",
     "#fb5607",
