@@ -88,10 +88,8 @@ export default function MeasurementsList() {
           style={{
             borderRadius: 30,
             overflow:'hidden',
-            // backgroundColor:  theme.colors.muted[300],
             width: "100%",
              flex:1,
-            //height: 100,
             borderColor: theme.colors.muted[300],
             borderWidth: 2,
           }}

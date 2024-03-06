@@ -33,10 +33,7 @@ export const LastMeasurement = () => {
   }, [timestamp]);
 
   return (
-    <RoundedContainer
-      size={RINGSIZE - 15}
-      borderWidth={8}
-    >
+    <RoundedContainer size={RINGSIZE - 15} borderWidth={8}>
       <VStack
         style={{
           width: RINGSIZE,
