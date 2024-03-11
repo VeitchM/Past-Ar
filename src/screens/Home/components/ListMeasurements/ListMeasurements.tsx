@@ -53,7 +53,7 @@ export default function MeasurementsList() {
     console.log("refreshedListMeasurements");
     setTimeout(() => {
       refreshList();
-    });
+    },100);
   }, [lastMeasurement]);
 
   const onDelete = useCallback(() => {
@@ -67,7 +67,7 @@ export default function MeasurementsList() {
   console.log("Rerendered MesurementList", measurements);
   return measurements ? (
     measurements.length > 0 ? (
-      <VStack alignItems="center" width="100%" flex={1}>
+      <VStack alignItems="center" flex={1} width="100%">
         <MeasurementModal
           onDelete={onDelete}
           setMeasurement={setSelectedMeasurement}
@@ -79,12 +79,16 @@ export default function MeasurementsList() {
             borderRadius: 30,
             overflow: "hidden",
             width: "100%",
+            // width: 280,
+            // height:100,
             flex: 1,
+// backgroundColor:"red",
             borderColor: theme.colors.muted[300],
             borderWidth: 2,
           }}
         >
           <FlashList
+          
             extraData={setSelectedMeasurement}
             data={measurements}
             estimatedItemSize={ITEM_HEIGHT}

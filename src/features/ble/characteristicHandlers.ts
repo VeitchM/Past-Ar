@@ -4,7 +4,7 @@ import base64 from "react-native-base64";
 import { getLocation } from "../location/location";
 
 //==== Types ====================
-import { DeviceSerializable, Measurement } from "../store/types";
+import { Measurement } from "../store/types";
 import { BleError, BleErrorCode, Characteristic } from "react-native-ble-plx";
 
 //==== Store =============================
@@ -18,9 +18,7 @@ import {
   insertCalibrationMeasurement,
   insertMeasurement,
 } from "../localDB/measurements";
-import { addNotification } from "../store/notificationSlice";
 
-import { hardware as HardwareConstants } from "../../../config.json";
 import { pushNotification } from "../pushNotification";
 import TS from "../../../TS";
 import { setUpdateMeasures } from "../store/filterSlice";
@@ -180,17 +178,19 @@ function speedOfSound(humidity: number, temperature: number) {
   return 331.4 + 0.6 * temperature + 0.0124 * humidity;
 }
 
-function distanceCorrection(
-  distance: number,
-  humidity: number,
-  temperature: number,
-  plateHeight: number
-): number {
-  // Add plate size in cm
-  // const PLATE_SIZE = 1.34
-  // TODO MAYBE I SHOULD ADD AN DEFAULT HEIGHT AND PLATE WIDTH BUT YOU CAN CHANGE IT LOCALLY
-  // This numbers are defined on the device documentation
-  return (
-    plateHeight - (distance * 58 * speedOfSound(humidity, temperature)) / 20000
-  );
-}
+
+/** Not longer used */
+// function distanceCorrection(
+//   distance: number,
+//   humidity: number,
+//   temperature: number,
+//   plateHeight: number
+// ): number {
+//   // Add plate size in cm
+//   // const PLATE_SIZE = 1.34
+//   // TODO MAYBE I SHOULD ADD AN DEFAULT HEIGHT AND PLATE WIDTH BUT YOU CAN CHANGE IT LOCALLY
+//   // This numbers are defined on the device documentation
+//   return (
+//     plateHeight - (distance * 58 * speedOfSound(humidity, temperature)) / 20000
+//   );
+// }

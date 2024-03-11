@@ -5,7 +5,7 @@ import {
   MaterialCommunityIcons,
   Ionicons,
 } from "@expo/vector-icons";
-import { StatusBar, Text } from "native-base";
+import { StatusBar, Text, View } from "native-base";
 
 // Screens ================================================================
 import HomeScreen from "./Home/HomeScreen";
@@ -20,11 +20,12 @@ import HomeCalibration from "./Calibrations/HomeScreen";
 import { RootTabsParamList } from "./Tabs.types";
 import TS from "../../TS";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import BatteryLevel from "../components/Battery";
 
 const Tab = createBottomTabNavigator<RootTabsParamList>();
 
 export default function ScreenTabs() {
-    const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
   return (
     <>
       <Tab.Navigator
@@ -33,6 +34,11 @@ export default function ScreenTabs() {
         screenOptions={{
           tabBarStyle: { height: 60 + insets.bottom },
           headerShown: false,
+          headerRight: () => (
+            <View paddingRight={2}>
+              <BatteryLevel />
+            </View>
+          ),
         }}
       >
         <Tab.Screen

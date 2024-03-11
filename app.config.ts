@@ -12,7 +12,7 @@ const bundlePackage = IS_DEV ? "com.pastech.dev" : "com.pastech.app";
 
 export default {
   name: "Pastech" + (IS_DEV ? " (DEV)" : ""),
-  slug: "Pastech",
+  slug: "pastech",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",

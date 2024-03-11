@@ -18,7 +18,7 @@ export default function BatteryLevel() {
     return <>
         {
             battery > 0 ?
-                <View position={'absolute'} right={15} top={33}>
+                <View>
                     {/* <Text fontWeight={400} fontSize='2xl'>{TS.t('pasturometer')}</Text> */}
                     <HStack alignItems='center'>
                         <Icon as={MaterialCommunityIcons} size={'xl'} name={batteryIcon} color='muted.400' />

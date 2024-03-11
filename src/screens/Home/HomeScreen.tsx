@@ -15,9 +15,7 @@ import {
   Box,
   Badge,
   useTheme,
-
   VStack,
-
 } from "native-base";
 import { ReactNode, useEffect, useState } from "react";
 import { ColorValue, TouchableOpacity, Image, Dimensions } from "react-native";
@@ -57,8 +55,8 @@ export default function HomeScreen(props: GenericTabsProps<"Home">) {
       headerLeft: () => {
         return <HeaderLeft />;
       },
-      headerShadowVisible:true,
-      headerShown:true
+      headerShadowVisible: true,
+      headerShown: true,
     });
     showSectors();
   }, []);
@@ -74,7 +72,8 @@ export default function HomeScreen(props: GenericTabsProps<"Home">) {
         alignItems={"center"}
         paddingLeft={5}
         paddingY={2}
-        height={"100%"} width={200}
+        height={"100%"}
+        width={200}
       >
         <Image
           resizeMode="contain"
@@ -82,7 +81,7 @@ export default function HomeScreen(props: GenericTabsProps<"Home">) {
             width: "100%",
             height: "100%",
             justifyContent: "flex-start",
-            alignSelf:'flex-start',
+            alignSelf: "flex-start",
             marginLeft: 5,
           }}
           source={require("../../../assets/logo-text.png")}
@@ -108,14 +107,14 @@ export default function HomeScreen(props: GenericTabsProps<"Home">) {
         alignItems="center"
         flex={1}
         backgroundColor={"white"}
-        paddingY={0}
         paddingX={10}
+        width={"100%"}
       >
         <View height={2} />
-        <View flex={1}>
+        <View flex={1} width={"100%"}>
           <LastMeasurement />
-          <BatteryLevel />
-          <View height={2} />
+          {/* <BatteryLevel /> */}
+          {/* <View height={2} /> */}
           <MeasurementsList />
         </View>
         <View height={3} />
