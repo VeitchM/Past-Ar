@@ -9,13 +9,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 
 //==== Components ===========================================
-import {
-  Heading,
-  VStack,
-  Divider,
-  Spinner,
-  useTheme,
-} from "native-base";
+import { Heading, VStack, Divider, Spinner, useTheme } from "native-base";
 // import {
 //   DeleteCalibrationModal,
 //   InfoCalibrationModal,
@@ -71,25 +65,21 @@ export default function MeasurementsList() {
   }, [selectedMeasurement]);
 
   console.log("Rerendered MesurementList", measurements);
-  return (
-    <VStack
-      alignItems="center"
-      width="100%"
-      flex={1}
-    >
-      <MeasurementModal
-        onDelete={onDelete}
-        setMeasurement={setSelectedMeasurement}
-        measurement={selectedMeasurement}
-      />
-      <Heading paddingBottom={2}>{TS.t("last_measurements")}</Heading>
-      {measurements && measurements.length ? (
+  return measurements ? (
+    measurements.length > 0 ? (
+      <VStack alignItems="center" width="100%" flex={1}>
+        <MeasurementModal
+          onDelete={onDelete}
+          setMeasurement={setSelectedMeasurement}
+          measurement={selectedMeasurement}
+        />
+        <Heading paddingBottom={2}>{TS.t("last_measurements")}</Heading>
         <View
           style={{
             borderRadius: 30,
-            overflow:'hidden',
+            overflow: "hidden",
             width: "100%",
-             flex:1,
+            flex: 1,
             borderColor: theme.colors.muted[300],
             borderWidth: 2,
           }}
@@ -102,13 +92,13 @@ export default function MeasurementsList() {
             ItemSeparatorComponent={ListDivider}
           />
         </View>
-      ) : (
-        <VStack height={150} justifyContent="center">
-          <Spinner size={90} />
-        </VStack>
-      )}
+      </VStack>
+    ) : null
+  ) : (
+    <VStack alignItems="center" width="100%" flex={1}>
+      <Spinner size={90} />
     </VStack>
   );
 }
 
-const ListDivider = ()=> <Divider   width={"85%"} alignSelf={"center"} />
+const ListDivider = () => <Divider width={"85%"} alignSelf={"center"} />;

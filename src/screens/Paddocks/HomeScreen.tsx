@@ -556,13 +556,13 @@ export default function PaddockScreen(props: Props) {
           }}
         >
           <Heading
-            size="xl"
+            size="lg"
             style={{
               marginLeft: 20,
               marginRight: 5,
               bottom: 2,
-              textShadowOffset: { width: -0.5, height: 0.5 },
-              textShadowRadius: 5,
+              // textShadowOffset: { width: -0.5, height: 0.5 },
+              // textShadowRadius: 5,
             }}
           >
             {TS.t("paddocks")}

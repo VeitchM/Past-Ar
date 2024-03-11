@@ -15,21 +15,9 @@ import {
   Box,
   Badge,
   useTheme,
-  Flex,
-  IconButton,
-  useColorMode,
-  useColorModeValue,
-  Heading,
-  Divider,
-  Center,
-  Modal,
-  FormControl,
-  Input,
-  FlatList,
-  HStack,
+
   VStack,
-  Spacer,
-  ScrollView,
+
 } from "native-base";
 import { ReactNode, useEffect, useState } from "react";
 import { ColorValue, TouchableOpacity, Image, Dimensions } from "react-native";
@@ -54,14 +42,14 @@ import {
   startSector,
 } from "../../features/localDB/sectors";
 import { TouchableHighlight } from "react-native-gesture-handler";
+import { GenericTabsProps } from "../Tabs.types";
 
-//TODO add modal of device, where you can set the height
-
-export default function HomeScreen(props: any) {
+export default function HomeScreen(props: GenericTabsProps<"Home">) {
   const bleConnectionState = useTypedSelector(
     (state) => state.ble.connectionState
   );
   const dispatch = useTypedDispatch();
+  const theme = useTheme();
   const [sectoring, setSectoring] = useState(false);
   const [currentSector, setCurrentSector] = useState(-1);
   //Not used yet, but will be needed in the future
@@ -69,10 +57,6 @@ export default function HomeScreen(props: any) {
     props.navigation.setOptions({
       headerLeft: () => {
         return <HeaderLeft />;
-      },
-      headerShown: true,
-      headerStyle: {
-        backgroundColor: "#18181b",
       },
     });
     showSectors();
@@ -85,15 +69,22 @@ export default function HomeScreen(props: any) {
 
   const HeaderLeft = () => {
     return (
-      <View alignItems={"flex-start"}>
+      <View
+        alignItems={"center"}
+        paddingLeft={5}
+        paddingY={1}
+        height={"100%"} width={200}
+      >
         <Image
+          resizeMode="contain"
           style={{
-            width: 150,
-            height: 54,
-            justifyContent: "flex-end",
+            width: "100%",
+            height: "100%",
+            justifyContent: "flex-start",
+            alignSelf:'flex-start',
             marginLeft: 5,
           }}
-          source={require("../../../assets/logo-small-white-text.png")}
+          source={require("../../../assets/logo-text.png")}
         />
       </View>
     );
@@ -112,7 +103,6 @@ export default function HomeScreen(props: any) {
 
   return (
     <>
-      <StatusBar translucent backgroundColor="black" barStyle="light-content" />
       <VStack
         alignItems="center"
         flex={1}
@@ -121,10 +111,12 @@ export default function HomeScreen(props: any) {
         paddingX={10}
       >
         <View height={2} />
-        <LastMeasurement />
-        <BatteryLevel />
-        <View height={2} />
-        <MeasurementsList />
+        <View flex={1}>
+          <LastMeasurement />
+          <BatteryLevel />
+          <View height={2} />
+          <MeasurementsList />
+        </View>
         <View height={3} />
         {bleConnectionState == "connected" ? (
           <Pasturometer />
@@ -138,18 +130,20 @@ export default function HomeScreen(props: any) {
         >
           <View
             justifyContent={"flex-start"}
-            backgroundColor={"trueGray.700"}
+            backgroundColor={"muted.50"}
             paddingTop={2}
             paddingBottom={2}
             paddingLeft={45}
             height="85px"
-            width={Dimensions.get("screen").width }
+            width={Dimensions.get("screen").width}
             flexDirection={"row"}
+            borderColor={"muted.300"}
+            borderWidth={0.5}
           >
             <View
               rounded={"full"}
               borderWidth={3}
-              borderColor={"trueGray.300"}
+              borderColor={"muted.300"}
               height={70}
               width={70}
             >
@@ -163,22 +157,22 @@ export default function HomeScreen(props: any) {
             <View alignItems={"flex-start"}>
               <Text
                 marginLeft={2}
-                fontWeight={400}
-                color={"white"}
+                fontWeight={700}
+                // color={"white"}
                 fontSize="xl"
+              >
+                {sectoring ? TS.t("press_to_stop") : TS.t("press_to_record")}
+              </Text>
+              <Text
+                marginLeft={2}
+                // italic
+                fontWeight={400}
+                // color={"white"}
+                fontSize="md"
               >
                 {sectoring
                   ? TS.t("recording_sector")
                   : TS.t("not_recording_sector")}
-              </Text>
-              <Text
-                marginLeft={2}
-                italic
-                fontWeight={400}
-                color={"white"}
-                fontSize="md"
-              >
-                {sectoring ? TS.t("press_to_stop") : TS.t("press_to_record")}
               </Text>
             </View>
           </View>

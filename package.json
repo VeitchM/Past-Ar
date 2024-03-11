@@ -2,8 +2,8 @@
   "name": "pastech",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start --dev-client",
-    "android": "expo run:android",
+    "start": "npx cross-env APP_VARIANT=development expo start --dev-client",
+    "android": "npx cross-env APP_VARIANT=development expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web"
   },
