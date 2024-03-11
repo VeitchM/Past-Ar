@@ -83,7 +83,7 @@ const stringFields = {
   HUMIDITY: 5,
   SENSORS_QUANTITY: 6,
   MEASUREMENTS: 7,
-};
+} as const;
 
 /** It process the raw data from the device and returns a Measurement object and the battery level if it succeed, it returns undefined if a problems ocurred */
 async function rawDataToMeasurement(
@@ -113,16 +113,17 @@ async function rawDataToMeasurement(
   const measurementValue = verifyMeasurements(measurements);
   if (measurementValue !== undefined) {
     const battery = parseFloat(values[stringFields.BATERY]);
-    const device = store.getState().ble.connectedDevice as DeviceSerializable;
-    console.assert(device && device.baseHeight, "Device wasnt on");
+    // const device = store.getState().ble.connectedDevice as DeviceSerializable;
+    // console.assert(device && device.baseHeight, "Device wasnt on");
     const location = await getLocation();
     const measurement: Measurement = {
-      height: distanceCorrection(
-        measurementValue,
-        humidity,
-        temperature,
-        device.baseHeight!
-      ),
+      // height: distanceCorrection(
+      //   measurementValue,
+      //   humidity,
+      //   temperature,
+      //   device.baseHeight!
+      // ),
+      height: measurementValue,
       timestamp: Date.now(),
       latitude: location!.coords.latitude,
       longitude: location!.coords.longitude,

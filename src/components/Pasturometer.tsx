@@ -62,20 +62,18 @@ function ModalPasturometer(props: {
   const store = useTypedSelector((state) => state.ble);
 
   const [alias, setAlias] = useState(store.connectedDevice?.alias || "");
-  const [plateWidth, setPlateWidth] = useState(
-    store.connectedDevice?.baseHeight?.toString() || ""
-  );
+  // const [plateWidth, setPlateWidth] = useState(
+  //   store.connectedDevice?.baseHeight?.toString() || ""
+  // );
   const [errorPlateWidth, setErrorPlateWidth] = useState(false);
 
   const dispatch = useTypedDispatch();
 
   console.log({ devices: store.connectedDevice });
 
-  useEffect(() => {
-    setErrorPlateWidth(isNaN(Number(plateWidth)));
-  }, [plateWidth]);
-
-  function save() {}
+  // useEffect(() => {
+  //   setErrorPlateWidth(isNaN(Number(plateWidth)));
+  // }, [plateWidth]);
 
   return (
     <Modal isOpen={props.show} onClose={() => props.setShow(false)}>
@@ -114,7 +112,7 @@ function ModalPasturometer(props: {
           <Heading size="md">{TS.t("MAC")}</Heading>
           <Text style={styles.text}>{store.connectedDevice?.id}</Text>
 
-          <HStack style={{ justifyContent: "space-between" }}>
+          {/* <HStack style={{ justifyContent: "space-between" }}>
             <Heading
               color={errorPlateWidth ? "error.400" : undefined}
               size="md"
@@ -138,7 +136,7 @@ function ModalPasturometer(props: {
             borderRadius={0}
             isInvalid={errorPlateWidth}
             style={styles.input}
-          />
+          /> */}
 
           <Button
             onPress={() => disconnectFromDevice()}
@@ -186,7 +184,6 @@ function ModalPasturometer(props: {
                     id: device.id,
                     name: device.name,
                     alias: alias,
-                    baseHeight: Number(plateWidth),
                     model: device.model,
                   };
                   persistDevice(newDevice);

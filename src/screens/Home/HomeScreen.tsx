@@ -48,7 +48,6 @@ export default function HomeScreen(props: GenericTabsProps<"Home">) {
   const bleConnectionState = useTypedSelector(
     (state) => state.ble.connectionState
   );
-  const dispatch = useTypedDispatch();
   const theme = useTheme();
   const [sectoring, setSectoring] = useState(false);
   const [currentSector, setCurrentSector] = useState(-1);
@@ -58,6 +57,8 @@ export default function HomeScreen(props: GenericTabsProps<"Home">) {
       headerLeft: () => {
         return <HeaderLeft />;
       },
+      headerShadowVisible:true,
+      headerShown:true
     });
     showSectors();
   }, []);
@@ -72,7 +73,7 @@ export default function HomeScreen(props: GenericTabsProps<"Home">) {
       <View
         alignItems={"center"}
         paddingLeft={5}
-        paddingY={1}
+        paddingY={2}
         height={"100%"} width={200}
       >
         <Image

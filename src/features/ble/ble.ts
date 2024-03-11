@@ -236,7 +236,6 @@ import { pushNotification } from "../pushNotification";
 import { getPersistedDevices } from "../localDB/device";
 import { getDeviceIfExists, updatePersistedDevices } from "./persistedDevices";
 import { DeviceMin } from "./type";
-import { log } from "react-native-reanimated";
 import TS from "../../../TS";
 
 /** Set callbacks in monitors for each characteristic, it is called by the connectToDevice function

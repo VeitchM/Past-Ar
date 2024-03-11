@@ -19,8 +19,8 @@ export function getDeviceIfExists(id: string, name: string | null): DeviceSerial
   //EACH DEVICE MOST HAVE THE NAME FORMAT [BRAND]-[MODEL]-[ID]
 
   const model = name?.split('-')[1] || 'PROTOTYPE'
-  const baseHeight: number = PASTUROMETER_PROPERTIES.MODELS[model]?.BASE_HEIGHT || PASTUROMETER_PROPERTIES.MODELS.PROTOTYPE?.BASE_HEIGHT
+  // const baseHeight: number = PASTUROMETER_PROPERTIES.MODELS[model]?.BASE_HEIGHT || PASTUROMETER_PROPERTIES.MODELS.PROTOTYPE?.BASE_HEIGHT
 
-  return persistedDevices.find(device => device.id == id) || { id, name, baseHeight, alias: name, model }
+  return persistedDevices.find(device => device.id == id) || { id, name, alias: name, model }
 
 }

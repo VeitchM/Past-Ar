@@ -6,9 +6,9 @@ export async function persistDevice(device: DeviceSerializable) {
     console.log('Persist device');
     
     return execQuery(`
-    INSERT OR REPLACE INTO devices (id, name, alias, baseHeight,model)
+    INSERT OR REPLACE INTO devices (id, name, alias,model)
 VALUES (?,?,?,?,?);    
-    `, [device.id, device.name, device.alias, device.baseHeight,device.model])
+    `, [device.id, device.name, device.alias, ,device.model])
 }
 
 export async function getPersistedDevice(id: string): Promise<DeviceSerializable | undefined> {
