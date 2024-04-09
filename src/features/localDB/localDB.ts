@@ -85,6 +85,9 @@ const createTableQueries = [
         timestamp INTEGER,
         sendStatus INTEGER
       );`,
+    `UPDATE measurements
+      SET height = ABS(height)
+      WHERE height < 0`,  
     `CREATE TABLE IF NOT EXISTS calibrations (
         ID INTEGER PRIMARY KEY,
         name TEXT,
