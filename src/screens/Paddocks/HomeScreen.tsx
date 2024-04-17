@@ -578,7 +578,7 @@ export default function PaddockScreen(props: Props) {
               title={item?.name}
               index={index}
               foreColor={"coolGray.800"}
-              color={item.color ? item.color : ColorUtils.getColor(3)}
+              color={item.color ? item.color : ColorUtils.getColor(index)}
               canBeEdited={
                 item.ID ? !paddocksFromBack.includes(item.ID) : false
               }

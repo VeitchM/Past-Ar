@@ -176,8 +176,8 @@ function MLibreView(props: MapViewProps, ref: React.Ref<IMapView>) {
                         id={"POLYSHAPE_" + index}
                         shape={BuildPolygonShape([...paddock, paddock[0]])}
                     >
-                        <MapLibreGL.FillLayer maxZoomLevel={100000} id={"POLYFILL_" + index} style={{ fillColor: props.paddockList[index] ? props.paddockList[index].color + 'BB' : ColorUtils.getColor(index) + 'BB', fillOpacity: 0.8, fillOutlineColor: '#ffffff' }} />
-                        <MapLibreGL.LineLayer maxZoomLevel={100000} id={"POLYLINE_" + index} style={{ lineColor: props.paddockList[index] ? props.paddockList[index].color : ColorUtils.getColor(index) }} />
+                        <MapLibreGL.FillLayer maxZoomLevel={100000} id={"POLYFILL_" + index} style={{ fillColor: (props.paddockList[index] && props.paddockList[index].color) ? props.paddockList[index].color + 'BB' : ColorUtils.getColor(index) + 'BB', fillOpacity: 0.8, fillOutlineColor: '#ffffff' }} />
+                        <MapLibreGL.LineLayer maxZoomLevel={100000} id={"POLYLINE_" + index} style={{ lineColor: (props.paddockList[index] && props.paddockList[index].color) ? props.paddockList[index].color : ColorUtils.getColor(index) }} />
                         <MapLibreGL.SymbolLayer id={"POLYTEXT_" + index}
                             style={{ textColor: '#525252', textHaloColor: '#ffffff', textHaloWidth: 1, textField: props.paddockList[index] ? props.paddockList[index].name : '' }}
                         ></MapLibreGL.SymbolLayer>

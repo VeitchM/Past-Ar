@@ -3,6 +3,7 @@ import { HStack, Heading, Icon, View } from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import fontColorContrast from "font-color-contrast";
+import { TouchableHighlight } from "@gorhom/bottom-sheet";
 interface ItemProps {
   title: string;
   index: number;
@@ -44,26 +45,74 @@ export default function BottomSheetItem({
 
   //----------JSX-----------//
   return (
-    <>
-      <HStack
-        backgroundColor={iColor + "EE"}
-        borderColor={iForeColor}
-        style={{ ...styles.item }}
-      >
-        <Heading
-          paddingBottom={2}
-          mt="1"
-          color={iForeColor}
-          fontWeight="medium"
-          size="md"
-          maxWidth={"60%"}
-          lineBreakMode="clip"
-        >
-          {title}
-        </Heading>
-        <View style={{ flex: 1 }}></View>
+    <View width={"95%"} padding={2}>
+      <TouchableHighlight
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          backgroundColor: iColor,
+          borderColor: iForeColor,
+          ...styles.item,
+        }}
+        onPress={() => {
+          onLocatePress();
+        }}
+        // activeOpacity={0.1}
 
-        {canBeEdited ? (
+        underlayColor={iColor + "AA"}
+      >
+        <HStack>
+          <Heading
+            paddingBottom={2}
+            mt="2.5"
+            color={iForeColor}
+            fontWeight="medium"
+            size="md"
+            maxWidth={"60%"}
+            lineBreakMode="clip"
+          >
+            {title}
+          </Heading>
+          <View style={{ flex: 1 }}></View>
+
+          <TouchableOpacity onPress={() => {}}>
+            <Icon
+              style={styles.icon}
+              as={MaterialCommunityIcons}
+              size={10}
+              name={"crosshairs-gps"}
+              color={iForeColor}
+            />
+          </TouchableOpacity>
+        </HStack>
+      </TouchableHighlight>
+    </View>
+  );
+}
+let styles = StyleSheet.create({
+  icon: {
+    margin: 5,
+  },
+  border_icon: {
+    borderWidth: 4,
+    borderColor: "#ffffff",
+    borderRadius: 100,
+    margin: 5,
+  },
+  item: {
+    alignItems: "center",
+    borderWidth: 2,
+    borderRadius: 6,
+    width: "100%",
+    minHeight: 60,
+    margin: 0,
+    paddingLeft: 20,
+    paddingRight: 5,
+  },
+});
+
+{
+  /* {canBeEdited ? (
           <TouchableOpacity
             onPress={() => {
               if (onEditPress != undefined) onEditPress();
@@ -87,43 +136,5 @@ export default function BottomSheetItem({
               color={iForeColor}
             />
           </TouchableOpacity>
-        )}
-
-        <TouchableOpacity
-          onPress={() => {
-            onLocatePress();
-          }}
-        >
-          <Icon
-            style={styles.icon}
-            as={MaterialCommunityIcons}
-            size={10}
-            name={"crosshairs-gps"}
-            color={iForeColor}
-          />
-        </TouchableOpacity>
-      </HStack>
-    </>
-  );
+        )} */
 }
-let styles = StyleSheet.create({
-  icon: {
-    margin: 5,
-  },
-  border_icon: {
-    borderWidth: 4,
-    borderColor: "#ffffff",
-    borderRadius: 100,
-    margin: 5,
-  },
-  item: {
-    alignItems: "center",
-    borderWidth: 2,
-    borderRadius: 6,
-    width: "90%",
-    minHeight: 60,
-    margin: 8,
-    paddingLeft: 20,
-    paddingRight: 5,
-  },
-});
