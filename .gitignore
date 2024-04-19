@@ -16,3 +16,4 @@ android
 
 # macOS
 .DS_Store
+*.apk
