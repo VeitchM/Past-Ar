@@ -1,29 +1,6 @@
 import { useEffect, useState } from "react";
-import { DeviceSerializable } from "../features/store/types";
-import {
-  useTypedDispatch,
-  useTypedSelector,
-} from "../features/store/storeHooks";
-import {
-  connectToDevice,
-  scanForPeripherals,
-  stopScanningForPeripherals,
-} from "../features/ble/ble";
-import {
-  Button,
-  FlatList,
-  HStack,
-  Heading,
-  Icon,
-  Input,
-  Modal,
-  Spinner,
-  Text,
-  VStack,
-} from "native-base";
-import { SafeAreaView } from "react-native";
-import { setTryingToConnect } from "../features/store/bleSlice";
-
+import { useTypedDispatch } from "../features/store/storeHooks";
+import { Button, Icon } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   CalibrationLocalDBExtended,
@@ -31,7 +8,6 @@ import {
 } from "../features/localDB/types";
 import PolynomialFunction from "./PolynomialFunction";
 import CalibrationsMeasurements from "./CalibrationMeasurements";
-import { addNotification } from "../features/store/notificationSlice";
 import {
   calibrationExists,
   insertCalibrationFromMeasurements,
@@ -39,6 +15,7 @@ import {
 import { pushNotification } from "../features/pushNotification";
 import TS from "../../TS";
 import { setUpdateCalibration } from "../features/store/filterSlice";
+import BaseModal from "./BaseModal";
 
 /** A modal which explain that if accepted a calibration from measurement will be created */
 export function NewCalibrationModal(props: {
@@ -63,7 +40,7 @@ export function NewCalibrationModal(props: {
         const exists = await calibrationExists(props.calibrationName);
         if (!exists) {
           await insertCalibrationFromMeasurements(props.calibrationName);
-          dispatch(setUpdateCalibration({update:true}))
+          dispatch(setUpdateCalibration({ update: true }));
         } else {
           pushNotification(TS.t("name_already_exists"), "error");
           console.log("Name already exists");
@@ -78,16 +55,13 @@ export function NewCalibrationModal(props: {
       }
     }
   }
-
   return (
     <BaseModal
       title={TS.t("create_calibration")}
       showModal={props.showModal}
       calibrationName={props.calibrationName}
       setShowModal={props.setShowModal}
-      lines={[
-        TS.t("calibration_ask_create"),TS.t("calibration_info_create")
-      ]}
+      lines={[TS.t("calibration_ask_create"), TS.t("calibration_info_create")]}
     >
       <>
         <Button
@@ -216,53 +190,5 @@ export function InfoCalibrationModal(props: PropsInfoModal) {
         {TS.t("understood")}
       </Button>
     </BaseModal>
-  );
-}
-
-//----------------------------------------------------------------------------------------------
-
-function BaseModal(props: {
-  title: string;
-  showModal: boolean;
-  setShowModal: (value: boolean) => void;
-  calibrationName?: string;
-  customBody?: JSX.Element;
-  lines?: string[];
-  children: JSX.Element;
-}) {
-  return (
-    <Modal isOpen={props.showModal} onClose={() => props.setShowModal(false)}>
-      <Modal.Content maxWidth="400px">
-        {/*  For some reason this makes all Explode <Modal.CloseButton /> */}
-        <Modal.Header
-          flexDir="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Heading>{props.title}</Heading>
-          {/* <Modal.CloseButton /> */}
-        </Modal.Header>
-        <Modal.Body style={{ marginLeft: 10 }}>
-          {/* It throws warning to Flatlist  */}
-
-          <Heading fontWeight="light" size="md">
-            {" "}
-            {TS.t("name")}
-          </Heading>
-          <Heading size="2xl">{props.calibrationName}</Heading>
-          {props.lines?.map((line) => {
-            return (
-              <Text key={line} marginTop="20px" fontSize="lg">
-                {line}
-              </Text>
-            );
-          })}
-          {props.customBody}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button.Group space={2}>{props.children}</Button.Group>
-        </Modal.Footer>
-      </Modal.Content>
-    </Modal>
   );
 }

@@ -7,6 +7,7 @@
     "filter_screen_title": "Filtros",
     "stats_screen_title": "Estadísticas",
 
+
     "home_tab_title": "Inicio",
     "paddock_tab_title": "Paddocks",
     "calibration_tab_title": "Calibración",
@@ -78,6 +79,8 @@
     "exit": "Salir",
     "save": "Guardar",
     "back": "Volver",
+    "accept": "Aceptar",
+    "configure": "Configurar",
 
     "date": "Fecha",
 

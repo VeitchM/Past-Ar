@@ -11,8 +11,8 @@ export function onInit(){
         if(row){
 
             const {sendStatus,ID,...measurement} = row
-            console.log('Row last',row);
-            console.log('Row last',measurement);
+            // console.log('Row last',row);
+            // console.log('Row last',measurement);
             store.dispatch(setLastMeasurement(measurement))
         }
 

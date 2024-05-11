@@ -41,7 +41,7 @@ export async function execTransaction(queries: string[], values: Array<any>[] = 
 
                 tx.executeSql(query, values[index],
                     (_, _result) => {
-                        console.log('Executed', query);
+                        // console.log('Executed', query);
                         result[index] = _result
                     },
                 )
@@ -53,7 +53,7 @@ export async function execTransaction(queries: string[], values: Array<any>[] = 
             },
             () => {
 
-                console.log('Query succed result:', result);
+                // console.log('Query succed result:', result);
                 resolve(result)
             }
         )

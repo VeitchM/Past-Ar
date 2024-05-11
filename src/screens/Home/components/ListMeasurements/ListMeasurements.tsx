@@ -64,7 +64,6 @@ export default function MeasurementsList() {
       });
   }, [selectedMeasurement]);
 
-  console.log("Rerendered MesurementList", measurements);
   return measurements ? (
     measurements.length > 0 ? (
       <VStack alignItems="center" flex={1} width="100%">

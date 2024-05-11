@@ -97,9 +97,7 @@ async function rawDataToMeasurement(
   const temperature = parseFloat(values[stringFields.TEMPERATURE]);
   const humidity = parseFloat(values[stringFields.HUMIDITY]);
 
-  console.log("Sensors: ", values[stringFields.SENSORS_QUANTITY]);
 
-  console.log("Recieved: ", value);
 
   const measurements = values
     .slice(
@@ -135,7 +133,7 @@ const TOLERANCE = 3.5;
 const verifyMeasurements = (measurements: number[]) => {
   let sum = 0;
   let validNumbers = 0;
-  console.log("Measurements: ", measurements);
+  // console.log("Measurements: ", measurements);
 
   if (measurements.length > 0) {
     const median = measurements.sort()[Math.floor(measurements.length / 2)];

@@ -1,6 +1,6 @@
 {
     "backend": {
-        "URL": "http://pastech.com.ar",
+        "URL": "https://system.pastech.com.ar",
         "API_VERSION": "v1"
     },
     "hardware":{

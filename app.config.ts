@@ -20,11 +20,7 @@ export default {
   plugins: [
     [
       "expo-build-properties",
-      {
-        android: {
-          usesCleartextTraffic: true,
-        },
-      },
+
     ],
     [
       "expo-notifications",
@@ -44,6 +40,8 @@ export default {
     [
       "expo-location",
       {
+        isIosBackgroundLocationEnabled:true,
+        isAndroidBackgroundLocationEnabled:true,
         locationAlwaysAndWhenInUsePermission:
           "Allow $(PRODUCT_NAME) to use your location.",
       },
