@@ -1,6 +1,5 @@
 import * as Location from "expo-location";
 
-const LOCATION_TASK_NAME = "background-location-task";
 //TODO why this codes destroys the app and is not handled by expo in any way
 
 // const requestPermissions = async () => {
@@ -22,13 +21,22 @@ const LOCATION_TASK_NAME = "background-location-task";
 
 const config = {
   //For testing purposes DELETE AFTER
-    'accuracy':Location.LocationAccuracy.BestForNavigation,
-//   timeInterval: 0,
-//   distanceInterval: 0,
+  accuracy: Location.LocationAccuracy.BestForNavigation,
+  //   timeInterval: 0,
+  //   distanceInterval: 0,
 };
 
 export async function getLocation() {
   try {
+    Location.isBackgroundLocationAvailableAsync().then((result) =>
+      console.log("Is background location available", result)
+    );
+
+    Location.requestForegroundPermissionsAsync().then((result) =>
+      console.log("Foreground permission request", result)
+    );
+
+
     Location.getLastKnownPositionAsync().then((position) => {
       console.log("Background Last known position", JSON.stringify(position));
     });
@@ -47,3 +55,30 @@ export async function getLocation() {
   }
 }
 // -38.0098303 -57.5501679  1715384712865
+
+import React from "react";
+import { Button, View, StyleSheet } from "react-native";
+import * as TaskManager from "expo-task-manager";
+
+
+
+const LOCATION_TASK_NAME = "background-location-task";
+
+
+Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, config)
+
+
+TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+  if (error) {
+    // Error occurred - check `error.message` for more details.
+    console.error(error)
+    return;
+  }
+  if (data) {
+    console.log("Data on background task",data)
+    // do something with the locations captured in the background
+  }
+});
+
+
+
