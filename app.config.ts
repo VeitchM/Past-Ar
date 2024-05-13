@@ -1,10 +1,8 @@
-import { ExpoConfig, ConfigContext } from 'expo/config';
-
+import { ExpoConfig, ConfigContext } from "expo/config";
 
 //This variable is set on the packages.json scripts
 const IS_DEV = process.env.APP_VARIANT === "development";
 // console.log("App Variant value:",process.env.APP_VARIANT, IS_DEV )
-
 
 //This let you havinhg installed a development and preview(almost production) in your phone at the same time.
 //It is not applied yet, we must add new googleServices.json files
@@ -18,10 +16,7 @@ export default {
   icon: "./assets/icon.png",
   userInterfaceStyle: "light",
   plugins: [
-    [
-      "expo-build-properties",
-
-    ],
+    ["expo-build-properties"],
     [
       "expo-notifications",
       {
@@ -40,14 +35,24 @@ export default {
     [
       "expo-location",
       {
-        isIosBackgroundLocationEnabled:true,
-        isAndroidBackgroundLocationEnabled:true,
+        isIosBackgroundLocationEnabled: true,
+        isAndroidBackgroundLocationEnabled: true,
         locationAlwaysAndWhenInUsePermission:
           "Allow $(PRODUCT_NAME) to use your location.",
       },
     ],
     ["@maplibre/maplibre-react-native"],
-    "expo-build-properties",
+    [
+      "expo-build-properties",
+      {
+        android: {
+          // compileSdkVersion: 34,
+          // targetSdkVersion: 34,
+          minSDKVersion: 34,
+          // "buildToolsVersion": "31.0.0"
+        },
+      },
+    ],
   ],
   splash: {
     image: "./assets/splash.png",

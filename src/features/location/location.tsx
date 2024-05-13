@@ -1,28 +1,10 @@
 import * as Location from "expo-location";
 
-//TODO why this codes destroys the app and is not handled by expo in any way
-
-// const requestPermissions = async () => {
-//     const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
-//     if (foregroundStatus === 'granted') {
-//       const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
-//       if (backgroundStatus === 'granted') {
-//         //TODO verify
-//         await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-//           accuracy: Location.Accuracy.Balanced,
-//         });
-//       }
-//     }
-//   };
-
-// requestPermissions()
-
-//TODO maybe it should set on Redux the permission granted
-
 const config = {
   //For testing purposes DELETE AFTER
   accuracy: Location.LocationAccuracy.BestForNavigation,
   //   timeInterval: 0,
+  timeout:6000
   //   distanceInterval: 0,
 };
 
@@ -35,7 +17,6 @@ export async function getLocation() {
     Location.requestForegroundPermissionsAsync().then((result) =>
       console.log("Foreground permission request", result)
     );
-
 
     Location.getLastKnownPositionAsync().then((position) => {
       console.log("Background Last known position", JSON.stringify(position));
@@ -56,29 +37,28 @@ export async function getLocation() {
 }
 // -38.0098303 -57.5501679  1715384712865
 
-import React from "react";
-import { Button, View, StyleSheet } from "react-native";
 import * as TaskManager from "expo-task-manager";
-
-
 
 const LOCATION_TASK_NAME = "background-location-task";
 
+Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME).then((status) =>
+  console.log("Location updates were already started", LOCATION_TASK_NAME)
+);
 
-Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, config)
-
-
+Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, config);
+console.log(
+  "Was location already defined",
+  TaskManager.isTaskDefined(LOCATION_TASK_NAME)
+);
+TaskManager.isTaskDefined(LOCATION_TASK_NAME);
 TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   if (error) {
     // Error occurred - check `error.message` for more details.
-    console.error(error)
+    console.error(error);
     return;
   }
   if (data) {
-    console.log("Data on background task",data)
+    console.log("Data on background task", data);
     // do something with the locations captured in the background
   }
 });
-
-
-
