@@ -4,32 +4,32 @@ const config = {
   //For testing purposes DELETE AFTER
   accuracy: Location.LocationAccuracy.BestForNavigation,
   //   timeInterval: 0,
-  timeout:6000
+  timeout: 6000,
   //   distanceInterval: 0,
 };
 
 export async function getLocation() {
   try {
-    Location.isBackgroundLocationAvailableAsync().then((result) =>
-      console.log("Is background location available", result)
-    );
+    // Location.isBackgroundLocationAvailableAsync().then((result) =>
+    //   console.log("Is background location available", result)
+    // );
 
-    Location.requestForegroundPermissionsAsync().then((result) =>
-      console.log("Foreground permission request", result)
-    );
+    // Location.requestForegroundPermissionsAsync().then((result) =>
+    //   console.log("Foreground permission request", result)
+    // );
 
-    Location.getLastKnownPositionAsync().then((position) => {
-      console.log("Background Last known position", JSON.stringify(position));
-    });
-    Location.getCurrentPositionAsync(config).then((position) =>
-      console.log("Background position", JSON.stringify(position))
-    );
-    const location = await Location.getCurrentPositionAsync();
-
-    // Location.getBackgroundPermissionsAsync().then((value) => {
-    //   console.log("Background Permissions", JSON.stringify(value));
+    // Location.getLastKnownPositionAsync().then((position) => {
+    //   console.log("Background Last known position", JSON.stringify(position));
     // });
-    console.log("Get location:", location);
+    // Location.getCurrentPositionAsync(config).then((position) =>
+    //   console.log("Background position", JSON.stringify(position))
+    // );
+    const location = await Location.getCurrentPositionAsync(config);
+
+    Location.getBackgroundPermissionsAsync().then((value) => {
+      console.log("Background Permissions", JSON.stringify(value));
+    });
+    console.log("Get location at ", new Date(), location);
     return location;
   } catch (e) {
     return undefined;
