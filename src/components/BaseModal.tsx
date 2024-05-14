@@ -25,19 +25,21 @@ export default function BaseModal(props: {
         </Modal.Header>
         <Modal.Body style={{ marginLeft: 10 }}>
           {/* It throws warning to Flatlist  */}
-
-          <Heading fontWeight="light" size="md">
-            {" "}
-            {TS.t("name")}
-          </Heading>
-          <Heading size="2xl">{props.calibrationName}</Heading>
-          {props.lines?.map((line) => {
-            return (
-              <Text key={line} marginTop="20px" fontSize="lg">
-                {line}
-              </Text>
-            );
-          })}
+          {props.lines && (
+            <>
+              <Heading fontWeight="light" size="md">
+                {TS.t("name")}
+              </Heading>
+              <Heading size="2xl">{props.calibrationName}</Heading>
+              {props.lines?.map((line) => {
+                return (
+                  <Text key={line} marginTop="20px" fontSize="lg">
+                    {line}
+                  </Text>
+                );
+              })}
+            </>
+          )}
           {props.customBody}
         </Modal.Body>
         <Modal.Footer>

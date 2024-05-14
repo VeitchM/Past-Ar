@@ -7,7 +7,6 @@
     "filter_screen_title": "Filtros",
     "stats_screen_title": "Estadísticas",
 
-
     "home_tab_title": "Inicio",
     "paddock_tab_title": "Paddocks",
     "calibration_tab_title": "Calibración",
@@ -178,8 +177,8 @@
     "paddocks_info_latitude": "Latitud",
     "paddocks_info_longitude": "Longitud",
 
-    "location_permissions_required":"Permisos de localización requeridos",
-    "location_always_permission_required":"For the app to work as expected it is required to set localization permissions to always."
-
+    "location_permissions_error": "Error pidiendo permisos intente nuevamente",
+    "location_permissions_required": "Permisos de localización requeridos",
+    "location_always_permission_required": "Para que la aplicacion funcione correctamente es necesario configurar la localizacion de la aplicacion a siempre permitida"
   }
 }

@@ -108,6 +108,7 @@ async function rawDataToMeasurement(
 
   const measurementValue = verifyMeasurements(measurements);
   if (measurementValue !== undefined) {
+    const timestamp= Date.now()
     const battery = parseFloat(values[stringFields.BATERY]);
     // const device = store.getState().ble.connectedDevice as DeviceSerializable;
     // console.assert(device && device.baseHeight, "Device wasnt on");
@@ -119,8 +120,8 @@ async function rawDataToMeasurement(
       //   temperature,
       //   device.baseHeight!
       // ),
+      timestamp,
       height: measurementValue,
-      timestamp: Date.now(),
       latitude: location!.coords.latitude,
       longitude: location!.coords.longitude,
     };

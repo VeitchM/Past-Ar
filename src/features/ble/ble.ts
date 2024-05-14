@@ -11,7 +11,6 @@ const MTU = 255;
 //but it doesnt reset the already made connections, so they will stay in a unreacheable space(Or i think so)
 // So previusly restart expo you should disconnect the device, for now this is archive going back.
 
-import requestPermissions from "./blePermissionRequest";
 
 import {
   BleErrorCode,
@@ -35,7 +34,7 @@ import bleConstants from "./bleConstants";
 import { DeviceSerializable } from "../store/types";
 
 const bleManager = new BleManager();
-requestPermissions();
+// requestPermissions();
 
 //
 console.log("Ble imported");

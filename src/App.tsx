@@ -15,29 +15,14 @@ ble; // Dont delete, it force the import
 
 import { onInit } from "./features/localDB/onInit";
 import { useEffect } from "react";
-import LocationPermissionManager from "./features/location/LocationPermissionManager";
-import {
-  RequestDisableOptimization,
-  BatteryOptEnabled,
-  //@ts-ignore
-} from "react-native-battery-optimization-check";
+import LocationPermissionManager from "./features/location/PermissionManager";
+
 onInit();
 
 LogBox.ignoreLogs(["new NativeEventEmitter"]); // Ignore log notification by message
 
 export default function App() {
   const [fontLoaded] = useFonts(customFonts);
-
-  useEffect(() => {
-    BatteryOptEnabled().then((isEnabled: boolean) => {
-      // returns promise<boolean>
-      if (isEnabled) {
-        // if battery optimization is enabled, request to disable it.
-        RequestDisableOptimization();
-        // ...
-      }
-    });
-  }, []);
 
   if (!fontLoaded) return <></>;
   return (
