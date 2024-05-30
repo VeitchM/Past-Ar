@@ -17,3 +17,7 @@ android
 # macOS
 .DS_Store
 *.apk
+
+#Added for ios builds
+ios
+*.back
