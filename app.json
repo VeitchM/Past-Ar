@@ -1,7 +1,12 @@
 {
   "expo": {
-    "name": "pastech",
-    "slug": "pastech",
+    "extra": {
+      "eas": {
+        "projectId": "73bc1426-177c-47be-9d44-cfcfdca87371"
+      }
+    },
+    "owner": "renzoromeo",
+    "slug": "pastech-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -77,11 +82,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "c006d87b-b6dd-4d36-be11-1461dbad3568"
-      }
     }
   }
 }
