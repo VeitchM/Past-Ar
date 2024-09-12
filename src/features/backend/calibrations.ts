@@ -19,7 +19,7 @@ import { createPayload } from "./utils";
  * @returns true if it success false if it fails
  */
 export async function synchronizeCalibrations(
-  foreground?: boolean
+  foreground?: boolean,
 ): Promise<boolean> {
   try {
     if (Permission.postCalibrations()) await updateCalibrations(foreground);
@@ -28,8 +28,7 @@ export async function synchronizeCalibrations(
   } catch (e) {
     //It should not be necessary to setSending on error case
     //setSending(SendStatus.NOT_SENT, TablesNames.CALIBRATIONS_FROM_MEASUREMENTS)
-    foreground &&
-      pushNotification(TS.t("calibrations_cannot_sync"), "error");
+    foreground && pushNotification(TS.t("calibrations_cannot_sync"), "error");
     console.error(e);
     return false;
   }
@@ -46,14 +45,14 @@ async function updateCalibrations(foreground?: boolean) {
         "data" in res &&
           (await updateToCalibrationFunctionFromServer(
             calibration.calibrationID,
-            res.data
+            res.data,
           ));
       }
     } catch (e) {
       await setSendStatus(
         SendStatus.FOR_SENDING,
         TablesNames.CALIBRATIONS_FROM_MEASUREMENTS,
-        calibration.calibrationID
+        calibration.calibrationID,
       );
       throw new Error(`Error getting calibrations`);
     }
@@ -77,7 +76,7 @@ async function downloadCalibrations(foreground?: boolean) {
 async function postCalibration(calibration: CalibrationForBack) {
   return fetch(
     `${mobileAPI}/calibrations`,
-    createPayload("POST", calibration)
+    createPayload("POST", calibration),
   ).then(async (res) => {
     const resObject = await res.json();
     console.log("Response from Server on postMeasurement", resObject);
@@ -89,7 +88,7 @@ async function postCalibration(calibration: CalibrationForBack) {
 }
 
 export async function updateLocalCalibrations(
-  calibrationsFromBack: CalibrationFromBack[]
+  calibrationsFromBack: CalibrationFromBack[],
 ) {
   try {
     const calibrationsFromBackInLocalDB =
@@ -105,13 +104,13 @@ export async function updateLocalCalibrations(
         // console.log('Update local calibration ', calibrationFound);
         updateCalibrationFunction(
           calibrationFound.ID,
-          calibration.curve?.toString()
+          calibration.curve?.toString(),
         );
       } else {
         insertCalibrationFromFunctionFromServer(
           calibration.name,
           calibration.curve?.toString(),
-          calibration.uid
+          calibration.uid,
         );
       }
     });
@@ -125,9 +124,7 @@ async function getCalibrationsFromBack(calibrationUID?: string) {
   //TODO make it paginated
   //TODO  Verify what happens if i ask for an ID
   // const url = `${mobileAPI}/calibrations/${calibrationUID}`
-  const url = `${mobileAPI}/calibrations${
-    calibrationUID ? "/" + calibrationUID : ""
-  }`;
+  const url = `${mobileAPI}/calibrations/${calibrationUID || ""}`;
 
   console.log("URL donde se hizo el get", url);
 
@@ -135,7 +132,7 @@ async function getCalibrationsFromBack(calibrationUID?: string) {
     const resObject = await res.json();
     console.log(
       "Response from Server on get Calibration",
-      resObject.toString()
+      resObject.toString(),
     );
     return resObject;
   });
