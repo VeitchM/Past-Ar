@@ -29,7 +29,7 @@ import { setUpdateMeasures } from "../store/filterSlice";
 
 const onCharacteristicUpdate = async (
   error: BleError | null,
-  characteristic: Characteristic | null
+  characteristic: Characteristic | null,
 ) => {
   try {
     if (!characteristicError(error, characteristic) && characteristic?.value) {
@@ -54,7 +54,7 @@ const onCharacteristicUpdate = async (
 
           const id = await insertCalibrationMeasurement(
             calibrationID,
-            measurementID
+            measurementID,
           );
           console.log("Id obteined", id);
 
@@ -85,14 +85,14 @@ const stringFields = {
 
 /** It process the raw data from the device and returns a Measurement object and the battery level if it succeed, it returns undefined if a problems ocurred */
 async function rawDataToMeasurement(
-  value: string
+  value: string,
 ): Promise<{ battery: number; measurement: Measurement } | undefined> {
   //TODO catch if i received empty
   const values = value.split(";");
   console.log("Received values", values);
 
   const measurementsQuantity = parseFloat(
-    values[stringFields.SENSORS_QUANTITY]
+    values[stringFields.SENSORS_QUANTITY],
   );
   const temperature = parseFloat(values[stringFields.TEMPERATURE]);
   const humidity = parseFloat(values[stringFields.HUMIDITY]);
@@ -104,7 +104,7 @@ async function rawDataToMeasurement(
   const measurements = values
     .slice(
       stringFields.MEASUREMENTS,
-      stringFields.MEASUREMENTS + measurementsQuantity
+      stringFields.MEASUREMENTS + measurementsQuantity,
     )
     .map((measurement) => parseFloat(measurement));
 
@@ -149,11 +149,11 @@ const verifyMeasurements = (measurements: number[]) => {
     });
   }
 
-  if (validNumbers < measurements.length)
-    pushNotification(TS.t("obstructed_sensor"), "warning");
+  // if (validNumbers < measurements.length)
+  //   pushNotification(TS.t("obstructed_sensor"), "warning");
   if (validNumbers > 1) return sum / validNumbers;
   else {
-    pushNotification(TS.t("failed_measurement"), "error");
+    // pushNotification(TS.t("failed_measurement"), "error");
     return undefined;
   }
 };
@@ -177,7 +177,6 @@ function speedOfSound(humidity: number, temperature: number) {
   // This numbers are defined on the device documentation
   return 331.4 + 0.6 * temperature + 0.0124 * humidity;
 }
-
 
 /** Not longer used */
 // function distanceCorrection(
