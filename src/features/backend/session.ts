@@ -28,6 +28,7 @@ export function signout() {
   clearInterval(unsubscribeSynchronize);
   deleteUserData();
   store.dispatch(setSignIn(false));
+  store.dispatch(setUser(undefined));
   // A little violent, with setting signin to false it will be okay
 }
 
@@ -35,7 +36,7 @@ export function signout() {
 export async function signin(email: string, password: string) {
   return fetch(
     `${mobileAPI}/auth/login`,
-    createPayload("POST", { email: email, password: password })
+    createPayload("POST", { email: email, password: password }),
   )
     .then(async (res) => {
       const resObject = await res.json();
@@ -123,7 +124,7 @@ export function refreshToken() {
       `${mobileAPI}/auth/refreshToken`,
       createPayload("POST", {
         refresh_token: "" + backendState.tokens?.refreshToken,
-      })
+      }),
     ).then(async (res) => {
       const resObject = await res.json();
       // console.log('Refresh token from server', resObject);
