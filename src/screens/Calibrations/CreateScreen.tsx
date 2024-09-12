@@ -88,7 +88,7 @@ export default function CreateCalibration({ navigation }: Props) {
         </VStack>
 
         <VStack style={{ width: "100%" }} bg="muted.50">
-          <BlockButton
+          {/* <BlockButton
             height={100}
             text={TS.t("from_function")}
             isDisabled={!calibrationName}
@@ -102,7 +102,7 @@ export default function CreateCalibration({ navigation }: Props) {
               />
             }
             onPress={onPressCreateFromFunction}
-          />
+          /> */}
           <BlockButton
             height={100}
             isDisabled={!calibrationName}
