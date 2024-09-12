@@ -1,11 +1,21 @@
-import { HStack, ScrollView, Text } from "native-base"
+import { ScrollView, Text } from "native-base";
 
-export default function PolynomialFunction(props: { coeficients: number[] }) {
-    return (
-        <ScrollView horizontal>
-            {props.coeficients?.map((coeficient, index) => {
+export default function PolynomialFunction({
+  coeficients,
+}: {
+  coeficients: number[];
+}) {
+  return (
+    <ScrollView horizontal>
+      <Text fontSize="2xl">
+        {coeficients.every((c) => !c)
+          ? "Calibración incompleta"
+          : `${coeficients[0].toFixed(2)}X ${
+              coeficients[1] > 0 ? "+" : "-"
+            } ${Math.abs(coeficients[1]).toFixed(2)}`}
+      </Text>
+      {/* {props.coeficients?.map((coeficient, index) => {
                 return coeficient != 0 ?
-
                     <HStack key={index}>
                         {index == 0 || 0 > coeficient ?
                             null
@@ -22,7 +32,7 @@ export default function PolynomialFunction(props: { coeficients: number[] }) {
                     </HStack>
                     :
                     null
-            })}
-        </ScrollView>
-    )
+            })} */}
+    </ScrollView>
+  );
 }
