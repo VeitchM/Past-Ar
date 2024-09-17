@@ -45,91 +45,87 @@ export default function ScreenTabs() {
         ),
       }}
     >
-      {user && (
-        <>
-          <Tab.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{
-              title: "",
-              tabBarLabel: ({ focused, color }) => (
-                <Text fontSize="sm" color={color}>
-                  {TS.t("home_tab_title")}
-                </Text>
-              ),
-              tabBarIcon: ({ focused, color, size }) => (
-                <FontAwesome
-                  size={45}
-                  name="home"
-                  color={color}
-                  focused={focused}
-                  style={{ marginBottom: -10 }}
-                />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Calibration"
-            component={CalibrationStackScreen}
-            options={{
-              tabBarLabel: ({ focused, color }) => (
-                <Text fontSize="sm" color={color} noOfLines={1}>
-                  {TS.t("calibration_tab_title")}
-                </Text>
-              ),
-              tabBarIcon: ({ focused, color, size }) => (
-                <MaterialCommunityIcons
-                  size={45}
-                  name="ruler-square-compass"
-                  color={color}
-                  focused={focused}
-                  style={{ marginBottom: -3 }}
-                />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Statistics"
-            component={StatisticsStackScreen}
-            options={{
-              tabBarLabel: ({ focused, color }) => (
-                <Text fontSize="sm" color={color}>
-                  {TS.t("statistics_tab_title")}
-                </Text>
-              ),
-              tabBarIcon: ({ focused, color, size }) => (
-                <FontAwesome
-                  size={40}
-                  name="pie-chart"
-                  color={color}
-                  focused={focused}
-                  style={{ marginBottom: -9 }}
-                />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Paddocks"
-            component={PaddockScreenStack}
-            options={{
-              tabBarLabel: ({ focused, color }) => (
-                <Text fontSize="sm" color={color}>
-                  {TS.t("paddock_tab_title")}
-                </Text>
-              ),
-              tabBarIcon: ({ focused, color, size }) => (
-                <MaterialCommunityIcons
-                  size={45}
-                  name="map"
-                  color={color}
-                  focused={focused}
-                  style={{ marginBottom: -5 }}
-                />
-              ),
-            }}
-          />
-        </>
-      )}
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          title: "",
+          tabBarLabel: ({ focused, color }) => (
+            <Text fontSize="sm" color={color}>
+              {TS.t("home_tab_title")}
+            </Text>
+          ),
+          tabBarIcon: ({ focused, color, size }) => (
+            <FontAwesome
+              size={45}
+              name="home"
+              color={color}
+              focused={focused}
+              style={{ marginBottom: -10 }}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Calibration"
+        component={CalibrationStackScreen}
+        options={{
+          tabBarLabel: ({ focused, color }) => (
+            <Text fontSize="sm" color={color} noOfLines={1}>
+              {TS.t("calibration_tab_title")}
+            </Text>
+          ),
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              size={45}
+              name="ruler-square-compass"
+              color={color}
+              focused={focused}
+              style={{ marginBottom: -3 }}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Statistics"
+        component={StatisticsStackScreen}
+        options={{
+          tabBarLabel: ({ focused, color }) => (
+            <Text fontSize="sm" color={color}>
+              {TS.t("statistics_tab_title")}
+            </Text>
+          ),
+          tabBarIcon: ({ focused, color, size }) => (
+            <FontAwesome
+              size={40}
+              name="pie-chart"
+              color={color}
+              focused={focused}
+              style={{ marginBottom: -9 }}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Paddocks"
+        component={PaddockScreenStack}
+        options={{
+          tabBarLabel: ({ focused, color }) => (
+            <Text fontSize="sm" color={color}>
+              {TS.t("paddock_tab_title")}
+            </Text>
+          ),
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              size={45}
+              name="map"
+              color={color}
+              focused={focused}
+              style={{ marginBottom: -5 }}
+            />
+          ),
+        }}
+      />
       <Tab.Screen
         name="User"
         component={UserScreen}
