@@ -26,8 +26,6 @@ export async function synchronizeCalibrations(
     if (Permission.getCalibrations()) await downloadCalibrations(foreground);
     return true;
   } catch (e) {
-    //It should not be necessary to setSending on error case
-    //setSending(SendStatus.NOT_SENT, TablesNames.CALIBRATIONS_FROM_MEASUREMENTS)
     foreground && pushNotification(TS.t("calibrations_cannot_sync"), "error");
     console.error(e);
     return false;
@@ -79,11 +77,9 @@ async function postCalibration(calibration: CalibrationForBack) {
     createPayload("POST", calibration),
   ).then(async (res) => {
     const resObject = await res.json();
-    console.log("Response from Server on postMeasurement", resObject);
     return resObject as { data: string; message: string } | { code: string };
 
     //TODO should do this recursive call, which is cut when signin is set to false
-    //logedIn(resObject)
   });
 }
 
@@ -95,13 +91,10 @@ export async function updateLocalCalibrations(
       await getCalibrationsFromBackInLocalDB();
     calibrationsFromBack.forEach((calibration) => {
       const calibrationFound = calibrationsFromBackInLocalDB.find((item) => {
-        // console.log('Looking for calibration', { calibration, item });
         return calibration.uid === item.uid;
       });
-      //console.log('Update local calibrations ', calibration);
 
       if (calibrationFound) {
-        // console.log('Update local calibration ', calibrationFound);
         updateCalibrationFunction(
           calibrationFound.ID,
           calibration.curve?.toString(),
@@ -123,17 +116,10 @@ export async function updateLocalCalibrations(
 async function getCalibrationsFromBack(calibrationUID?: string) {
   //TODO make it paginated
   //TODO  Verify what happens if i ask for an ID
-  // const url = `${mobileAPI}/calibrations/${calibrationUID}`
   const url = `${mobileAPI}/calibrations/${calibrationUID || ""}`;
-
-  console.log("URL donde se hizo el get", url);
 
   return fetch(url, createPayload("GET")).then(async (res) => {
     const resObject = await res.json();
-    console.log(
-      "Response from Server on get Calibration",
-      resObject.toString(),
-    );
     return resObject;
   });
 }

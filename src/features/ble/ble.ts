@@ -32,17 +32,11 @@ import store from "../store/store";
 
 import bleConstants from "./bleConstants";
 
-import { DeviceSerializable } from "../store/types";
-
 const bleManager = new BleManager();
 requestPermissions();
 
-//
-console.log("Ble imported");
-
 bleManager.onStateChange((state) => {
   console.log("Bluetooth ", state);
-  //
 }, true);
 
 let onAnomalousDisconnectionSubscription: Subscription = {
@@ -53,8 +47,6 @@ let onAnomalousDisconnectionSubscription: Subscription = {
 
 // Crappy name, needs to change, for some reason onDeviceDisconnected its called more than one time, 6 seconds aprox, I think it needs to be selfunsubscribed in its own callback
 const onAnomalousDisconnection = (deviceId: string) => {
-  console.log("On anomalous disconnection was called");
-
   onAnomalousDisconnectionSubscription = bleManager.onDeviceDisconnected(
     deviceId,
     (error, device) => {
@@ -62,7 +54,7 @@ const onAnomalousDisconnection = (deviceId: string) => {
       error && console.error(error);
       console.error(
         "On device disconnected onAnomalousDisconnection callback was called",
-        Date.now()
+        Date.now(),
       );
 
       //self unsubscription
@@ -86,12 +78,12 @@ const onAnomalousDisconnection = (deviceId: string) => {
             id: bleStore.connectedDevice.id,
             name: bleStore.connectedDevice.name,
           },
-          RECONNECTIONS_INTENTS
+          RECONNECTIONS_INTENTS,
         );
       }
 
       //Else it was disconnected by the method disconnectToDevice()
-    }
+    },
   );
 };
 
@@ -100,12 +92,6 @@ function tryToReconnect(device: DeviceMin, intentsLeft: number) {
   if (intentsLeft > 0)
     setTimeout(() => {
       connectToDevice(device).then((deviceConnected) => {
-        console.log(
-          "Try to reconnect:  interNum: ",
-          intentsLeft,
-          " success: ",
-          !!deviceConnected
-        );
         if (!deviceConnected) tryToReconnect(device, intentsLeft - 1);
         else {
           console.log("Reconnected");
@@ -163,7 +149,6 @@ const scanForPeripherals = () => {
 const stopScanningForPeripherals = () => {
   bleManager.stopDeviceScan();
   store.dispatch(resetDevices());
-  console.log("stop scanning");
 };
 
 /**
@@ -177,7 +162,6 @@ const stopScanningForPeripherals = () => {
 const connectToDevice = async (device: DeviceMin) => {
   let deviceConnection = null;
   let deviceIsConnected = await bleManager.isDeviceConnected(device.id);
-  console.log("ConnectionToDevice called");
 
   if (!deviceIsConnected) {
     try {
@@ -186,7 +170,7 @@ const connectToDevice = async (device: DeviceMin) => {
       });
       if (deviceConnection) {
         store.dispatch(
-          setConnectedDevice(getDeviceIfExists(device.id, device.name))
+          setConnectedDevice(getDeviceIfExists(device.id, device.name)),
         );
         await deviceConnection.discoverAllServicesAndCharacteristics();
         // It already stop scanning following the control flow of the screens, but it is an idempotent function so...
@@ -217,7 +201,7 @@ const disconnectFromDevice = async () => {
   console.log(
     "Try disconnect: ",
     connectedDevice,
-    store.getState().ble.connectionState
+    store.getState().ble.connectionState,
   );
 
   store.dispatch(setDisconnected());
@@ -231,9 +215,7 @@ const disconnectFromDevice = async () => {
 };
 
 import { onCharacteristicUpdate } from "./characteristicHandlers";
-import { addNotification } from "../store/notificationSlice";
 import { pushNotification } from "../pushNotification";
-import { getPersistedDevices } from "../localDB/device";
 import { getDeviceIfExists, updatePersistedDevices } from "./persistedDevices";
 import { DeviceMin } from "./type";
 import TS from "../../../TS";
@@ -249,7 +231,7 @@ const setMonitorsCallbacks = async (device: Device) => {
     device.monitorCharacteristicForService(
       services.main.UUID,
       services.main.characteristics.main.UUID,
-      onCharacteristicUpdate
+      onCharacteristicUpdate,
     );
   } else {
     console.error("No Device Connected");

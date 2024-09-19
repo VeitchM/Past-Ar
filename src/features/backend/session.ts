@@ -7,7 +7,6 @@ import {
   setTokens,
   setUser,
 } from "../store/backendSlice";
-import { addNotification } from "../store/notificationSlice";
 import store from "../store/store";
 import { pushNotification } from "../pushNotification";
 import { mobileAPI } from "./config";
@@ -15,8 +14,6 @@ import { getErrorLabel } from "./constants";
 import { SYNCHRONIZE_INTERVAL, synchronize } from "./synchronize";
 import { createPayload } from "./utils";
 import jwtDecode from "jwt-decode";
-
-// It could be a class
 
 /** Id of refreshToken's set_interval()*/
 let unsubscribeRefreshToken: number;
@@ -29,7 +26,6 @@ export function signout() {
   deleteUserData();
   store.dispatch(setSignIn(false));
   store.dispatch(setUser(undefined));
-  // A little violent, with setting signin to false it will be okay
 }
 
 /** Sends email and password to backend and signsin */
@@ -40,7 +36,6 @@ export async function signin(email: string, password: string) {
   )
     .then(async (res) => {
       const resObject = await res.json();
-      console.log(resObject);
       if (resObject.code) {
         console.error(resObject.message);
         pushNotification(getErrorLabel(resObject.code), "error", false);
@@ -51,7 +46,6 @@ export async function signin(email: string, password: string) {
     })
     .catch((error) => {
       console.error(error);
-
       pushNotification(getErrorLabel("FAILED_CONNECTION"), "error", false);
     });
 }
@@ -73,8 +67,6 @@ function signedIn(res: TokensResponse) {
   synchronize();
   setSynchronizeDataInterval();
   setRefreshTokenInterval();
-
-  console.log("Signed in", new Date());
 }
 
 function setRefreshTokenInterval() {
@@ -83,8 +75,6 @@ function setRefreshTokenInterval() {
   unsubscribeRefreshToken = setInterval(() => {
     refreshToken();
   }, tokens!.expiresIn! * 0.9) as unknown as number;
-
-  console.log({ unsubscribeRefreshToken });
 }
 
 function setSynchronizeDataInterval() {
@@ -116,9 +106,6 @@ function getUserData(token: string) {
 
 export function refreshToken() {
   const backendState = store.getState().backend;
-  console.log("Refresh token sent for refresh token API:");
-  console.log(backendState.tokens?.refreshToken);
-
   if (backendState.signIn) {
     fetch(
       `${mobileAPI}/auth/refreshToken`,

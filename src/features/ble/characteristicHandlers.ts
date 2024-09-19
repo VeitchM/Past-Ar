@@ -19,8 +19,6 @@ import {
   insertMeasurement,
 } from "../localDB/measurements";
 
-import { pushNotification } from "../pushNotification";
-import TS from "../../../TS";
 import { setUpdateMeasures } from "../store/filterSlice";
 
 //==== LocalDB =================================================
@@ -35,18 +33,15 @@ const onCharacteristicUpdate = async (
     if (!characteristicError(error, characteristic) && characteristic?.value) {
       const rawData = base64.decode(characteristic.value);
 
-      // const { battery, measurement } =
       const data = await rawDataToMeasurement(rawData);
       if (data) {
         const { battery, measurement } = data;
-        console.log("Main Characteristic", measurement);
 
         store.dispatch(setLastMeasurement(measurement));
         store.dispatch(setBattery(battery));
 
         const measurementID = await insertMeasurement(measurement); //TODO call bleSlice and measurementSlice
         store.dispatch(setUpdateMeasures({ update: true }));
-        // getMeasurements()
 
         if (store.getState().measurement.calibrationMode) {
           const calibrationID = store.getState().measurement.calibrationID;
@@ -56,7 +51,6 @@ const onCharacteristicUpdate = async (
             calibrationID,
             measurementID,
           );
-          console.log("Id obteined", id);
 
           store.dispatch(setCalibrationMeasurementID(id));
 
@@ -89,17 +83,9 @@ async function rawDataToMeasurement(
 ): Promise<{ battery: number; measurement: Measurement } | undefined> {
   //TODO catch if i received empty
   const values = value.split(";");
-  console.log("Received values", values);
-
   const measurementsQuantity = parseFloat(
     values[stringFields.SENSORS_QUANTITY],
   );
-  const temperature = parseFloat(values[stringFields.TEMPERATURE]);
-  const humidity = parseFloat(values[stringFields.HUMIDITY]);
-
-  console.log("Sensors: ", values[stringFields.SENSORS_QUANTITY]);
-
-  console.log("Recieved: ", value);
 
   const measurements = values
     .slice(
@@ -109,18 +95,10 @@ async function rawDataToMeasurement(
     .map((measurement) => parseFloat(measurement));
 
   const measurementValue = verifyMeasurements(measurements);
-  if (measurementValue !== undefined) {
+  if (measurementValue) {
     const battery = parseFloat(values[stringFields.BATERY]);
-    // const device = store.getState().ble.connectedDevice as DeviceSerializable;
-    // console.assert(device && device.baseHeight, "Device wasnt on");
     const location = await getLocation();
     const measurement: Measurement = {
-      // height: distanceCorrection(
-      //   measurementValue,
-      //   humidity,
-      //   temperature,
-      //   device.baseHeight!
-      // ),
       height: measurementValue,
       timestamp: Date.now(),
       latitude: location!.coords.latitude,
@@ -135,7 +113,6 @@ const TOLERANCE = 3.5;
 const verifyMeasurements = (measurements: number[]) => {
   let sum = 0;
   let validNumbers = 0;
-  console.log("Measurements: ", measurements);
 
   if (measurements.length > 0) {
     const median = measurements.sort()[Math.floor(measurements.length / 2)];
@@ -143,11 +120,14 @@ const verifyMeasurements = (measurements: number[]) => {
 
     measurements.forEach((number) => {
       if (Math.abs(number - median) < TOLERANCE) {
+        console.log("Tolerancia aceptada: ", number);
         sum += number;
         validNumbers++;
       }
     });
   }
+
+  console.log({ sum, validNumbers });
 
   // if (validNumbers < measurements.length)
   //   pushNotification(TS.t("obstructed_sensor"), "warning");
@@ -172,24 +152,3 @@ const characteristicError = (error: BleError | null, characteristic: any) => {
 };
 
 export { onCharacteristicUpdate };
-
-function speedOfSound(humidity: number, temperature: number) {
-  // This numbers are defined on the device documentation
-  return 331.4 + 0.6 * temperature + 0.0124 * humidity;
-}
-
-/** Not longer used */
-// function distanceCorrection(
-//   distance: number,
-//   humidity: number,
-//   temperature: number,
-//   plateHeight: number
-// ): number {
-//   // Add plate size in cm
-//   // const PLATE_SIZE = 1.34
-//   // TODO MAYBE I SHOULD ADD AN DEFAULT HEIGHT AND PLATE WIDTH BUT YOU CAN CHANGE IT LOCALLY
-//   // This numbers are defined on the device documentation
-//   return (
-//     plateHeight - (distance * 58 * speedOfSound(humidity, temperature)) / 20000
-//   );
-// }

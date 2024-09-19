@@ -2,32 +2,21 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StackParamList } from "./ScreenStack";
 import {
   Box,
-  Button,
   Divider,
   Heading,
   Icon,
-  Modal,
   ScrollView,
   Select,
   View,
 } from "native-base";
-import {
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-} from "react-native";
+import { Dimensions, TouchableOpacity } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { useCallback, useEffect, useState } from "react";
-import { getLocation } from "../../features/location/location";
 import { LocationObject } from "expo-location";
-import { Measurement, Paddock } from "../../features/store/types";
+import { Measurement } from "../../features/store/types";
 import { calculateByHeight } from "../../features/statistics/WeightCalculus";
-import { Entypo, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import DatePicker from "react-native-date-picker";
 import {
   CalibrationLocalDB,
   SectorLocalDB,
@@ -35,14 +24,10 @@ import {
 import FormatUtils from "../../features/utils/FormatUtils";
 import PolyHelper from "../../features/utils/GeometricHelper";
 
-import {
-  getCalibrations,
-  getCalibrationsFromMeasurementExtended,
-} from "../../features/localDB/calibrations";
+import { getCalibrations } from "../../features/localDB/calibrations";
 import {
   getMeasurements,
   getMeasurementsBetween,
-  insertMeasurement,
 } from "../../features/localDB/measurements";
 import { themeNavigation } from "../../theme";
 import { CommonActions, useFocusEffect } from "@react-navigation/native";
@@ -50,54 +35,33 @@ import {
   useTypedDispatch,
   useTypedSelector,
 } from "../../features/store/storeHooks";
-import {
-  getSectorByID,
-  getSectors,
-  getSectorsBetween,
-} from "../../features/localDB/sectors";
-import { getLocales } from "expo-localization";
+import { getSectorByID } from "../../features/localDB/sectors";
 import { getPaddockByID } from "../../features/localDB/paddocks";
 import { LatLng } from "react-native-maps";
 import TS from "../../../TS";
-import {
-  setUpdateCalibration,
-  setUpdateMeasures,
-  updateFilter,
-} from "../../features/store/filterSlice";
+import { setUpdateCalibration } from "../../features/store/filterSlice";
 
 const screenWidth = Dimensions.get("window").width;
-const Tab = createMaterialTopTabNavigator();
 
 type Props = NativeStackScreenProps<StackParamList, "StatisticsHome">;
 
 export default function PaddockScreen(props: Props) {
-  const [location, setLocation] = useState<LocationObject>();
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [weight, setWeight] = useState(0);
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [modalFrom, setModalFrom] = useState(false);
-  const [modalUntil, setModalUntil] = useState(false);
   const [selectedCalibration, setSelectedCalibration] = useState(-1);
-  const [selectedSector, setSelectedSector] = useState(-1);
   const [calibrations, setCalibrations] = useState<CalibrationLocalDB[]>([]);
-  const [sectors, setSectors] = useState<SectorLocalDB[]>([]);
   const filterState = useTypedSelector((state) => state.filter);
   const paddockList = useTypedSelector((state) => state.paddock.paddocks);
   const dispatch = useTypedDispatch();
 
   useEffect(() => {
-    // setFrom(new Date(filterState.from_stats));
-    // setUntil(new Date(filterState.until_stats));
     readCalibrations();
-    //readMeasurements();
-    readSectors(filterState.from_stats, filterState.until_stats);
   }, [filterState]);
 
   useFocusEffect(
     useCallback(() => {
       readCalibrations();
       readMeasurements();
-      readSectors(filterState.from_stats, filterState.until_stats);
     }, [filterState]),
   );
 
@@ -138,11 +102,13 @@ export default function PaddockScreen(props: Props) {
     }
     setMeasurements(mes);
 
-    if (calibration)
-      setWeight(
-        await calculateByHeight(parseFloat(meanHeight(mes)), calibration),
+    if (calibration) {
+      const weight = await calculateByHeight(
+        parseFloat(meanHeight(mes)),
+        calibration,
       );
-    else if (selectedCalibration)
+      setWeight(weight);
+    } else if (selectedCalibration)
       setWeight(
         await calculateByHeight(
           parseFloat(meanHeight(mes)),
@@ -157,25 +123,6 @@ export default function PaddockScreen(props: Props) {
     });
     if (filterState.updateCalibrations) {
       dispatch(setUpdateCalibration({ update: false }));
-    }
-  };
-
-  const readSectors = (_from?: number, _until?: number) => {
-    if (_from == undefined || _until == undefined) {
-      getSectors().then((s) => {
-        if (s)
-          setSectors(
-            s.filter((ss) => {
-              return !!ss.finish_date && !!ss.start_date;
-            }),
-          );
-        else setSectors([]);
-      });
-    } else {
-      getSectorsBetween(_from, _until).then((s) => {
-        if (s) setSectors(s);
-        else setSectors([]);
-      });
     }
   };
 
@@ -238,8 +185,7 @@ export default function PaddockScreen(props: Props) {
     );
   };
 
-  //  Why??????????
-  const MainScreen = useCallback(() => {
+  const MainScreen = () => {
     return (
       <ScrollView flex={1} contentContainerStyle={{ alignItems: "center" }}>
         <Box
@@ -503,7 +449,7 @@ export default function PaddockScreen(props: Props) {
         />
       </ScrollView>
     );
-  }, [filterState, measurements]);
+  };
 
   return (
     <>

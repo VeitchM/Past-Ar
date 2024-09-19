@@ -5,7 +5,11 @@ export async function calculateByHeight(height: number, calibrationID: number) {
   const [calibration] = cal.filter((e) => {
     return e.ID == calibrationID;
   });
+  console.log(calibration.function);
   if (calibration && calibration.function) {
+    console.log(
+      processFunction(height, calibration.function.split(",").map(Number)),
+    );
     return processFunction(height, calibration.function.split(",").map(Number));
   }
   return 0;
