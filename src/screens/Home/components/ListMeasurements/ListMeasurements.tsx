@@ -1,19 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { ListRenderItem, View } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import { View } from "react-native";
 
 //==== Icons ==================================================
-import { Entypo } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
 
 import { FlashList } from "@shopify/flash-list";
 
 //==== Components ===========================================
 import { Heading, VStack, Divider, Spinner, useTheme } from "native-base";
-// import {
-//   DeleteCalibrationModal,
-//   InfoCalibrationModal,
-// } from "../../components/CalibrationsModals";
 
 //==== LocalDB ==========================================
 import { MeasurementLocalDB } from "../../../../features/localDB/types";
@@ -29,8 +22,6 @@ import Item, { ITEM_HEIGHT } from "./ListItemMeasurement";
 
 const LIST_SIZE = 50;
 
-type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
-
 export default function MeasurementsList() {
   //Value represents id in database
   const theme = useTheme();
@@ -39,21 +30,19 @@ export default function MeasurementsList() {
     useState<MeasurementLocalDB>();
 
   const lastMeasurement = useTypedSelector(
-    (state) => state.measurement.lastMeasurement
+    (state) => state.measurement.lastMeasurement,
   );
 
   const refreshList = useCallback(() => {
-    console.log("RefreshList");
     getNLastMeasurements(LIST_SIZE).then((measurements) => {
       setMeasurements(measurements);
     });
   }, [setMeasurements]);
 
   useEffect(() => {
-    console.log("refreshedListMeasurements");
     setTimeout(() => {
       refreshList();
-    },100);
+    }, 100);
   }, [lastMeasurement]);
 
   const onDelete = useCallback(() => {
@@ -64,7 +53,6 @@ export default function MeasurementsList() {
       });
   }, [selectedMeasurement]);
 
-  console.log("Rerendered MesurementList", measurements);
   return measurements ? (
     measurements.length > 0 ? (
       <VStack alignItems="center" flex={1} width="100%">
@@ -79,16 +67,12 @@ export default function MeasurementsList() {
             borderRadius: 30,
             overflow: "hidden",
             width: "100%",
-            // width: 280,
-            // height:100,
             flex: 1,
-// backgroundColor:"red",
             borderColor: theme.colors.muted[300],
             borderWidth: 2,
           }}
         >
           <FlashList
-          
             extraData={setSelectedMeasurement}
             data={measurements}
             estimatedItemSize={ITEM_HEIGHT}
