@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-
-//==== Redux ======================================================
-import { useTypedDispatch } from "../../features/store/storeHooks";
-import { addNotification } from "../../features/store/notificationSlice";
+import { useState } from "react";
 
 //==== Components ===========================================
 import { Heading, VStack, Input, Icon } from "native-base";
@@ -26,16 +22,10 @@ export default function CreateCalibration({ navigation }: Props) {
 
   const [calibrationName, setCalibrationName] = useState<string>();
 
-  const dispatch = useTypedDispatch();
-
   const [
     showModalCalibrationFromMeasurement,
     setShowModalCalibrationFromMeasurement,
   ] = useState(false);
-
-  useEffect(() => {
-    console.log("calibrationName", calibrationName);
-  }, [calibrationName]);
 
   /**Function used by onPressCreateFromFunction and onPressCreateFrom */
   function onPressCreate(callback: () => void) {
@@ -47,14 +37,6 @@ export default function CreateCalibration({ navigation }: Props) {
         })
         .catch((e) => console.error(e));
     } else console.error("Shouldnt happen, calibration name empty");
-  }
-
-  function onPressCreateFromFunction() {
-    onPressCreate(() => {
-      navigation.navigate("CreateFunctionCalibration", {
-        name: calibrationName as string,
-      });
-    });
   }
 
   function onPressCreateFromMeasurement() {
@@ -88,21 +70,6 @@ export default function CreateCalibration({ navigation }: Props) {
         </VStack>
 
         <VStack style={{ width: "100%" }} bg="muted.50">
-          {/* <BlockButton
-            height={100}
-            text={TS.t("from_function")}
-            isDisabled={!calibrationName}
-            icon={
-              <Icon
-                alignSelf="center"
-                as={MaterialCommunityIcons}
-                name="function-variant"
-                size={60}
-                color="muted.400"
-              />
-            }
-            onPress={onPressCreateFromFunction}
-          /> */}
           <BlockButton
             height={100}
             isDisabled={!calibrationName}
