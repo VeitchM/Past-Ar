@@ -116,18 +116,13 @@ const verifyMeasurements = (measurements: number[]) => {
 
   if (measurements.length > 0) {
     const median = measurements.sort()[Math.floor(measurements.length / 2)];
-    console.log({ median, measurements });
-
     measurements.forEach((number) => {
       if (Math.abs(number - median) < TOLERANCE) {
-        console.log("Tolerancia aceptada: ", number);
         sum += number;
         validNumbers++;
       }
     });
   }
-
-  console.log({ sum, validNumbers });
 
   // if (validNumbers < measurements.length)
   //   pushNotification(TS.t("obstructed_sensor"), "warning");
