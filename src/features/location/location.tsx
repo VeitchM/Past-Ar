@@ -1,8 +1,10 @@
-import { getCurrentPositionAsync } from "expo-location";
+import { getCurrentPositionAsync, LocationAccuracy } from "expo-location";
 
 export async function getLocation() {
   try {
-    const location = await getCurrentPositionAsync();
+    const location = await getCurrentPositionAsync({
+      accuracy: LocationAccuracy.BestForNavigation,
+    });
     return location;
   } catch (err) {
     console.error(err);
