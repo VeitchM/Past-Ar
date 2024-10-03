@@ -2,6 +2,7 @@ import TS from "../../../TS";
 import {
   getCalibrationsForBack,
   getCalibrationsFromBackInLocalDB,
+  insertCalibrationFromBack,
   insertCalibrationFromFunctionFromServer,
   updateCalibrationFunction,
   updateToCalibrationFunctionFromServer,
@@ -91,7 +92,7 @@ export async function updateLocalCalibrations(
       await getCalibrationsFromBackInLocalDB();
     calibrationsFromBack.forEach((calibration) => {
       const calibrationFound = calibrationsFromBackInLocalDB.find((item) => {
-        return calibration.uid === item.uid;
+        return calibration.uid === item.ID.toString();
       });
 
       if (calibrationFound) {
@@ -100,11 +101,7 @@ export async function updateLocalCalibrations(
           calibration.curve?.toString(),
         );
       } else {
-        insertCalibrationFromFunctionFromServer(
-          calibration.name,
-          calibration.curve?.toString(),
-          calibration.uid,
-        );
+        insertCalibrationFromBack(calibration);
       }
     });
   } catch (err) {

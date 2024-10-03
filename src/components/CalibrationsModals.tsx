@@ -63,7 +63,7 @@ export function NewCalibrationModal(props: {
         const exists = await calibrationExists(props.calibrationName);
         if (!exists) {
           await insertCalibrationFromMeasurements(props.calibrationName);
-          dispatch(setUpdateCalibration({update:true}))
+          dispatch(setUpdateCalibration({ update: true }));
         } else {
           pushNotification(TS.t("name_already_exists"), "error");
           console.log("Name already exists");
@@ -85,9 +85,7 @@ export function NewCalibrationModal(props: {
       showModal={props.showModal}
       calibrationName={props.calibrationName}
       setShowModal={props.setShowModal}
-      lines={[
-        TS.t("calibration_ask_create"),TS.t("calibration_info_create")
-      ]}
+      lines={[TS.t("calibration_ask_create"), TS.t("calibration_info_create")]}
     >
       <>
         <Button
@@ -174,14 +172,11 @@ export const calibrationTypesNames = [
 ];
 
 export function InfoCalibrationModal(props: PropsInfoModal) {
-  let type = TS.t("calibration_created");
-  if (props.info && "fromFunction" in props.info && props.info?.fromFunction)
-    props.info?.fromFunction &&
-      (type += calibrationTypesNames[CalibrationTypesEnum.fromFunction]);
-  else type += calibrationTypesNames[CalibrationTypesEnum.fromMeasurements];
-
-  console.log("Info calibration modal", props.info);
-
+  // TODO: solución temporal para indicar calibraciones estándar.
+  // En el futuro, cambiar la API Web para que devuelva si una cal. es estándar.
+  const type = [1, 2, 3, 4, 5].includes(props.info?.ID || -1)
+    ? "Estándar"
+    : TS.t("cal_from_measurements");
   return (
     <BaseModal
       title={TS.t("calibration")}

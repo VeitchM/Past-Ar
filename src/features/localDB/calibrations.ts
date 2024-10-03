@@ -1,4 +1,4 @@
-import { CalibrationForBack } from "../backend/types";
+import { CalibrationForBack, CalibrationFromBack } from "../backend/types";
 import { SendStatus, execQuery, execTransaction } from "./localDB";
 import { measurementToBackendFormat } from "./measurements";
 import { TablesNames } from "./tablesDefinition";
@@ -78,7 +78,7 @@ export async function updateToCalibrationFunctionFromServer(
 /** It gets the rows from the local db which comes from the server */
 export async function getCalibrationsFromBackInLocalDB() {
   return execTransaction([
-    `SELECT * FROM ${TablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER}`,
+    `SELECT * FROM ${TablesNames.CALIBRATIONS_FROM_MEASUREMENTS}`,
   ]).then(
     (result) => result[0].rows._array as calibrationsFromFunctionFromBackend[],
   );
@@ -101,6 +101,7 @@ async function insertCalibration(
   functionDefinition: string | null = null,
 ) {
   //TODO refactorize
+  console.log("inserting");
   return execQuery(`INSERT INTO calibrations (name,function) values (?,?)`, [
     name,
     functionDefinition,
@@ -133,6 +134,19 @@ export async function insertCalibrationFromFunctionFromServer(
       [id, uid],
     ).then((result) => result.insertId as number); //It wont return undefined, in the case it doesnt insert an error will be thrown
   }
+}
+
+export async function insertCalibrationFromBack(
+  calibration: CalibrationFromBack,
+) {
+  await execQuery(
+    `INSERT INTO ${TablesNames.CALIBRATIONS} (ID, name, function) values (${
+      calibration.uid
+    }, '${calibration.name}', '${calibration.curve.toString()}')`,
+  );
+  await execQuery(
+    `INSERT INTO ${TablesNames.CALIBRATIONS_FROM_MEASUREMENTS} (ID, sendStatus) values (${calibration.uid}, 1)`,
+  );
 }
 
 /** Creates the tables needed for a Calibration made from measurements */
@@ -188,12 +202,12 @@ export async function getCalibrationsFromMeasurementExtended() {
  */
 export async function getCalibrationsMeasurements(calibrationID: number) {
   return execQuery(`
-    SELECT t2.* 
+    SELECT t2.*, t1.ID
     FROM calibrationsMeasurements AS t1
     INNER JOIN measurements as t2 ON t1.ID = t2.ID
-    WHERE  t1.calibrationID = ${calibrationID} `).then(
-    (result) => result.rows._array as Array<MeasurementLocalDB>,
-  );
+    WHERE  t1.calibrationID = ${calibrationID} `).then((result) => {
+    return result.rows._array as Array<MeasurementLocalDB>;
+  });
 }
 
 //=== DELETE =================================================

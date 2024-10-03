@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 //==== Components ===========================================
-import { Heading, VStack, Input, Icon } from "native-base";
+import { Heading, VStack, Input, Icon, Button } from "native-base";
 import { NewCalibrationModal } from "../../components/CalibrationsModals";
 
 //==== Navigation ==============================================
@@ -70,21 +70,13 @@ export default function CreateCalibration({ navigation }: Props) {
         </VStack>
 
         <VStack style={{ width: "100%" }} bg="muted.50">
-          <BlockButton
+          <Button
             height={100}
             isDisabled={!calibrationName}
-            text={TS.t("from_measurements")}
-            icon={
-              <Icon
-                alignSelf="center"
-                as={MaterialCommunityIcons}
-                name="ruler"
-                size={60}
-                color="muted.400"
-              />
-            }
             onPress={onPressCreateFromMeasurement}
-          />
+          >
+            {TS.t("create_calibration")}
+          </Button>
         </VStack>
       </VStack>
       <NewCalibrationModal

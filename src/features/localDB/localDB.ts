@@ -2,13 +2,26 @@ import * as SQLite from "expo-sqlite";
 import { SendableTables } from "./types";
 import { TablesNames } from "./tablesDefinition";
 
-const db = SQLite.openDatabase("pastar.db");
+const db = SQLite.openDatabase("pastarsas.db");
 
 //We declare foreigns key, for that, we should import a pragma module
 //with a query
 db.exec([{ sql: "PRAGMA foreign_keys = ON;", args: [] }], false, () => {
+  // resetDB();
   createTables();
 });
+
+function resetDB() {
+  console.log("RESETTING DB");
+  dropTables(TablesNames.MEASUREMENTS);
+  dropTables(TablesNames.CALIBRATIONS);
+  dropTables(TablesNames.CALIBRATIONS_FROM_FUNCTIONS);
+  dropTables(TablesNames.CALIBRATIONS_FROM_FUNCTIONS_FROM_SERVER);
+  dropTables(TablesNames.CALIBRATIONS_FROM_MEASUREMENTS);
+  dropTables(TablesNames.PADDOCKS);
+  dropTables(TablesNames.SECTORS);
+  dropTables(TablesNames.USER);
+}
 
 //Does it work?
 db.exec(

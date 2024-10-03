@@ -1,6 +1,6 @@
 {
     "backend": {
-      "URL": "https://pastech2.com.ar"
+      "URL": "https://pastech-web-production-a687.up.railway.app"
     },
     "hardware":{
         "DEFAULT_PLATE_WIDTH":1.34,

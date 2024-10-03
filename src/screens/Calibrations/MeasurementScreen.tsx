@@ -1,76 +1,121 @@
-
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 //=========== Components ========================================
-import { Box, Container, Flex, Heading, Text, View } from "native-base"
+import { Button, ScrollView, Text, View } from "native-base";
 
-import { setCalibrationModeOff, setCalibrationModeOn } from "../../features/store/measurementSlice";
+import {
+  setCalibrationModeOff,
+  setCalibrationModeOn,
+} from "../../features/store/measurementSlice";
 
 //======= Navigation Props =========================
 import { PropsCalibrationMeasurement } from "./Stack.types";
 
-import { useTypedDispatch, useTypedSelector } from "../../features/store/storeHooks";
+import {
+  useTypedDispatch,
+  useTypedSelector,
+} from "../../features/store/storeHooks";
 
+import React from "react";
+import { getCalibrationsMeasurements } from "../../features/localDB/calibrations";
+import { MeasurementLocalDB } from "../../features/localDB/types";
 
-function CalibrationMeasurement({ navigation, route }: PropsCalibrationMeasurement) {
+type CustomMeasurement = MeasurementLocalDB & { ID: number };
 
-    const SPACE_BETWEEN_TEXT = 5
+function CalibrationMeasurement({
+  navigation,
+  route,
+}: PropsCalibrationMeasurement) {
+  const SPACE_BETWEEN_TEXT = 5;
+  const [measurements, setMeasurements] = useState<CustomMeasurement[]>([]);
 
-    const dispatch = useTypedDispatch()
-    const calibrationMeasurmentID = useTypedSelector(state => state.measurement.calibrationMeasurementID)
-    const lastMeasurementHeight = useTypedSelector(state => state.measurement.lastMeasurement.height)
+  const dispatch = useTypedDispatch();
+  const lastMeasurement = useTypedSelector(
+    (state) => state.measurement.lastMeasurement,
+  );
 
-    console.log('Lalallal', calibrationMeasurmentID);
+  async function fetchMeasurements() {
+    const measurements = await getCalibrationsMeasurements(
+      route.params.calibrationID,
+    );
+    setMeasurements(measurements.reverse());
+  }
 
-    useFocusEffect(
-        useCallback(() => {
-            console.log('Focused');
-            dispatch(setCalibrationModeOn(route.params.calibrationID))
+  useEffect(() => {
+    fetchMeasurements();
+  }, [lastMeasurement]);
 
-            return () => {
-                console.log('Not focused anymore');
-                dispatch(setCalibrationModeOff());
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(setCalibrationModeOn(route.params.calibrationID));
 
-            }//Unsubscribe
-        }, []))
+      return () => {
+        dispatch(setCalibrationModeOff());
+      }; //Unsubscribe
+    }, []),
+  );
 
-    return (
-        <View bg='white' style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
+  const last = measurements.length > 0 ? measurements[0] : null;
 
-            <View paddingTop={0} flex={1} >
-
-                {!calibrationMeasurmentID ? <Heading >Esperando Medicion</Heading> : null}
-                <Container bg='muted.100' minWidth={250} alignItems='center'>
-                    <Text fontSize='lg' fontWeight='thin'>Calibración</Text>
-                    <Heading size='2xl' fontWeight='regular' >{route.params.calibrationName}</Heading>
-                    {calibrationMeasurmentID ?
-                        <>
-                            <Text fontSize='lg' marginTop={5} marginBottom={-2} >Identificador</Text>
-                            <Heading size='3xl'>{calibrationMeasurmentID}</Heading>
-                            {/* TODO make it not ugly*/}
-
-                            <Text fontSize='md' fontWeight='thin' marginTop={1} marginBottom={0} >Medicion</Text>
-                            <Heading size='xl' fontWeight='regular'>{lastMeasurementHeight.toFixed(1)}cm</Heading>
-                        </>
-                        :
-                        <Heading size='md' fontWeight={400}>Esperando medicion</Heading>
-                    }
-                </Container>
+  return (
+    <View
+      style={{ flex: 1, flexDirection: "column", marginBottom: 20 }}
+      width="full"
+    >
+      <View
+        width="full"
+        backgroundColor="muted.50"
+        style={{ paddingHorizontal: 30 }}
+      >
+        <Text marginY={SPACE_BETWEEN_TEXT} fontSize="lg" fontWeight="bold">
+          Presione el boton del pasturometro para realizar medicion
+        </Text>
+        <View style={{ height: 5 }} />
+        <Text marginY={SPACE_BETWEEN_TEXT} fontSize="lg" fontWeight="bold">
+          Anote el numero en pantalla para posteriormente asociarlo al peso de
+          pasto seco de la medicion
+        </Text>
+      </View>
+      <ScrollView
+        style={{
+          marginVertical: 50,
+        }}
+        width="1/2"
+      >
+        {measurements.map((measurement) => (
+          <View
+            key={measurement.timestamp}
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text fontSize="2xl">{measurement.ID}</Text>
+            <View
+              style={{
+                backgroundColor: "#dddddd",
+                marginTop: 5,
+                marginLeft: 5,
+                borderRadius: 4,
+                alignSelf: "flex-start",
+                paddingTop: 1,
+                paddingBottom: 1,
+                paddingLeft: 5,
+                paddingRight: 5,
+                width: 120,
+              }}
+            >
+              <Text fontSize="2xl">{measurement.height.toFixed(1)} cm</Text>
             </View>
+          </View>
+        ))}
+      </ScrollView>
 
-            <View width='100%' bg='muted.50' flex={1} borderTopRadius='3xl' shadow={3} >
-                <Box flexDirection='column' margin={10} justifyContent='space-between' >
-                    <Text marginY={SPACE_BETWEEN_TEXT} fontSize='lg' fontWeight='bold'>Presione el boton del pasturometro para realizar medicion</Text>
-                    <View style={{ height: 5 }} />
-                    <Text marginY={SPACE_BETWEEN_TEXT} fontSize='lg' fontWeight='bold'>Anote el numero en pantalla para posteriormente asociarlo al peso de pasto seco de la medicion</Text>
-                </Box>
-            </View>
-
-        </View>
-    )
-
-
+      <Button>Enviar Calibración</Button>
+    </View>
+  );
 }
 
-export default CalibrationMeasurement
+export default CalibrationMeasurement;

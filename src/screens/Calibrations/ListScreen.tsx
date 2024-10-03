@@ -1,8 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { ListRenderItem } from "react-native";
+import React, { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-
-import { useTypedSelector } from "../../features/store/storeHooks";
 
 //==== Icons ==================================================
 import { Entypo } from "@expo/vector-icons";
@@ -17,7 +14,6 @@ import {
   FlatList,
   IconButton,
   Divider,
-  Icon,
   Pressable,
   Spinner,
 } from "native-base";
@@ -35,6 +31,10 @@ import {
 
 //==== Navigation ==============================================
 import { PropsCalibrationList } from "./Stack.types";
+
+function calibracionIncompleta(func: string | null) {
+  return !func || func?.split(",").every((value) => value === "0");
+}
 
 export default function CalibrationsList({ navigation }: PropsCalibrationList) {
   //Value represents id in database
@@ -66,52 +66,39 @@ export default function CalibrationsList({ navigation }: PropsCalibrationList) {
       return (
         <Pressable
           onPress={() => {
-            console.log("aaaya");
             setSelectedCalibration(item);
             setShowInfoModal(true);
           }}
         >
           <HStack
-            style={{ height: 60, flex: 1, paddingHorizontal: 30 }}
+            style={{
+              height: 60,
+              flex: 1,
+              paddingHorizontal: 30,
+            }}
             backgroundColor="white"
             justifyContent="space-between"
             alignItems="center"
           >
-            <HStack>
-              {/* I Could use a condition in just the icon name, but with cloud it will be a ternary */}
-              {item.fromFunction != 1 && (
-                <Icon
-                  marginRight={2}
-                  alignSelf="center"
-                  size="xl"
-                  as={MaterialCommunityIcons}
-                  name="ruler"
-                />
-              )}
-              {item.fromMeasurement != 1 && (
-                <Icon
-                  marginRight={2}
-                  alignSelf="center"
-                  size="xl"
-                  as={MaterialCommunityIcons}
-                  name="function-variant"
-                />
-              )}
-
-              <Heading>{item.name}</Heading>
-            </HStack>
-            {/* <IconButton
-                        onPress={() => {
-                            setSelectedCalibration(item)
-                            setShowDeleteModal(true)
-                        }}
-                        colorScheme='red'
-                        _icon={{
-                            as: MaterialIcons,
-                            name: "delete",
-                            size: '2xl'
-
-                        }} /> */}
+            <Heading>{item.name}</Heading>
+            {calibracionIncompleta(item.function) && (
+              <IconButton
+                _icon={{
+                  as: Entypo,
+                  name: "plus",
+                  size: "md",
+                }}
+                rounded="md"
+                variant="solid"
+                style={{ width: 40, height: 40 }}
+                onPress={() => {
+                  navigation.navigate("CalibrationMeasurement", {
+                    calibrationID: item.ID,
+                    calibrationName: item.name,
+                  });
+                }}
+              />
+            )}
           </HStack>
           <Divider />
         </Pressable>
@@ -140,7 +127,9 @@ export default function CalibrationsList({ navigation }: PropsCalibrationList) {
             maxHeight="85%"
             minHeight="10%"
             width="100%"
-            data={calibrations}
+            data={calibrations.sort((a, _) =>
+              calibracionIncompleta(a.function) ? -1 : 1,
+            )}
             renderItem={Item}
           />
         ) : (
@@ -160,9 +149,7 @@ export default function CalibrationsList({ navigation }: PropsCalibrationList) {
           onPress={() => {
             navigation.navigate("CreateCalibration");
           }}
-        >
-          {/* <Entypo name="plus" size={35} color='white' /> */}
-        </IconButton>
+        ></IconButton>
       </VStack>
     </>
   );
